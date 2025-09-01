@@ -1,20 +1,28 @@
 import requests
 import mysql.connector
 
-API_KEY = "123"  
+API_KEY = "123"
 BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}/"
 
-
-LEAGUE_ID = "5201"
+LEAGUE_IDS = ["5400", "5201"] 
 SEASON = "2025"
 
 conn = mysql.connector.connect(
     host="localhost",
-    user="root",      # troque pelo nome do seu usuário do mySQL
-    password="root",  # troque pela senha q vc usa no mySQL
+    user="root",
+    password="root",
     database="futebol_feminino"
 )
 cursor = conn.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS ligas (
+    idLeague VARCHAR(50) PRIMARY KEY,
+    strLeague VARCHAR(255),
+    strSport VARCHAR(100),
+    strLeagueAlternate VARCHAR(255)
+)
+""")
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS partidas (
@@ -27,22 +35,46 @@ CREATE TABLE IF NOT EXISTS partidas (
     strAwayTeam VARCHAR(100),
     intHomeScore INT,
     intAwayScore INT,
-    strVenue VARCHAR(255)
+    strVenue VARCHAR(255),
+    idLeague VARCHAR(50),
+    FOREIGN KEY (idLeague) REFERENCES ligas(idLeague)
 )
 """)
 
+def save_league_info(league_id):
+    url = f"{BASE_URL}lookupleague.php?id={league_id}"
+    data = requests.get(url).json()
+    league = data.get("leagues", [])[0] if data.get("leagues") else None
+    if league:
+        cursor.execute("""
+            INSERT INTO ligas (idLeague, strLeague, strSport, strLeagueAlternate)
+            VALUES (%s,%s,%s,%s)
+            ON DUPLICATE KEY UPDATE
+                strLeague=VALUES(strLeague),
+                strSport=VALUES(strSport),
+                strLeagueAlternate=VALUES(strLeagueAlternate)
+        """, (
+            league.get("idLeague"),
+            league.get("strLeague"),
+            league.get("strSport"),
+            league.get("strLeagueAlternate")
+        ))
+        conn.commit()
+        print(f"Liga {league.get('strLeague')} salva/atualizada.")
+
 def get_season_events(league_id, season):
     url = f"{BASE_URL}eventsseason.php?id={league_id}&s={season}"
-    response = requests.get(url)
-    data = response.json()
-    return data.get("events", [])
+    data = requests.get(url).json()
+    return data.get("events", []) or []
 
-def save_to_db(events):
+def save_events(events, league_id):
     for e in events:
+        idLeague_to_save = e.get("idLeague") or league_id
+
         cursor.execute("""
             INSERT INTO partidas (idEvent, strEvent, dateEvent, strTime, strSeason, 
-                                  strHomeTeam, strAwayTeam, intHomeScore, intAwayScore, strVenue)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                                  strHomeTeam, strAwayTeam, intHomeScore, intAwayScore, strVenue, idLeague)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             ON DUPLICATE KEY UPDATE
                 strEvent=VALUES(strEvent),
                 dateEvent=VALUES(dateEvent),
@@ -52,7 +84,8 @@ def save_to_db(events):
                 strAwayTeam=VALUES(strAwayTeam),
                 intHomeScore=VALUES(intHomeScore),
                 intAwayScore=VALUES(intAwayScore),
-                strVenue=VALUES(strVenue)
+                strVenue=VALUES(strVenue),
+                idLeague=VALUES(idLeague)
         """, (
             e.get("idEvent"),
             e.get("strEvent"),
@@ -64,18 +97,21 @@ def save_to_db(events):
             e.get("intHomeScore"),
             e.get("intAwayScore"),
             e.get("strVenue"),
+            idLeague_to_save
         ))
     conn.commit()
 
+
+def process_league(league_id, season):
+    save_league_info(league_id)             
+    events = get_season_events(league_id, season)
+    print(f"[{league_id}] jogos encontrados: {len(events)}")
+    save_events(events, league_id)            
+
 if __name__ == "__main__":
-    events = get_season_events(LEAGUE_ID, SEASON)
-    print(f"Total de jogos encontrados: {len(events)}")
+    for lid in LEAGUE_IDS:
+        process_league(lid, SEASON)
 
-    for ev in events[:5]:  
-        print(ev["dateEvent"], ev["strEvent"], ev["strHomeTeam"], "vs", ev["strAwayTeam"])
-
-    save_to_db(events)
-    print("Jogos salvos no banco de dados!")
-
-cursor.close()
-conn.close()
+    print("Todas as ligas processadas e partidas salvas.")
+    cursor.close()
+    conn.close()
