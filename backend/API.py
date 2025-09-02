@@ -9,8 +9,8 @@ SEASON = "2025"
 
 conn = mysql.connector.connect(
     host="localhost",
-    user="root",
-    password="root",
+    user="root",      # troque pelo nome do seu usuário do mySQL
+    password="root",  # troque pela senha q vc usa no mySQL
     database="futebol_feminino"
 )
 cursor = conn.cursor()
