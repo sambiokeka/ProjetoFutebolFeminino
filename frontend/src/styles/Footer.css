@@ -1,46 +1,74 @@
 .site-footer {
-  background: #f8f9fa;
-  color: #333333;
+  background: #111827;
+  color: white;
   padding: 3rem 0 1rem;
   margin-top: auto;
 }
 
-.footer-top {
+.footer-main {
   margin-bottom: 2rem;
 }
 
+/* CONTAINER PRINCIPAL */
+.footer-main .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.footer-main .col-md-4 {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ALINHAMENTO DAS COLUNAS */
+.footer-main .col-md-4:first-child {
+  text-align: left;
+}
+
+.footer-main .col-md-4:nth-child(2) {
+  text-align: center;
+  padding: 0 2rem;
+}
+
+.footer-main .col-md-4:last-child {
+  text-align: left;
+}
+
+/* ESTILOS DE TEXTO */
 .footer-logo {
   font-family: 'Pacifico', cursive;
-  font-size: 2rem;
-  color: #000000;
-  margin-bottom: 1rem;
+  font-size: 27px;
+  color: white;
+  margin: -0.6rem 0 1rem 0;
   font-weight: 400;
 }
 
 .footer-description {
-  color: #666666;
+  color: #a1a0a0;
   line-height: 1.6;
-  font-size: 1rem;
-  max-width: 500px;
-}
-
-.footer-middle {
-  margin: 2rem 0;
+  font-size: 0.95rem;
+  max-width: 100%;
 }
 
 .footer-title {
-  color: #000000;
-  font-weight: 600;
+  color: white;
+  font-weight: 100;
   margin-bottom: 1rem;
   font-size: 1.1rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  width: 100%;
 }
 
+/* LINKS */
 .footer-links {
   list-style: none;
   padding: 0;
   margin: 0;
+  width: 100%;
 }
 
 .footer-links li {
@@ -48,17 +76,19 @@
 }
 
 .footer-links a {
-  color: #666666;
+  color: #a1a0a0;
   text-decoration: none;
   transition: all 0.3s ease;
   font-size: 0.95rem;
+  display: inline-block;
 }
 
 .footer-links a:hover {
-  color: #000000;
+  color: white;
   text-decoration: underline;
 }
 
+/* RODAPÉ INFERIOR */
 .footer-divider {
   border-color: rgba(0, 0, 0, 0.1);
   margin: 2rem 0;
@@ -95,31 +125,37 @@
   margin: 0 0.5rem;
 }
 
-/* Responsividade */
+/* RESPONSIVIDADE */
 @media (max-width: 768px) {
   .site-footer {
     padding: 2rem 0 1rem;
   }
   
+  .footer-main .row {
+    flex-direction: column;
+  }
+  
+  .footer-main .col-md-4 {
+    margin-bottom: 2rem;
+    text-align: center;
+    padding: 0 2rem;
+    align-items: center;
+  }
+  
   .footer-logo {
     font-size: 1.8rem;
-    text-align: center;
+    margin: 0 0 1rem 0;
   }
   
-  .footer-description {
-    text-align: center;
-    margin: 0 auto;
-  }
-  
-  .footer-middle .col-md-6 {
-    margin-bottom: 2rem;
-  }
-  
-  .footer-title {
-    text-align: center;
-  }
-  
+  .footer-title,
   .footer-links {
     text-align: center;
+  }
+}
+
+/* TABLETS */
+@media (min-width: 769px) and (max-width: 991px) {
+  .footer-main .col-md-4:nth-child(2) {
+    padding: 0 1.5rem;
   }
 }
