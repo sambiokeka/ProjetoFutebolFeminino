@@ -1,0 +1,176 @@
+.register-main {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #da5b8f, #6c3cbd);
+  display: flex;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.register-section {
+  flex: 1;
+}
+
+.register-card {
+  border: none;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.card-body {
+  background-color: #3d1b5c;
+  
+}
+
+.card-header {
+  background-color: #3d1b5c;
+  border: none;
+  color: white;
+}
+
+
+.card-header h1 {
+  font-weight: 700;
+  color: white;
+}
+
+.register-form .form-label {
+  font-weight: 600;
+  color: #fdfdfd;
+  margin-bottom: 0.5rem;
+}
+
+.register-form .form-control {
+  border-radius: 0.5rem;
+  border: 2px solid #e9ecef;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.register-form .form-control:focus {
+  border-color: #4facfe;
+  box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ec4cbc 0%, #5800aa 100%);
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #d2deeb;
+  z-index: 1;
+}
+
+.divider-text {
+  background-color: #3d1b5c;
+  padding: 0 1rem;
+  position: relative;
+  z-index: 2;
+  color: #fcfdfd;
+  font-size: 0.9rem;
+}
+
+.social-buttons .btn {
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.social-buttons .btn:hover {
+  transform: translateY(-1px);
+}
+
+.social-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.5rem;
+}
+
+.card-footer {
+  background-color:#3d1b5c;
+  color: #fdfdfd;
+  border:none;
+}
+
+.card-footer a {
+  color: #ce31ee;
+  font-weight: 600;
+}
+
+.card-footer a:hover {
+  color: #00f2fe;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .register-main {
+    padding: 1rem;
+  }
+  
+  .register-card {
+    margin: 0;
+  }
+  
+  .card-header {
+    padding: 2rem 1rem;
+  }
+  
+  .card-body {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .register-form .row {
+    margin: 0 -0.5rem;
+  }
+  
+  .register-form .col-12 {
+    padding: 0 0.5rem;
+  }
+  
+  .social-buttons .btn {
+    font-size: 0.9rem;
+  }
+  
+  .social-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Animações */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.register-card {
+  animation: fadeInUp 0.6s ease-out;
+}

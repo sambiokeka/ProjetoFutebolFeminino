@@ -1,0 +1,125 @@
+.site-footer {
+  background: #f8f9fa;
+  color: #333333;
+  padding: 3rem 0 1rem;
+  margin-top: auto;
+}
+
+.footer-top {
+  margin-bottom: 2rem;
+}
+
+.footer-logo {
+  font-family: 'Pacifico', cursive;
+  font-size: 2rem;
+  color: #000000;
+  margin-bottom: 1rem;
+  font-weight: 400;
+}
+
+.footer-description {
+  color: #666666;
+  line-height: 1.6;
+  font-size: 1rem;
+  max-width: 500px;
+}
+
+.footer-middle {
+  margin: 2rem 0;
+}
+
+.footer-title {
+  color: #000000;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 0.7rem;
+}
+
+.footer-links a {
+  color: #666666;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.footer-links a:hover {
+  color: #000000;
+  text-decoration: underline;
+}
+
+.footer-divider {
+  border-color: rgba(0, 0, 0, 0.1);
+  margin: 2rem 0;
+}
+
+.footer-bottom {
+  text-align: center;
+}
+
+.copyright {
+  color: #666666;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.legal-links {
+  margin-top: 0.5rem;
+}
+
+.legal-links a {
+  color: #666666;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.legal-links a:hover {
+  color: #000000;
+  text-decoration: underline;
+}
+
+.link-separator {
+  color: #cccccc;
+  margin: 0 0.5rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .site-footer {
+    padding: 2rem 0 1rem;
+  }
+  
+  .footer-logo {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+  
+  .footer-description {
+    text-align: center;
+    margin: 0 auto;
+  }
+  
+  .footer-middle .col-md-6 {
+    margin-bottom: 2rem;
+  }
+  
+  .footer-title {
+    text-align: center;
+  }
+  
+  .footer-links {
+    text-align: center;
+  }
+}
