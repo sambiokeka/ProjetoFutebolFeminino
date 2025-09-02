@@ -97,7 +97,6 @@ def save_league_info(league):
 def get_status(date_str, time_str):
     if not time_str:
         time_str = "00:00:00"
-    # Converte AM/PM se necessário
     if "AM" in time_str or "PM" in time_str:
         time_part, modifier = time_str.split(" ")
         hours, minutes = map(int, time_part.split(":"))
