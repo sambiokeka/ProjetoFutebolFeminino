@@ -2,9 +2,30 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .titulo {
   color: #333;
   text-align: center;
+}
+
+main {
+  flex: 1;
+  padding: 1rem 0; /* Espaço vertical */
+}
+
+/* Para mobile */
+@media (max-width: 768px) {
+  main {
+    padding: 0.5rem 0; /* Menos espaço em mobile */
+  }
+}
+
+@media (max-width: 414px) {
+  main {
+    padding: 0.3rem 0; /* Ainda menos em celulares pequenos */
+  }
 }

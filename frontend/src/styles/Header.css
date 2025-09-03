@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 .site-header {
   background: #ffffff;
@@ -49,6 +50,7 @@
   width: 55px;
   height: 55px;
   object-fit: contain;
+  margin-bottom: -10px;
 }
 
 /* Menu mobile */
@@ -80,7 +82,7 @@
   }
 }
 
-/* Adicionando destaque ao item ativo */
+/* destaque ao item ativo */
 .navbar-nav .nav-link:active,
 .navbar-nav .nav-link:focus {
   color: #1a237e !important;

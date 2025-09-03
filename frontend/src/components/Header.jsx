@@ -25,9 +25,6 @@ const Header = () => {
                 <a className="nav-link" href="#inicio">Início</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#partidas">Partidas</a>
-              </li>
-              <li className="nav-item">
                 <a className="nav-link" href="#meusjogos">Meus jogos</a>
               </li>
               <li className="nav-item">
