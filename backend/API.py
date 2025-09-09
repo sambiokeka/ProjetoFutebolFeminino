@@ -177,7 +177,7 @@ def process_league(league_name):
         if i % 5 == 0:
             time.sleep(3)
         else:
-            time.sleep(0.8)
+            time.sleep(1)
 
 # ---- Execução principal ----
 if __name__ == "__main__":
