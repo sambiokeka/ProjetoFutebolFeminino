@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import '../styles/Partidas.css';
 
 function Partidas() {
   const [partidas, setPartidas] = useState([]);
@@ -23,87 +24,252 @@ function Partidas() {
 
   const ligasUnicas = [...new Set(partidas.map((p) => p.strLeague))];
 
-const filtrarPartidas = () => {
-  return partidas.filter((p) => {
-    // Filtro por data
-    if (filtros.data) {
-      const filtroData = new Date(filtros.data);
-      const dataPartida = new Date(p.dateEvent);
-      
-      // Comparar só o ano, mês e dia
-      if (
-        filtroData.getFullYear() !== dataPartida.getFullYear() ||
-        filtroData.getMonth() !== dataPartida.getMonth() ||
-        filtroData.getDate() !== dataPartida.getDate()
-      ) {
-        return false;
-      }
+  // status da partida
+  const getStatusPartida = (partida) => {
+    const agora = new Date();
+    const dataPartida = new Date(`${partida.dateEvent}T${partida.strTime || "00:00"}`);
+    
+    if (partida.intHomeScore !== null && partida.intAwayScore !== null) {
+      return "finalizada";
+    } else if (dataPartida > agora) {
+      return "ao vivo";
+    } else {
+      return "proxima";
     }
+  };
 
-    // Filtro por liga
-    if (filtros.liga && p.strLeague !== filtros.liga) return false;
+  const filtrarPartidas = () => {
+    return partidas.filter((p) => {
+      // Filtro por data
+      if (filtros.data) {
+        const filtroData = new Date(filtros.data);
+        const dataPartida = new Date(p.dateEvent);
 
-    // Filtro por time
-    if (filtros.time && !(
-      p.strHomeTeam.toLowerCase().includes(filtros.time.toLowerCase()) ||
-      p.strAwayTeam.toLowerCase().includes(filtros.time.toLowerCase())
-    )) return false;
+        if (
+          filtroData.getFullYear() !== dataPartida.getFullYear() ||
+          filtroData.getMonth() !== dataPartida.getMonth() ||
+          filtroData.getDate() !== dataPartida.getDate()
+        ) {
+          return false;
+        }
+      }
 
-    // Filtro por status
-    if (filtros.status && p.status !== filtros.status) return false;
+      // Filtro por liga
+      if (filtros.liga && p.strLeague !== filtros.liga) return false;
 
-    return true;
+      // Filtro por time
+      if (
+        filtros.time &&
+        !(
+          p.strHomeTeam.toLowerCase().includes(filtros.time.toLowerCase()) ||
+          p.strAwayTeam.toLowerCase().includes(filtros.time.toLowerCase())
+        )
+      )
+        return false;
+
+      // Filtro por status
+      if (filtros.status) {
+        const statusPartida = getStatusPartida(p);
+        if (filtros.status !== statusPartida) return false;
+      }
+
+      return true;
+    });
+  };
+
+  // Ordenar por data + hora
+  const partidasOrdenadas = filtrarPartidas().sort((a, b) => {
+    const dataA = new Date(`${a.dateEvent}T${a.strTime || "00:00"}`);
+    const dataB = new Date(`${b.dateEvent}T${b.strTime || "00:00"}`);
+    return dataA - dataB;
   });
-};
+
+  // Agrupar por data
+  const partidasAgrupadas = partidasOrdenadas.reduce((acc, partida) => {
+    if (!acc[partida.dateEvent]) acc[partida.dateEvent] = [];
+    acc[partida.dateEvent].push(partida);
+    return acc;
+  }, {});
+
+  // Formatar data em português
+  const formatarData = (dataStr) => {
+    const data = new Date(dataStr);
+    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    return data.toLocaleDateString('pt-BR', options);
+  };
 
   return (
-    <div>
-      <h2>Filtros</h2>
-      <div style={{ marginBottom: "1rem" }}>
-        <input type="date" name="data" value={filtros.data} onChange={handleFiltroChange} />
+    <div className="partidas-container">
+<div className="hero-section">
+<div className="hero-content">
+  <h1>O Futuro do Futebol Feminino</h1>
+  <p>Acompanhe todas as partidas, estatísticas e notícias do futebol feminino.<br />
+  Celebramos o talento, a paixão e a força das mulheres no esporte.</p>
+  <div className="hero-actions">
+    <a href="#" className="icon-btn">
+      <i className="fas fa-play-circle"></i>
+      Encontrar partidas ao vivo
+    </a>
+    <a href="#" className="icon-btn">
+      <i className="fas fa-calendar-alt"></i>
+      Calendário de jogos
+    </a>
+  </div>
+</div>
+</div>
+
+      <div className="filtros-section">
+        <h2>Todas as partidas</h2>
+        <p className="subtitulo">Acompanhe os jogos mais importantes de futebol feminino</p>
         
-        <select name="liga" value={filtros.liga} onChange={handleFiltroChange}>
-          <option value="">Todos os campeonatos</option>
-          {ligasUnicas.map((liga) => (
-            <option key={liga} value={liga}>{liga}</option>
-          ))}
-        </select>
-        
-        <input type="text" name="time" placeholder="Time" value={filtros.time} onChange={handleFiltroChange} />
-        
-        <select name="status" value={filtros.status} onChange={handleFiltroChange}>
-          <option value="">Todos</option>
-          <option value="proximas">Próximas</option>
-          <option value="finalizadas">Finalizadas</option>
-        </select>
+        {/* FILTRO */}
+        <div className="filtros-container">
+          <div className="filtro-group">
+            <label>Data</label>
+            <input
+              type="date"
+              name="data"
+              value={filtros.data}
+              onChange={handleFiltroChange}
+              className="filtro-input"
+            />
+          </div>
+
+          <div className="filtro-group">
+            <label>Liga/Campeonato</label>
+            <select 
+              name="liga" 
+              value={filtros.liga} 
+              onChange={handleFiltroChange}
+              className="filtro-select"
+            >
+              <option value="">Todos os campeonatos</option>
+              {ligasUnicas.map((liga) => (
+                <option key={liga} value={liga}>
+                  {liga}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filtro-group">
+            <label>Time</label>
+            <input
+              type="text"
+              name="time"
+              placeholder="Nome do time"
+              value={filtros.time}
+              onChange={handleFiltroChange}
+              className="filtro-input"
+            />
+          </div>
+
+          <div className="filtro-group">
+            <label>Status</label>
+            <select
+              name="status"
+              value={filtros.status}
+              onChange={handleFiltroChange}
+              className="filtro-select"
+            >
+              <option value="">Todos</option>
+              <option value="proxima">Próximas</option>
+              <option value="ao-vivo">Ao Vivo</option>
+              <option value="finalizada">Finalizadas</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      <table border="1" cellPadding="5">
-        <thead>
-          <tr>
-            <th>Liga</th>
-            <th>Data</th>
-            <th>Hora</th>
-            <th>Casa</th>
-            <th>Visitante</th>
-            <th>Placar</th>
-            <th>Estádio</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtrarPartidas().map((p) => (
-            <tr key={p.idEvent}>
-              <td>{p.strLeague}</td>
-              <td>{p.dateEvent}</td>
-              <td>{p.strTime}</td>
-              <td>{p.strHomeTeam}</td>
-              <td>{p.strAwayTeam}</td>
-              <td>{p.intHomeScore} x {p.intAwayScore}</td>
-              <td>{p.strVenue}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="partidas-content">
+        {Object.keys(partidasAgrupadas).length > 0 ? (
+          Object.keys(partidasAgrupadas).map((data) => (
+            <div key={data} className="partidas-dia">
+              <h3 className="data-titulo">{formatarData(data)}</h3>
+              
+              {partidasAgrupadas[data].map((p) => {
+                const status = getStatusPartida(p);
+                
+                return (
+                  <div key={p.idEvent} className="partida-card">
+                    <div className="partida-header">
+                      <span className="liga-nome">{p.strLeague}</span>
+                      {status === "proxima" && (
+                        <span className="partida-finalizada">PRÓXIMA</span>)}
+                      {status === "ao-vivo" && (
+                        <span className="partida-ao-vivo">● AO VIVO</span>
+                      )}
+                      {status === "finalizada" && (
+                        <span className="partida-finalizada">FINALIZADA</span>
+                      )}
+                    </div>
+                    
+                    <div className="partida-corpo">
+                      <div className="time time-casa">
+                        <div className="time-escudo">
+                          <div className="escudo-placeholder">
+                            <i className="fas fa-shield-alt"></i>
+                          </div>
+                        </div>
+                        <span className="time-nome">{p.strHomeTeam}</span>
+                      </div>
+                      
+                      <div className="placar">
+                        {status === "proxima" ? (
+                          <span className="partida-horario">{p.strTime ? p.strTime.substring(0, 5) : '--:--'}</span>
+                        ) : (
+                          <>
+                            <span className="placar-numero">{p.intHomeScore !== null ? p.intHomeScore : '-'}</span>
+                            <span className="placar-divisoria">x</span>
+                            <span className="placar-numero">{p.intAwayScore !== null ? p.intAwayScore : '-'}</span>
+                          </>
+                        )}
+                      </div>
+                      
+                      <div className="time time-visitante">
+                        <div className="time-escudo">
+                          <div className="escudo-placeholder">
+                            <i className="fas fa-shield-alt"></i>
+                          </div>
+                        </div>
+                        <span className="time-nome">{p.strAwayTeam}</span>
+                      </div>
+                    </div>
+                    
+<div className="partida-footer">
+  {status === "proxima" && (
+    <button className="btn-lembrar">
+      <i className="fas fa-bell"></i>
+      Lembrar-me
+    </button>
+  )}
+  
+  {status === "ao-vivo" && (
+    <button className="btn-assistir">
+      <i className="fas fa-play-circle"></i>
+      Assistir ao vivo
+    </button>
+  )}
+  
+  {status === "finalizada" && (
+    <button className="btn-detalhes">
+      <i className="fas fa-info-circle"></i>
+      Ver detalhes
+    </button>
+  )}
+</div>
+                  </div>
+                );
+              })}
+            </div>
+          ))
+        ) : (
+          <div className="sem-partidas">
+            <i className="fas fa-futbol"></i>
+            <p>Nenhuma partida encontrada com os filtros selecionados</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

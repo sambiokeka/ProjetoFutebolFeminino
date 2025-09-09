@@ -1,9 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-* {
-  font-family: 'Inter', sans-serif;
-}
-
 .site-footer {
   background: #111827;
   color: white;
@@ -15,30 +9,30 @@
   margin-bottom: 2rem;
 }
 
-/* CONTAINER PRINCIPAL - CENTRALIZADO */
+/* CONTAINER PRINCIPAL */
 .footer-main .row {
   display: flex;
-  justify-content: center; /* Centraliza as colunas */
+  justify-content: center;
   align-items: flex-start;
-  gap: 2rem; /* Espaço entre colunas */
+  gap: 2rem;
 }
 
 .footer-main .col-md-5,
 .footer-main .col-md-3 {
-  flex: none; /* Remove flex automático */
+  flex: none;
   display: flex;
   flex-direction: column;
 }
 
 /* COLUNA ESQUERDA - Passa a Bola */
 .footer-main .col-md-5 {
-  width: 40%; /* Largura fixa */
+  width: 40%;
   text-align: left;
 }
 
-/* COLUNAS DIREITAS - Páginas e Mais */
+/* COLUNAS DA DIREITA - Páginas e Mais */
 .footer-main .col-md-3 {
-  width: 25%; /* Largura fixa */
+  width: 25%;
   text-align: left;
 }
 
@@ -175,7 +169,7 @@
   }
 }
 
-/* MOBILE PEQUENO */
+
 @media (max-width: 480px) {
   .site-footer {
     padding: 1.5rem 0 0.8rem;

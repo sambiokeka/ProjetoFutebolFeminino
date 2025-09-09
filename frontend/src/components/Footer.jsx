@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="footer-main">
           <div className="row">
             
-            {/* Coluna 1 - Passa a Bola (6 colunas) */}
+            {/* Coluna 1 - Passa a Bola */}
             <div className="col-md-5">
               <div className="footer-logo-container">
                 <img src={bolaIcon} alt="Ícone Bola" className="footer-logo-icon" />
@@ -22,7 +22,7 @@ const Footer = () => {
               </p>
             </div>
 
-            {/* Coluna 2 - Páginas (3.5 colunas) */}
+            {/* Coluna 2 - Páginas */}
             <div className="col-md-3">
               <h5 className="footer-title">Páginas</h5>
               <ul className="footer-links">
@@ -32,7 +32,7 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Coluna 3 - Mais (3.5 colunas) */}
+            {/* Coluna 3 - Mais */}
             <div className="col-md-3">
               <h5 className="footer-title">Mais</h5>
               <ul className="footer-links">

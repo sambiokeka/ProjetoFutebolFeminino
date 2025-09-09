@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../styles/Header.css';
 import bolaIcon from '../assets/bola-icon.png';
 
 const Header = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   return (
     <header className="site-header">
       <nav className="navbar navbar-expand-lg navbar-white bg-white">
@@ -14,21 +20,25 @@ const Header = () => {
             </div>
           </a>
           
-          <button className="navbar-toggler" type="button">
+          <button 
+            className={`navbar-toggler ${menuOpen ? 'active' : ''}`}
+            type="button"
+            onClick={toggleMenu}
+            aria-label="Toggle navigation"
+          >
             <span className="navbar-toggler-icon"></span>
           </button>
 
-
-          <div className="collapse navbar-collapse">
+          <div className={`collapse navbar-collapse ${menuOpen ? 'show' : ''}`}>
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <a className="nav-link" href="#inicio">Início</a>
+                <a className="nav-link" href="/Partidas" onClick={() => setMenuOpen(false)}>Início</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#meusjogos">Meus jogos</a>
+                <a className="nav-link" href="#meusjogos" onClick={() => setMenuOpen(false)}>Meus jogos</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#entrar">Entrar</a>
+                <a className="nav-link" href="/" onClick={() => setMenuOpen(false)}>Entrar</a>
               </li>
             </ul>
           </div>

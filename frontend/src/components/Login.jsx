@@ -25,7 +25,7 @@ export default function Login() {
     <main className="login-main">
       <section className="login-section container">
         <div className="row justify-content-center">
-          <div className="col-12 col-md-8 col-lg-6 col-xl-5">
+          <div className="col-12 col-md-8 col-lg-6 col-xl-6">
             <article className="login-card card shadow">
               <header className="card-header text-center py-4">
                 <h1 className="h2 mb-2">Login</h1>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // 👈 Importa o hook de navegação
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../styles/RegisterForm.css';
+import '../styles/Register.css';
 import googleIcon from '../assets/google-icon.png';
 import facebookIcon from '../assets/facebook-icon.png';
 
@@ -12,9 +12,8 @@ export default function RegisterForm() {
     e.preventDefault();
 
     // Aqui você pode colocar sua lógica de validação/envio para backend
-    // Ex: enviar os dados para a API, validar senhas etc.
 
-    // Redireciona para a Home
+    // Redireciona para o Inicio
     navigate('/');
   };
 
@@ -97,7 +96,7 @@ export default function RegisterForm() {
               
               <div className="card-footer text-center py-3">
                 <p className="mb-0">
-                  Já tem uma conta? <a href="#login" className="text-decoration-none">Entrar</a>
+                  Já tem uma conta? <a href="/" className="text-decoration-none">Entrar</a>
                 </p>
               </div>
             </article>
