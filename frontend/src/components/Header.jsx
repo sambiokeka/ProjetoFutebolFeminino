@@ -32,13 +32,13 @@ const Header = () => {
           <div className={`collapse navbar-collapse ${menuOpen ? 'show' : ''}`}>
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <a className="nav-link" href="/Partidas" onClick={() => setMenuOpen(false)}>Início</a>
+                <a className="nav-link" href="/" onClick={() => setMenuOpen(false)}>Início</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#meusjogos" onClick={() => setMenuOpen(false)}>Meus jogos</a>
+                <a className="nav-link" href="/saved-matches" onClick={() => setMenuOpen(false)}>Meus jogos</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="/" onClick={() => setMenuOpen(false)}>Entrar</a>
+                <a className="nav-link" href="/login" onClick={() => setMenuOpen(false)}>Entrar</a>
               </li>
             </ul>
           </div>
