@@ -8,11 +8,12 @@ CORS(app)
 def get_db_connection():
     conn = mysql.connector.connect(
         host="localhost",
-        user="root",      # troque pelo nome do seu usuário do mySQL
-        password="root",  # troque pela senha q vc usa no mySQL
+        user="root",
+        password="root",
         database="futebol_feminino"
     )
     return conn
+
 
 @app.route("/ligas", methods=["GET"])
 def listar_ligas():
@@ -55,5 +56,90 @@ def listar_partidas():
     conn.close()
     return jsonify(partidas)
 
+@app.route("/partidas/salvar", methods=["POST"])
+def salvar_partida():
+    data = request.get_json()
+    id_event = data.get('idEvent')
+    id_usuario = data.get('idUsuario')
+    
+    if not id_event or not id_usuario:
+        return jsonify({"error": "idEvent e idUsuario são obrigatórios"}), 400
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    try:
+        cur.execute("""
+            INSERT INTO partidas_salvas (idEvent, idUsuario)
+            VALUES (%s, %s)
+        """, (id_event, id_usuario))
+        conn.commit()
+        return jsonify({"success": True, "message": "Partida salva com sucesso!"})
+    except mysql.connector.IntegrityError:
+        return jsonify({"error": "Partida já salva para este usuário"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+        conn.close()
+
+@app.route("/partidas/salvas/<id_usuario>", methods=["GET"])
+def listar_partidas_salvas(id_usuario):
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+    
+    cur.execute("""
+        SELECT p.*, l.strLeague, ps.data_criacao
+        FROM partidas_salvas ps
+        JOIN partidas p ON ps.idEvent = p.idEvent
+        LEFT JOIN ligas l ON p.idLeague = l.idLeague
+        WHERE ps.idUsuario = %s
+        ORDER BY p.dateEvent, p.strTime
+    """, (id_usuario,))
+    
+    partidas = cur.fetchall()
+    cur.close()
+    conn.close()
+    
+    return jsonify(partidas)
+
+
+
+@app.route("/partidas/salvas/remover", methods=["POST"])
+def remover_partida_salva():
+    data = request.get_json()
+    id_event = data.get('idEvent')
+    id_usuario = data.get('idUsuario')
+    
+    print(f"Removendo partida: idEvent={id_event}, usuario={id_usuario}")
+    
+    if not id_event or not id_usuario:
+        return jsonify({"error": "idEvent e idUsuario são obrigatórios"}), 400
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    try:
+        cur.execute("DELETE FROM partidas_salvas WHERE idEvent = %s AND idUsuario = %s", 
+                   (id_event, id_usuario))
+        conn.commit()
+        
+        if cur.rowcount > 0:
+            return jsonify({"success": True, "message": "Partida removida com sucesso!"})
+        else:
+            return jsonify({"error": "Partida não encontrada"}), 404
+            
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+        conn.close()
+
+
+
+@app.route("/test", methods=["GET"])
+def test():
+    return jsonify({"message": "Backend funcionando!", "status": "OK"})
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
