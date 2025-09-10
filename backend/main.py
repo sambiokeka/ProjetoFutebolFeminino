@@ -73,6 +73,20 @@ CREATE TABLE IF NOT EXISTS partidas (
 )
 """)
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS partidas_salvas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idEvent VARCHAR(50) NOT NULL,
+    idUsuario VARCHAR(100) NOT NULL,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    notificado TINYINT(1) DEFAULT 0,
+    FOREIGN KEY (idEvent) REFERENCES partidas(idEvent),
+    UNIQUE KEY unique_partida_usuario (idEvent, idUsuario)
+)
+""")
+
+
+
 # ---- Salva liga no banco ----
 def save_league_info(league):
     if not league.get("idLeague"):
@@ -177,7 +191,7 @@ def process_league(league_name):
         if i % 5 == 0:
             time.sleep(3)
         else:
-            time.sleep(1)
+            time.sleep(1.5)
 
 # ---- Execução principal ----
 if __name__ == "__main__":
