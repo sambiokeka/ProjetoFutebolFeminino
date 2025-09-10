@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import '../styles/Partidas.css';
 import { traduzirNome } from '../utils/traduzir';
+import { getEscudoTime } from '../utils/escudos';
 
 function Partidas() {
   const [partidas, setPartidas] = useState([]);
@@ -29,47 +30,19 @@ function Partidas() {
   };
 
   const carregarPartidas = () => {
-    console.log("Fazendo fetch para http://localhost:5000/partidas");
-
     fetch("http://localhost:5000/partidas")
       .then((res) => {
-        console.log("Resposta recebida:", res.status, res.statusText);
         if (!res.ok) {
           throw new Error(`Erro HTTP! status: ${res.status}`);
         }
         return res.json();
       })
       .then((data) => {
-        console.log("Dados recebidos:", data);
-        
         const partidasTraduzidas = traduzirPartidas(data);
-        console.log("Partidas traduzidas:", partidasTraduzidas);
-        
         setPartidas(partidasTraduzidas);
       })
       .catch((err) => {
         console.error("Erro ao carregar partidas:", err);
-
-        
-        const dadosMock = [
-          {
-            idEvent: "1",
-            strEvent: "Flamengo Feminino vs Corinthians Feminino",
-            dateEvent: "2024-03-20",
-            strTime: "19:00",
-            strSeason: "2024",
-            strHomeTeam: "Flamengo Feminino",
-            strAwayTeam: "Corinthians Feminino",
-            intHomeScore: null,
-            intAwayScore: null,
-            strVenue: "Maracanã",
-            idLeague: "123",
-            strLeague: "Brasileirão Feminino"
-          }
-        ];
-        
-        console.log("Usando dados mock traduzidos");
-        setPartidas(dadosMock);
       });
   };
 
@@ -82,7 +55,6 @@ function Partidas() {
 
   const salvarPartida = async (idEvent) => {
     try {
-      console.log("Tentando salvar partida com ID:", idEvent, "Tipo:", typeof idEvent);
       const response = await fetch("http://localhost:5000/partidas/salvar", {
         method: "POST",
         headers: {
@@ -98,7 +70,6 @@ function Partidas() {
       
       if (result.success) {
         alert("Partida salva! Você será notificado antes do início.");
-        // Recarregar a lista de partidas salvas
         carregarPartidasSalvas();
       } else {
         alert(result.error || "Erro ao salvar partida");
@@ -111,7 +82,6 @@ function Partidas() {
 
   const removerPartida = async (idEvent) => {
     try {
-      console.log("Tentando remover partida com ID:", idEvent, "Tipo:", typeof idEvent);
       const response = await fetch("http://localhost:5000/partidas/salvas/remover", {
         method: "POST",
         headers: {
@@ -127,7 +97,6 @@ function Partidas() {
       
       if (result.success) {
         alert("Partida removida da sua lista.");
-        // Recarregar a lista de partidas salvas
         carregarPartidasSalvas();
       } else {
         alert(result.error || "Erro ao remover partida");
@@ -145,55 +114,60 @@ function Partidas() {
 
   const ligasUnicas = [...new Set(partidas.map((p) => p.strLeague))];
 
-
-const getStatusPartida = (partida) => {
-  const agora = new Date();
-  
-  // Se já tem placar, é finalizada
-  if (partida.intHomeScore !== null && partida.intAwayScore !== null) {
-    return "finalizada";
-  }
-  
-  // Se não tem data/hora, considera como próxima
-  if (!partida.dateEvent || !partida.strTime) {
-    return "proxima";
-  }
-  
-  // Converte a data e hora da partida
-  const dataPartidaStr = `${partida.dateEvent}T${partida.strTime}`;
-  let dataPartida;
-  
-  try {
-    dataPartida = new Date(dataPartidaStr);
+  // Função para ajustar o horário UTC para o fuso do Brasil (-3 horas)
+  const ajustarHorarioBrasil = (horaUTC) => {
+    if (!horaUTC) return '--:--';
     
-    // Se a data é inválida, considera como próxima
-    if (isNaN(dataPartida.getTime())) {
+    const [hours, minutes] = horaUTC.split(':');
+    let horasBrasil = parseInt(hours) - 3;
+    
+    if (horasBrasil < 0) {
+      horasBrasil += 24;
+    }
+    
+    return `${horasBrasil.toString().padStart(2, '0')}:${minutes}`;
+  };
+
+  const getStatusPartida = (partida) => {
+    const agora = new Date();
+    
+    if (partida.intHomeScore !== null && partida.intAwayScore !== null) {
+      return "finalizada";
+    }
+    
+    if (!partida.dateEvent || !partida.strTime) {
       return "proxima";
     }
     
-    // Se a partida já passou mas não tem placar, considera "ao vivo"
-    // (supondo que está em andamento)
-    if (dataPartida < agora) {
-      return "ao-vivo";
+    // Ajusta o horário para o fuso do Brasil antes de criar a data
+    const horaBrasil = ajustarHorarioBrasil(partida.strTime);
+    const dataPartidaStr = `${partida.dateEvent}T${horaBrasil}`;
+    let dataPartida;
+    
+    try {
+      dataPartida = new Date(dataPartidaStr);
+      
+      if (isNaN(dataPartida.getTime())) {
+        return "proxima";
+      }
+      
+      if (dataPartida < agora) {
+        return "ao-vivo";
+      }
+      
+      return "proxima";
+      
+    } catch (error) {
+      return "proxima";
     }
-    
-    // Se a partida é no futuro
-    return "proxima";
-    
-  } catch (error) {
-    console.error("Erro ao processar data da partida:", error, partida);
-    return "proxima";
-  }
-};
+  };
 
-  // verificar se partida está salva
   const isPartidaSalva = (idEvent) => {
     return partidasSalvas.some(ps => ps.idEvent === idEvent);
   };
 
   const filtrarPartidas = () => {
     return partidas.filter((p) => {
-      // Filtro por data
       if (filtros.data) {
         const filtroData = new Date(filtros.data);
         const dataPartida = new Date(p.dateEvent);
@@ -207,11 +181,8 @@ const getStatusPartida = (partida) => {
         }
       }
 
-
-      // Filtro por liga
       if (filtros.liga && p.strLeague !== filtros.liga) return false;
 
-      // Filtro por time
       if (
         filtros.time &&
         !(
@@ -221,7 +192,6 @@ const getStatusPartida = (partida) => {
       )
         return false;
 
-      // Filtro por status
       if (filtros.status) {
         const statusPartida = getStatusPartida(p);
         if (filtros.status !== statusPartida) return false;
@@ -231,24 +201,29 @@ const getStatusPartida = (partida) => {
     });
   };
 
-  // Ordenar por data + hora
   const partidasOrdenadas = filtrarPartidas().sort((a, b) => {
-    const dataA = new Date(`${a.dateEvent}T${a.strTime || "00:00"}`);
-    const dataB = new Date(`${b.dateEvent}T${b.strTime || "00:00"}`);
+    const horaA = ajustarHorarioBrasil(a.strTime);
+    const horaB = ajustarHorarioBrasil(b.strTime);
+    const dataA = new Date(`${a.dateEvent}T${horaA || "00:00"}`);
+    const dataB = new Date(`${b.dateEvent}T${horaB || "00:00"}`);
     return dataA - dataB;
   });
 
-  // Agrupar por data
   const partidasAgrupadas = partidasOrdenadas.reduce((acc, partida) => {
     if (!acc[partida.dateEvent]) acc[partida.dateEvent] = [];
     acc[partida.dateEvent].push(partida);
     return acc;
   }, {});
 
-  // Formatar data em português
   const formatarData = (dataStr) => {
     const data = new Date(dataStr);
-    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    const options = { 
+      weekday: 'long', 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric',
+      timeZone: 'America/Sao_Paulo'
+    };
     return data.toLocaleDateString('pt-BR', options);
   };
 
@@ -276,7 +251,6 @@ const getStatusPartida = (partida) => {
         <h2>Todas as partidas</h2>
         <p className="subtitulo">Acompanhe os jogos mais importantes de futebol feminino</p>
         
-        {/* FILTRO */}
         <div className="filtros-container">
           <div className="filtro-group">
             <label>Data</label>
@@ -363,6 +337,15 @@ const getStatusPartida = (partida) => {
                     <div className="partida-corpo">
                       <div className="time time-casa">
                         <div className="time-escudo">
+                          <img 
+                            src={getEscudoTime(p.strHomeTeam)} 
+                            alt={p.strHomeTeam}
+                            className="escudo-time"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
+                          />
                           <div className="escudo-placeholder">
                             <i className="fas fa-shield-alt"></i>
                           </div>
@@ -372,7 +355,9 @@ const getStatusPartida = (partida) => {
                       
                       <div className="placar">
                         {status === "proxima" ? (
-                          <span className="partida-horario">{p.strTime ? p.strTime.substring(0, 5) : '--:--'}</span>
+                          <span className="partida-horario">
+                            {p.strTime ? ajustarHorarioBrasil(p.strTime).substring(0, 5) : '--:--'}
+                          </span>
                         ) : (
                           <>
                             <span className="placar-numero">{p.intHomeScore !== null ? p.intHomeScore : '-'}</span>
@@ -384,6 +369,15 @@ const getStatusPartida = (partida) => {
                       
                       <div className="time time-visitante">
                         <div className="time-escudo">
+                          <img 
+                            src={getEscudoTime(p.strAwayTeam)} 
+                            alt={p.strAwayTeam}
+                            className="escudo-time"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
+                          />
                           <div className="escudo-placeholder">
                             <i className="fas fa-shield-alt"></i>
                           </div>
@@ -441,8 +435,6 @@ const getStatusPartida = (partida) => {
       </div>
     </div>
   );
-
-  
 }
 
 export default Partidas;

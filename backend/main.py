@@ -1,7 +1,9 @@
 import requests
 import mysql.connector
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
+import pytz
+
 
 API_KEY = "123"
 BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}/"
@@ -23,7 +25,7 @@ LEAGUE_DATES = {
         "2025-06-06", "2025-06-07", "2025-06-08", "2025-06-09", "2025-06-14",
         "2025-06-15", "2025-06-18",
         "2025-08-09", "2025-08-10", "2025-08-16", "2025-08-17", "2025-08-24",
-        "2025-08-31"
+        "2025-08-31", '2025-09-14'
     ],
     "International Friendlies Women": [
         "2025-06-29","2025-07-01","2025-07-02","2025-07-03","2025-07-05","2025-07-08"
@@ -61,6 +63,8 @@ CREATE TABLE IF NOT EXISTS partidas (
     strEvent VARCHAR(255),
     dateEvent DATE,
     strTime VARCHAR(20),
+    strHomeBadge VARCHAR(255),
+    strAwayBadge VARCHAR(255),
     strSeason VARCHAR(20),
     strHomeTeam VARCHAR(100),
     strAwayTeam VARCHAR(100),
@@ -111,6 +115,7 @@ def save_league_info(league):
 def get_status(date_str, time_str):
     if not time_str:
         time_str = "00:00:00"
+    
     if "AM" in time_str or "PM" in time_str:
         time_part, modifier = time_str.split(" ")
         hours, minutes = map(int, time_part.split(":"))
@@ -119,9 +124,15 @@ def get_status(date_str, time_str):
         if modifier.upper() == "AM" and hours == 12:
             hours = 0
         time_str = f"{hours:02d}:{minutes:02d}:00"
-    jogo_datetime = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M:%S")
-    agora = datetime.now()
-    return "proximas" if jogo_datetime > agora else "finalizadas"
+    
+    hora_utc = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M:%S")
+    
+    fuso_brasil = timedelta(hours=-3)
+    hora_brasil = hora_utc + fuso_brasil
+    
+    agora_brasil = datetime.utcnow() + timedelta(hours=-3)
+    
+    return "proximas" if hora_brasil > agora_brasil else "finalizadas"
 
 # ---- Busca eventos de uma liga em uma data específica ----
 def get_events_by_day(date, league_name):
@@ -150,8 +161,9 @@ def save_events(events):
 
         cursor.execute("""
             INSERT INTO partidas (idEvent, strEvent, dateEvent, strTime, strSeason, 
-                                  strHomeTeam, strAwayTeam, intHomeScore, intAwayScore, strVenue, idLeague, status)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                                strHomeTeam, strAwayTeam, intHomeScore, intAwayScore, 
+                                strVenue, idLeague, status, strHomeBadge, strAwayBadge)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             ON DUPLICATE KEY UPDATE
                 strEvent=VALUES(strEvent),
                 dateEvent=VALUES(dateEvent),
@@ -163,7 +175,9 @@ def save_events(events):
                 intAwayScore=VALUES(intAwayScore),
                 strVenue=VALUES(strVenue),
                 idLeague=VALUES(idLeague),
-                status=VALUES(status)
+                status=VALUES(status),
+                strHomeBadge=VALUES(strHomeBadge),
+                strAwayBadge=VALUES(strAwayBadge)
         """, (
             e.get("idEvent"),
             e.get("strEvent"),
@@ -176,7 +190,9 @@ def save_events(events):
             e.get("intAwayScore"),
             e.get("strVenue"),
             e.get("idLeague"),
-            status
+            status,
+            e.get("strHomeBadge"),  
+            e.get("strAwayBadge")  
         ))
     conn.commit()
 

@@ -293,6 +293,36 @@
   font-size: 1.1rem;
 }
 
+.time-escudo {
+  position: relative;
+  width: 70px;
+  height: 70px;
+}
+
+.escudo-time {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.escudo-placeholder {
+  display: none;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  color: #adb5bd;
+  border: 3px solid #dee2e6;
+}
+
+.escudo-placeholder i {
+  font-size: 1.5rem;
+}
 /* Placar */
 .placar {
   display: flex;

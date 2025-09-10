@@ -35,10 +35,10 @@ const Header = () => {
                 <a className="nav-link" href="/Partidas" onClick={() => setMenuOpen(false)}>Início</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#meusjogos" onClick={() => setMenuOpen(false)}>Meus jogos</a>
+                <a className="nav-link" href="/Salvo" onClick={() => setMenuOpen(false)}>Meus jogos</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="/" onClick={() => setMenuOpen(false)}>Entrar</a>
+                <a className="nav-link" href="/Login" onClick={() => setMenuOpen(false)}>Entrar</a>
               </li>
             </ul>
           </div>

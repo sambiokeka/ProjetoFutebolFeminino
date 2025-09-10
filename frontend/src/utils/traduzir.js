@@ -19,8 +19,16 @@ export const traducoes = {
     'Ceará Women': 'Ceará Feminino',
     'Fortaleza Women': 'Fortaleza Feminino',
     'Goiás Women': 'Goiás Feminino',
+
     'Sport Women': 'Sport Feminino',
-    'Vitória Women': 'Vitória Feminino'
+    'Vitória Women': 'Vitória Feminino',
+    'Ireland Women' : 'Irlanda Feminino',
+    'Belarus Women' : 'Bielorrússia Feminino',
+    'Azerbaijan Women' : 'Azerbaijão Feminino',
+    'USA Women' : 'EUA Feminino',
+    'Estonia Women' : 'Estónia Feminino',
+    'Serbia Women' : 'Sévia Feminino',
+    'England Women' : 'Inglaterra Feminino'
   },
 
   // Ligas/Campeonatos
