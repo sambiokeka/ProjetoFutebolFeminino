@@ -5,7 +5,7 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Hero Section */
+/* ===== HERO SECTION ===== */
 .hero-section {
   width: 100vw;
   position: relative;
@@ -14,8 +14,7 @@
   margin-left: -50vw;
   margin-right: -50vw;
   padding: 4rem 2rem;
-  background:
-  url('../assets/background.jpg') center/cover;
+  background: url('../assets/background.jpg') center/cover;
   color: white;
   text-align: center;
   margin-bottom: 3rem;
@@ -32,14 +31,6 @@
   margin-bottom: 1.5rem;
   font-weight: 800;
   line-height: 1.2;
-}
-
-.hero-content .destaque {
-  font-weight: 700;
-  background: linear-gradient(45deg, #ffd700, #ffed4e);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .hero-content p {
@@ -90,8 +81,7 @@
   transform: scale(1.2);
 }
 
-
-/* Filtros section */
+/* ===== FILTROS SECTION ===== */
 .filtros-section {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   padding: 2.5rem;
@@ -166,7 +156,7 @@
   padding-right: 3rem;
 }
 
-/* Partidas content */
+/* ===== PARTIDAS CONTENT ===== */
 .partidas-content {
   padding: 1rem 0;
 }
@@ -175,7 +165,7 @@
   margin-bottom: 3rem;
 }
 
-/* Card de Data */
+/* Data Title */
 .data-titulo {
   background: linear-gradient(135deg, #d63384 0%, #9c27b0 100%);
   color: white;
@@ -191,7 +181,8 @@
   overflow: hidden;
 }
 
-/* Card de partidas */
+
+/* ===== PARTIDA CARD ===== */
 .partida-card {
   background: white;
   border-radius: 16px;
@@ -222,22 +213,38 @@
   font-size: 1.2rem;
 }
 
-.partida-hora, .partida-ao-vivo, .partida-finalizada {
-  font-weight: 700;
-  font-size: 0.95rem;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-}
 
-.partida-hora {
+
+/* Status Styles */
+.partida-proxima {
   color: #0d6efd;
   background-color: rgba(13, 110, 253, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 .partida-ao-vivo {
   color: #dc3545;
   background-color: rgba(220, 53, 69, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
   animation: pulse 1.5s infinite;
+}
+
+.partida-finalizada {
+  color: #6c757d;
+  background-color: rgba(108, 117, 125, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 @keyframes pulse {
@@ -246,11 +253,7 @@
   100% { opacity: 1; }
 }
 
-.partida-finalizada {
-  color: #6c757d;
-  background-color: rgba(108, 117, 125, 0.1);
-}
-
+/* Partida Body */
 .partida-corpo {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -258,17 +261,6 @@
   gap: 2rem;
   margin-bottom: 1.5rem;
 }
-
-  .partida-corpo .time {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .partida-corpo .time-nome {
-    text-align: center;
-    min-width: auto;
-    font-size: 1rem;
-  }
 
 .time {
   display: flex;
@@ -301,6 +293,7 @@
   font-size: 1.1rem;
 }
 
+/* Placar */
 .placar {
   display: flex;
   align-items: center;
@@ -326,9 +319,10 @@
 .partida-horario {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #0d6efd;
+  color: #000000;
 }
 
+/* Partida Footer */
 .partida-footer {
   text-align: center;
   margin-top: 1.5rem;
@@ -337,6 +331,7 @@
   gap: 1rem;
 }
 
+/* Button Styles */
 .btn-lembrar, .btn-assistir, .btn-detalhes {
   display: flex;
   align-items: center;
@@ -349,17 +344,21 @@
   transition: all 0.3s ease;
   font-size: 0.95rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-decoration: none;
 }
 
 .btn-lembrar {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
   color: white;
 }
 
 .btn-lembrar:hover {
-  background: linear-gradient(135deg, #ee5a52 0%, #d63031 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+  box-shadow: 0 6px 20px rgba(106, 17, 203, 0.3);
+}
+
+.btn-lembrar.salvo {
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
 }
 
 .btn-assistir {
@@ -384,11 +383,11 @@
   box-shadow: 0 6px 20px rgba(111, 66, 193, 0.3);
 }
 
-/* Ícones dos botões */
 .btn-lembrar i, .btn-assistir i, .btn-detalhes i {
   font-size: 1rem;
 }
 
+/* ===== STATES ===== */
 .sem-partidas {
   text-align: center;
   padding: 4rem 2rem;
@@ -411,19 +410,42 @@
   font-weight: 500;
 }
 
-  .placar-numero {
-    font-size: 2rem;
-  }
+.carregando, .erro {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6c757d;
+}
 
-  .placar-divisoria {
-    font-size: 1.5rem;
-  }
+.carregando i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #6f42c1;
+}
 
-  .partida-horario {
-    font-size: 1.2rem;
-  }
+.erro i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #dc3545;
+}
 
-/* Responsividade */
+.btn-tentar-novamente {
+  background: linear-gradient(135deg, #6f42c1 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-tentar-novamente:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(111, 66, 193, 0.3);
+}
+
+/* ===== RESPONSIVIDADE ===== */
 @media (max-width: 768px) {
   .partidas-container {
     padding: 1rem 0.5rem;
@@ -447,7 +469,6 @@
     align-items: center;
   }
   
-  
   .filtros-container {
     grid-template-columns: 1fr;
   }
@@ -464,24 +485,17 @@
   }
   
   .placar {
-    order: -1;
-    margin: 1rem 0;
-  }
-  
-    /* Posiciona o placar no centro */
-  .partida-corpo .placar {
-    order: 2; 
+    order: 2;
     margin: 0;
   }
 
   .partida-corpo .time-casa {
-    order: 1; 
+    order: 1;
   }
 
   .partida-corpo .time-visitante {
-    order: 3; 
+    order: 3;
   }
-
   
   .partida-header {
     flex-direction: column;
@@ -501,23 +515,37 @@
   .placar-numero {
     font-size: 1.8rem;
   }
+  
+  .partida-horario {
+    font-size: 1.2rem;
+  }
+  
+  .partida-footer {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 @media (max-width: 480px) {
-  .header-content h1 {
-    font-size: 1.8rem;
+  .hero-content h1 {
+    font-size: 2rem;
   }
   
-  .header-content p {
+  .hero-content p {
     font-size: 1rem;
   }
   
   .data-titulo {
     font-size: 1.3rem;
+    padding: 1rem;
   }
   
   .partida-card {
     padding: 1.2rem;
   }
+  
+  .btn-lembrar, .btn-assistir, .btn-detalhes {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.9rem;
+  }
 }
-
