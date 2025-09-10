@@ -1,21 +1,148 @@
 import React, { useState, useEffect } from "react";
 import '../styles/Partidas.css';
+import { traduzirNome } from '../utils/traduzir';
 
 function Partidas() {
   const [partidas, setPartidas] = useState([]);
+  const [partidasSalvas, setPartidasSalvas] = useState([]);
   const [filtros, setFiltros] = useState({
     data: "",
     liga: "",
     time: "",
     status: ""
   });
+  const [carregando, setCarregando] = useState(true); 
+  const [erro, setErro] = useState(null); 
+  const [usuario] = useState("user123");
 
   useEffect(() => {
-    fetch("http://localhost:5000/partidas")
-      .then((res) => res.json())
-      .then((data) => setPartidas(data))
-      .catch((err) => console.error(err));
+    carregarPartidas();
+    carregarPartidasSalvas();
   }, []);
+
+  const traduzirPartidas = (partidas) => {
+    return partidas.map(partida => ({
+      ...partida,
+      strHomeTeam: traduzirNome(partida.strHomeTeam),
+      strAwayTeam: traduzirNome(partida.strAwayTeam),
+      strLeague: traduzirNome(partida.strLeague),
+      strEvent: traduzirNome(partida.strEvent)
+    }));
+  };
+
+  const carregarPartidas = () => {
+    console.log("Fazendo fetch para http://localhost:5000/partidas");
+    setCarregando(true);
+    setErro(null);
+    
+    fetch("http://localhost:5000/partidas")
+      .then((res) => {
+        console.log("Resposta recebida:", res.status, res.statusText);
+        if (!res.ok) {
+          throw new Error(`Erro HTTP! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log("Dados recebidos:", data);
+        
+        const partidasTraduzidas = traduzirPartidas(data);
+        console.log("Partidas traduzidas:", partidasTraduzidas);
+        
+        setPartidas(partidasTraduzidas);
+        setCarregando(false);
+      })
+      .catch((err) => {
+        console.error("Erro ao carregar partidas:", err);
+        setErro("Erro ao carregar partidas: " + err.message);
+        setCarregando(false);
+        
+        const dadosMock = [
+          {
+            idEvent: "1",
+            strEvent: "Flamengo Feminino vs Corinthians Feminino",
+            dateEvent: "2024-03-20",
+            strTime: "19:00",
+            strSeason: "2024",
+            strHomeTeam: "Flamengo Feminino",
+            strAwayTeam: "Corinthians Feminino",
+            intHomeScore: null,
+            intAwayScore: null,
+            strVenue: "Maracanã",
+            idLeague: "123",
+            strLeague: "Brasileirão Feminino"
+          }
+        ];
+        
+        console.log("Usando dados mock traduzidos");
+        setPartidas(dadosMock);
+      });
+  };
+
+  const carregarPartidasSalvas = () => {
+    fetch(`http://localhost:5000/partidas/salvas/${usuario}`)
+      .then((res) => res.json())
+      .then((data) => setPartidasSalvas(data))
+      .catch((err) => console.error("Erro ao carregar partidas salvas:", err));
+  };
+
+  const salvarPartida = async (idEvent) => {
+    try {
+      console.log("Tentando salvar partida com ID:", idEvent, "Tipo:", typeof idEvent);
+      const response = await fetch("http://localhost:5000/partidas/salvar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idEvent: idEvent,
+          idUsuario: usuario
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alert("Partida salva! Você será notificado antes do início.");
+        // Recarregar a lista de partidas salvas
+        carregarPartidasSalvas();
+      } else {
+        alert(result.error || "Erro ao salvar partida");
+      }
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao conectar com o servidor");
+    }
+  };
+
+  const removerPartida = async (idEvent) => {
+    try {
+      console.log("Tentando remover partida com ID:", idEvent, "Tipo:", typeof idEvent);
+      const response = await fetch("http://localhost:5000/partidas/salvas/remover", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idEvent: idEvent,
+          idUsuario: usuario
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alert("Partida removida da sua lista.");
+        // Recarregar a lista de partidas salvas
+        carregarPartidasSalvas();
+      } else {
+        alert(result.error || "Erro ao remover partida");
+      }
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao conectar com o servidor");
+    }
+  };
 
   const handleFiltroChange = (e) => {
     const { name, value } = e.target;
@@ -24,18 +151,50 @@ function Partidas() {
 
   const ligasUnicas = [...new Set(partidas.map((p) => p.strLeague))];
 
-  // status da partida
-  const getStatusPartida = (partida) => {
-    const agora = new Date();
-    const dataPartida = new Date(`${partida.dateEvent}T${partida.strTime || "00:00"}`);
+
+const getStatusPartida = (partida) => {
+  const agora = new Date();
+  
+  // Se já tem placar, é finalizada
+  if (partida.intHomeScore !== null && partida.intAwayScore !== null) {
+    return "finalizada";
+  }
+  
+  // Se não tem data/hora, considera como próxima
+  if (!partida.dateEvent || !partida.strTime) {
+    return "proxima";
+  }
+  
+  // Converte a data e hora da partida
+  const dataPartidaStr = `${partida.dateEvent}T${partida.strTime}`;
+  let dataPartida;
+  
+  try {
+    dataPartida = new Date(dataPartidaStr);
     
-    if (partida.intHomeScore !== null && partida.intAwayScore !== null) {
-      return "finalizada";
-    } else if (dataPartida > agora) {
-      return "ao vivo";
-    } else {
+    // Se a data é inválida, considera como próxima
+    if (isNaN(dataPartida.getTime())) {
       return "proxima";
     }
+    
+    // Se a partida já passou mas não tem placar, considera "ao vivo"
+    // (supondo que está em andamento)
+    if (dataPartida < agora) {
+      return "ao-vivo";
+    }
+    
+    // Se a partida é no futuro
+    return "proxima";
+    
+  } catch (error) {
+    console.error("Erro ao processar data da partida:", error, partida);
+    return "proxima";
+  }
+};
+
+  // verificar se partida está salva
+  const isPartidaSalva = (idEvent) => {
+    return partidasSalvas.some(ps => ps.idEvent === idEvent);
   };
 
   const filtrarPartidas = () => {
@@ -53,6 +212,7 @@ function Partidas() {
           return false;
         }
       }
+
 
       // Filtro por liga
       if (filtros.liga && p.strLeague !== filtros.liga) return false;
@@ -100,23 +260,23 @@ function Partidas() {
 
   return (
     <div className="partidas-container">
-<div className="hero-section">
-<div className="hero-content">
-  <h1>O Futuro do Futebol Feminino</h1>
-  <p>Acompanhe todas as partidas, estatísticas e notícias do futebol feminino.<br />
-  Celebramos o talento, a paixão e a força das mulheres no esporte.</p>
-  <div className="hero-actions">
-    <a href="#" className="icon-btn">
-      <i className="fas fa-play-circle"></i>
-      Encontrar partidas ao vivo
-    </a>
-    <a href="#" className="icon-btn">
-      <i className="fas fa-calendar-alt"></i>
-      Calendário de jogos
-    </a>
-  </div>
-</div>
-</div>
+      <div className="hero-section">
+        <div className="hero-content">
+          <h1>O Futuro do Futebol Feminino</h1>
+          <p>Acompanhe todas as partidas, estatísticas e notícias do futebol feminino.<br />
+          Celebramos o talento, a paixão e a força das mulheres no esporte.</p>
+          <div className="hero-actions">
+            <a href="#" className="icon-btn">
+              <i className="fas fa-play-circle"></i>
+              Encontrar partidas ao vivo
+            </a>
+            <a href="#" className="icon-btn">
+              <i className="fas fa-calendar-alt"></i>
+              Calendário de jogos
+            </a>
+          </div>
+        </div>
+      </div>
 
       <div className="filtros-section">
         <h2>Todas as partidas</h2>
@@ -189,13 +349,15 @@ function Partidas() {
               
               {partidasAgrupadas[data].map((p) => {
                 const status = getStatusPartida(p);
+                const partidaSalva = isPartidaSalva(p.idEvent);
                 
                 return (
                   <div key={p.idEvent} className="partida-card">
                     <div className="partida-header">
                       <span className="liga-nome">{p.strLeague}</span>
                       {status === "proxima" && (
-                        <span className="partida-finalizada">PRÓXIMA</span>)}
+                        <span className="partida-proxima">PRÓXIMA</span>
+                      )}
                       {status === "ao-vivo" && (
                         <span className="partida-ao-vivo">● AO VIVO</span>
                       )}
@@ -236,28 +398,41 @@ function Partidas() {
                       </div>
                     </div>
                     
-<div className="partida-footer">
-  {status === "proxima" && (
-    <button className="btn-lembrar">
-      <i className="fas fa-bell"></i>
-      Lembrar-me
-    </button>
-  )}
-  
-  {status === "ao-vivo" && (
-    <button className="btn-assistir">
-      <i className="fas fa-play-circle"></i>
-      Assistir ao vivo
-    </button>
-  )}
-  
-  {status === "finalizada" && (
-    <button className="btn-detalhes">
-      <i className="fas fa-info-circle"></i>
-      Ver detalhes
-    </button>
-  )}
-</div>
+                    <div className="partida-footer">
+                      {status === "proxima" && (
+                        partidaSalva ? (
+                          <button 
+                            className="btn-lembrar salvo"
+                            onClick={() => removerPartida(p.idEvent)}
+                          >
+                            <i className="fas fa-check-circle"></i>
+                            Lembrar-me
+                          </button>
+                        ) : (
+                          <button 
+                            className="btn-lembrar"
+                            onClick={() => salvarPartida(p.idEvent)}
+                          >
+                            <i className="fas fa-bell"></i>
+                            Lembrar-me
+                          </button>
+                        )
+                      )}
+                      
+                      {status === "ao-vivo" && (
+                        <button className="btn-assistir">
+                          <i className="fas fa-play-circle"></i>
+                          Assistir ao vivo
+                        </button>
+                      )}
+                      
+                      {status === "finalizada" && (
+                        <button className="btn-detalhes">
+                          <i className="fas fa-info-circle"></i>
+                          Ver detalhes
+                        </button>
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -272,6 +447,8 @@ function Partidas() {
       </div>
     </div>
   );
+
+  
 }
 
 export default Partidas;
