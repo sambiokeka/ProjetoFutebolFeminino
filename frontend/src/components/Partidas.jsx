@@ -11,8 +11,6 @@ function Partidas() {
     time: "",
     status: ""
   });
-  const [carregando, setCarregando] = useState(true); 
-  const [erro, setErro] = useState(null); 
   const [usuario] = useState("user123");
 
   useEffect(() => {
@@ -32,9 +30,7 @@ function Partidas() {
 
   const carregarPartidas = () => {
     console.log("Fazendo fetch para http://localhost:5000/partidas");
-    setCarregando(true);
-    setErro(null);
-    
+
     fetch("http://localhost:5000/partidas")
       .then((res) => {
         console.log("Resposta recebida:", res.status, res.statusText);
@@ -50,12 +46,10 @@ function Partidas() {
         console.log("Partidas traduzidas:", partidasTraduzidas);
         
         setPartidas(partidasTraduzidas);
-        setCarregando(false);
       })
       .catch((err) => {
         console.error("Erro ao carregar partidas:", err);
-        setErro("Erro ao carregar partidas: " + err.message);
-        setCarregando(false);
+
         
         const dadosMock = [
           {

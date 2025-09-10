@@ -3,6 +3,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Partidas from './components/Partidas';
 import Layout from './components/Layout';
+import Salvo from './components/Salvo';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
     <Route index element={<Login />} />
     <Route path="partidas" element={<Partidas />} /> 
     <Route path="register" element={<Register />} />
+    <Route path="salvo" element={<Salvo />} />
   </Route>
 </Routes>
   );
