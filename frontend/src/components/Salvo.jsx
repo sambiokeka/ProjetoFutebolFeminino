@@ -4,14 +4,27 @@ function Salvo() {
   const [partidasSalvas, setPartidasSalvas] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
-  const [usuario] = useState("user123");
+  const [mostrarModalExclusao, setMostrarModalExclusao] = useState(false);
+  
+  const [usuario] = useState(localStorage.getItem('username') || '');
 
   useEffect(() => {
-    carregarPartidasSalvas();
-  }, []);
+    if (usuario) {
+      carregarPartidasSalvas();
+    } else {
+      setErro("Usuário não está logado");
+      setCarregando(false);
+    }
+  }, [usuario]);
 
   const carregarPartidasSalvas = () => {
-    console.log("Carregando partidas salvas...");
+    if (!usuario) {
+      setErro("Usuário não está logado");
+      setCarregando(false);
+      return;
+    }
+
+    console.log("Carregando partidas salvas para:", usuario);
     setCarregando(true);
     
     fetch(`http://localhost:5000/partidas/salvas/${usuario}`)
@@ -34,6 +47,11 @@ function Salvo() {
   };
 
   const removerPartida = async (idEvent) => {
+    if (!usuario) {
+      alert("Usuário não está logado");
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:5000/partidas/salvas/remover", {
         method: "POST",
@@ -60,6 +78,53 @@ function Salvo() {
     }
   };
 
+  const excluirConta = async () => {
+    if (!usuario) {
+      alert("Usuário não está logado");
+      return;
+    }
+
+    if (!window.confirm("Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita e todos os seus dados serão perdidos!")) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch("http://localhost:5000/excluir-conta", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          username: usuario
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alert("Conta excluída com sucesso!");
+        // Limpa localStorage e redireciona para login
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        window.location.href = '/login';
+      } else {
+        alert(result.error || "Erro ao excluir conta");
+      }
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao conectar com o servidor");
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    window.location.href = '/login';
+  };
+
   if (carregando) {
     return (
       <div style={{ padding: '20px' }}>
@@ -83,8 +148,39 @@ function Salvo() {
 
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1>Partidas Salvas - VISUALIZAÇÃO BRUTA</h1>
-      <p>Usuário: {usuario}</p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h1>Partidas Salvas</h1>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            onClick={logout}
+            style={{
+              backgroundColor: '#666',
+              color: 'white',
+              border: 'none',
+              padding: '8px 16px',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            Sair
+          </button>
+          <button 
+            onClick={() => setMostrarModalExclusao(true)}
+            style={{
+              backgroundColor: '#ff4444',
+              color: 'white',
+              border: 'none',
+              padding: '8px 16px',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            Excluir Minha Conta
+          </button>
+        </div>
+      </div>
+
+      <p>Usuário: <strong>{usuario}</strong></p>
       <p>Total de partidas salvas: {partidasSalvas.length}</p>
       
       {partidasSalvas.length === 0 ? (
@@ -138,8 +234,66 @@ function Salvo() {
           </table>
         </div>
       )}
+
+      {/* Modal de Confirmação de Exclusão */}
+      {mostrarModalExclusao && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '10px',
+            width: '400px',
+            textAlign: 'center'
+          }}>
+            <h3>⚠️ Excluir Conta</h3>
+            <p>Tem certeza que deseja excluir sua conta?</p>
+            <p style={{ color: 'red', fontWeight: 'bold' }}>
+              Esta ação não pode ser desfeita! Todas as suas partidas salvas serão perdidas.
+            </p>
+            <div style={{ marginTop: '20px', display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button 
+                onClick={() => setMostrarModalExclusao(false)}
+                style={{
+                  backgroundColor: '#666',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={excluirConta}
+                style={{
+                  backgroundColor: '#ff4444',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
+              >
+                Sim, Excluir Conta
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-export default Salvo; 
+export default Salvo;

@@ -13,8 +13,9 @@ function Partidas() {
     time: "",
     status: ""
   });
-  const [usuario] = useState("user123");
 
+  const [usuario] = useState(localStorage.getItem('username') || '');
+  
   useEffect(() => {
     carregarPartidas();
     carregarPartidasSalvas();

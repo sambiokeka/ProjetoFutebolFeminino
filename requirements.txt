@@ -1,1 +1,13 @@
+react-router-dom 
+
 mysql-connector-python
+
+requests
+
+flask
+
+flask_cors
+
+pytz 
+
+flask-jwt-extended
