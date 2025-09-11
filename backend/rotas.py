@@ -1,23 +1,119 @@
-from flask import Flask, jsonify, request
-import mysql.connector
+from flask import Flask, request, jsonify
 from flask_cors import CORS
+import mysql.connector
+import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
+import jwt
+import datetime
+import secrets
 
 app = Flask(__name__)
+app.secret_key = 'chave_teste'
 CORS(app)
 
-def get_db_connection():
+# ==================== CONFIGURAÇÕES ====================
+DATABASE_AUTH = 'users.db'  # SQLite para autenticação
+
+DATABASE_FUTEBOL = 'futebol_feminino'  # MySQL para partidas
+
+SECRET_KEY = secrets.token_urlsafe(64)
+
+# ==================== AUTENTICAÇÃO (SQLite) ====================
+def init_db_auth():
+    conn = sqlite3.connect(DATABASE_AUTH)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+def get_db_connection_auth():
+    conn = sqlite3.connect(DATABASE_AUTH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+# ==================== PARTIDAS (MySQL) ====================
+def get_db_connection_futebol():
     conn = mysql.connector.connect(
         host="localhost",
         user="root",
         password="root",
-        database="futebol_feminino"
+        database=DATABASE_FUTEBOL
     )
     return conn
 
+# ==================== ROTAS DE AUTENTICAÇÃO ====================
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    
+    if not username or not password:
+        return jsonify({'message': 'Usuário e senha são obrigatórios'}), 400
+    
+    hashed_password = generate_password_hash(password)
+    
+    try:
+        conn = get_db_connection_auth()
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
+        user_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        
+        token = jwt.encode({
+            'user_id': user_id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2)
+        }, SECRET_KEY, algorithm='HS256')
+        
+        return jsonify({
+            'message': 'Usuário criado com sucesso',
+            'token': token,
+            'username': username 
+        }), 201
+        
+    except sqlite3.IntegrityError:
+        return jsonify({'message': 'Usuário já existe'}), 409
 
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({'message': 'Usuário e senha são obrigatórios'}), 400
+
+    conn = get_db_connection_auth()
+    cursor = conn.cursor()
+    cursor.execute('SELECT id, password FROM users WHERE username = ?', (username,))
+    user = cursor.fetchone()
+    conn.close()
+
+    if user and check_password_hash(user['password'], password):
+        token = jwt.encode({
+            'user_id': user['id'],
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2)
+        }, SECRET_KEY, algorithm='HS256')
+
+        return jsonify({
+            'token': token, 
+            'username': username, 
+            'message': 'Login efetuado com sucesso'
+        }), 200
+    else:
+        return jsonify({'message': 'Usuário ou senha incorretos'}), 401
+
+# ==================== ROTAS DE PARTIDAS ====================
 @app.route("/ligas", methods=["GET"])
 def listar_ligas():
-    conn = get_db_connection()
+    conn = get_db_connection_futebol()
     cur = conn.cursor(dictionary=True)
     cur.execute("SELECT idLeague, strLeague, strSport, strLeagueAlternate FROM ligas ORDER BY strLeague")
     ligas = cur.fetchall()
@@ -48,32 +144,13 @@ def listar_partidas():
 
     sql += " ORDER BY p.dateEvent, p.strTime"
 
-    conn = get_db_connection()
+    conn = get_db_connection_futebol()
     cur = conn.cursor(dictionary=True)
     cur.execute(sql, params)
     partidas = cur.fetchall()
     cur.close()
     conn.close()
     return jsonify(partidas)
-
-@app.route("/debug/partidas/ao_vivo", methods=["GET"])
-def debug_partidas_ao_vivo():
-    conn = get_db_connection()
-    cur = conn.cursor(dictionary=True)
-    
-    cur.execute("""
-        SELECT * FROM partidas 
-        WHERE status = 'ao_vivo'
-    """)
-    
-    partidas_ao_vivo = cur.fetchall()
-    cur.close()
-    conn.close()
-    
-    return jsonify({
-        "count": len(partidas_ao_vivo),
-        "partidas": partidas_ao_vivo
-    })
 
 @app.route("/partidas/salvar", methods=["POST"])
 def salvar_partida():
@@ -82,9 +159,9 @@ def salvar_partida():
     id_usuario = data.get('idUsuario')
     
     if not id_event or not id_usuario:
-        return jsonify({"error": "idEvent e idUsuario são obrigatórios"}), 400
+        return jsonify({"error": "Entre para continuar"}), 400
     
-    conn = get_db_connection()
+    conn = get_db_connection_futebol()
     cur = conn.cursor()
     
     try:
@@ -104,7 +181,7 @@ def salvar_partida():
 
 @app.route("/partidas/salvas/<id_usuario>", methods=["GET"])
 def listar_partidas_salvas(id_usuario):
-    conn = get_db_connection()
+    conn = get_db_connection_futebol()
     cur = conn.cursor(dictionary=True)
     
     cur.execute("""
@@ -122,20 +199,16 @@ def listar_partidas_salvas(id_usuario):
     
     return jsonify(partidas)
 
-
-
 @app.route("/partidas/salvas/remover", methods=["POST"])
 def remover_partida_salva():
     data = request.get_json()
     id_event = data.get('idEvent')
     id_usuario = data.get('idUsuario')
     
-    print(f"Removendo partida: idEvent={id_event}, usuario={id_usuario}")
-    
     if not id_event or not id_usuario:
         return jsonify({"error": "idEvent e idUsuario são obrigatórios"}), 400
     
-    conn = get_db_connection()
+    conn = get_db_connection_futebol()
     cur = conn.cursor()
     
     try:
@@ -154,11 +227,11 @@ def remover_partida_salva():
         cur.close()
         conn.close()
 
-
-
 @app.route("/test", methods=["GET"])
 def test():
     return jsonify({"message": "Backend funcionando!", "status": "OK"})
 
-if __name__ == "__main__":
+# ==================== INICIALIZAÇÃO ====================
+if __name__ == '__main__':
+    init_db_auth() 
     app.run(debug=True, port=5000)
