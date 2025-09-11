@@ -1,10 +1,9 @@
 .partidas-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 1rem 1rem; 
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
 
 /* ===== HERO SECTION ===== */
 .hero-section {
@@ -18,10 +17,8 @@
   background: url('../assets/background.jpg') top/cover;
   color: white;
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem; 
   margin-top: -2rem;
-
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,32 +88,32 @@
 /* ===== FILTROS SECTION ===== */
 .filtros-section {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  padding: 2.5rem;
-  border-radius: 16px;
-  margin-bottom: 2.5rem;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  border-radius: 12px; 
+  margin-bottom: 1.5rem; 
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .filtros-section h2 {
   color: #6f42c1;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.5rem; 
   font-weight: 700;
-  font-size: 2rem;
+  font-size: 1.5rem; 
   text-align: center;
 }
 
 .subtitulo {
   color: #6c757d;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem; 
   text-align: center;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .filtros-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+  gap: 1rem; 
 }
 
 .filtro-group {
@@ -126,20 +123,20 @@
 
 .filtro-group label {
   font-weight: 600;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.5rem;
   color: #495057;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .filtro-input, .filtro-select {
-  padding: 1rem 1.2rem;
+  padding: 0.8rem 1rem; 
   border: 2px solid #dee2e6;
-  border-radius: 12px;
+  border-radius: 10px; 
   background: white;
-  font-size: 1rem;
+  font-size: 0.9rem;
   transition: all 0.3s ease;
   color: #2d3748;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
 }
 
 .filtro-input::placeholder {
@@ -165,62 +162,59 @@
 
 /* ===== PARTIDAS CONTENT ===== */
 .partidas-content {
-  padding: 1rem 0;
+  padding: 0.5rem 0; 
 }
 
 .partidas-dia {
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 }
 
 /* Data Title */
 .data-titulo {
   background: linear-gradient(135deg, #d63384 0%, #9c27b0 100%);
   color: white;
-  padding: 1.2rem 2rem;
-  border-radius: 16px;
-  margin-bottom: 2rem;
+  padding: 1rem 1.5rem;
+  border-radius: 12px; 
+  margin-bottom: 1.5rem;
   font-weight: 700;
-  font-size: 1.4rem;
+  font-size: 1.2rem; 
   text-align: center;
-  box-shadow: 0 8px 25px rgba(214, 51, 132, 0.3);
+  box-shadow: 0 5px 20px rgba(214, 51, 132, 0.3);
   text-transform: capitalize;
   position: relative;
   overflow: hidden;
 }
 
-
 /* ===== PARTIDA CARD ===== */
 .partida-card {
   background: white;
-  border-radius: 16px;
-  padding: 2rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 1.5rem; 
+  margin-bottom: 1rem;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.5);
   transition: all 0.3s ease;
 }
 
 .partida-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px); 
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .partida-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem; 
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.8rem;
 }
 
 .liga-nome {
   font-weight: 700;
   color: #495057;
-  font-size: 1.2rem;
+  font-size: 1.1rem; 
 }
-
-
 
 /* Status Styles */
 .partida-proxima {
@@ -265,45 +259,45 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 2rem;
-  margin-bottom: 1.5rem;
+  gap: 1.5rem;
+  margin-bottom: 1rem; 
 }
 
 .time {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.6rem;
 }
 
 .time-escudo {
-  width: 70px;
-  height: 70px;
+  width: 60px; 
+  height: 60px;
   border-radius: 50%;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 3px solid #dee2e6;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid #dee2e6; 
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
 .escudo-placeholder {
   color: #adb5bd;
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 .time-nome {
   font-weight: 700;
   text-align: center;
   color: #495057;
-  font-size: 1.1rem;
+  font-size: 1rem; 
 }
 
 .time-escudo {
   position: relative;
-  width: 70px;
-  height: 70px;
+  width: 60px;
+  height: 60px;
 }
 
 .escudo-time {
@@ -324,37 +318,38 @@
   align-items: center;
   justify-content: center;
   color: #adb5bd;
-  border: 3px solid #dee2e6;
+  border: 2px solid #dee2e6; 
 }
 
 .escudo-placeholder i {
-  font-size: 1.5rem;
+  font-size: 1.2rem; 
 }
+
 /* Placar */
 .placar {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  min-width: 120px;
+  gap: 0.8rem;
+  min-width: 100px; 
   justify-content: center;
 }
 
 .placar-numero {
-  font-size: 2.2rem;
+  font-size: 1.8rem; 
   font-weight: 800;
-  min-width: 40px;
+  min-width: 35px; 
   text-align: center;
   color: #212529;
 }
 
 .placar-divisoria {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 500;
   color: #6c757d;
 }
 
 .partida-horario {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #000000;
 }
@@ -362,25 +357,25 @@
 /* Partida Footer */
 .partida-footer {
   text-align: center;
-  margin-top: 1.5rem;
+  margin-top: 1rem; 
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.8rem; 
 }
 
 /* Button Styles */
 .btn-lembrar, .btn-assistir, .btn-detalhes {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
+  gap: 0.4rem; 
+  padding: 0.6rem 1.2rem;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.95rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 0.9rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
   text-decoration: none;
 }
 
@@ -391,7 +386,7 @@
 
 .btn-lembrar:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(106, 17, 203, 0.3);
+  box-shadow: 0 5px 18px rgba(106, 17, 203, 0.3);
 }
 
 .btn-lembrar.salvo {
@@ -406,7 +401,7 @@
 .btn-assistir:hover {
   background: linear-gradient(135deg, #44bd32 0%, #2ecc71 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(76, 209, 55, 0.3);
+  box-shadow: 0 5px 18px rgba(76, 209, 55, 0.3);
 }
 
 .btn-detalhes {
@@ -417,64 +412,52 @@
 .btn-detalhes:hover {
   background: linear-gradient(135deg, #5a32a3 0%, #7c3aed 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(111, 66, 193, 0.3);
+  box-shadow: 0 5px 18px rgba(111, 66, 193, 0.3);
 }
 
 .btn-lembrar i, .btn-assistir i, .btn-detalhes i {
-  font-size: 1rem;
+  font-size: 0.9rem; 
 }
 
-/* ===== STATES ===== */
+/* ===== STATES =====  */
 .sem-partidas {
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 3rem 1.5rem; 
   color: #6c757d;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-radius: 16px;
-  margin: 2rem 0;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  border-radius: 12px; 
+  margin: 1.5rem 0; 
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
 }
 
 .sem-partidas i {
-  font-size: 4rem;
-  margin-bottom: 1.5rem;
+  font-size: 3rem; 
+  margin-bottom: 1rem; 
   color: #ced4da;
   opacity: 0.7;
 }
 
 .sem-partidas p {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 500;
 }
 
 .carregando, .erro {
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 3rem 1.5rem; 
   color: #6c757d;
 }
 
 .carregando i {
-  font-size: 3rem;
+  font-size: 2.5rem;
   margin-bottom: 1rem;
   color: #6f42c1;
 }
 
 .erro i {
-  font-size: 3rem;
+  font-size: 2.5rem; 
   margin-bottom: 1rem;
   color: #dc3545;
-}
-
-.btn-tentar-novamente {
-  background: linear-gradient(135deg, #6f42c1 0%, #8b5cf6 100%);
-  color: white;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 600;
-  margin-top: 1rem;
-  transition: all 0.3s ease;
 }
 
 .btn-tentar-novamente:hover {
