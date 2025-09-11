@@ -56,6 +56,25 @@ def listar_partidas():
     conn.close()
     return jsonify(partidas)
 
+@app.route("/debug/partidas/ao_vivo", methods=["GET"])
+def debug_partidas_ao_vivo():
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+    
+    cur.execute("""
+        SELECT * FROM partidas 
+        WHERE status = 'ao_vivo'
+    """)
+    
+    partidas_ao_vivo = cur.fetchall()
+    cur.close()
+    conn.close()
+    
+    return jsonify({
+        "count": len(partidas_ao_vivo),
+        "partidas": partidas_ao_vivo
+    })
+
 @app.route("/partidas/salvar", methods=["POST"])
 def salvar_partida():
     data = request.get_json()

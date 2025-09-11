@@ -3,6 +3,7 @@ import '../styles/Partidas.css';
 import { traduzirNome } from '../utils/traduzir';
 import { getEscudoTime } from '../utils/escudos';
 
+
 function Partidas() {
   const [partidas, setPartidas] = useState([]);
   const [partidasSalvas, setPartidasSalvas] = useState([]);
@@ -128,79 +129,105 @@ function Partidas() {
     return `${horasBrasil.toString().padStart(2, '0')}:${minutes}`;
   };
 
-  const getStatusPartida = (partida) => {
-    const agora = new Date();
+const getStatusPartida = (partida) => {
+  if (partida.status) {
+    const statusMap = {
+      'proximas': 'proxima',
+      'ao_vivo': 'ao-vivo', 
+      'finalizadas': 'finalizada'
+    };
+    return statusMap[partida.status] || 'proxima';
+  }
+  const agora = new Date();
+  
+  if (partida.intHomeScore !== null && partida.intAwayScore !== null) {
+    return "finalizada";
+  }
+  
+  if (!partida.dateEvent || !partida.strTime) {
+    return "proxima";
+  }
+  
+  try {
+    const horaBrasil = ajustarHorarioBrasil(partida.strTime, partida.dateEvent).horaAjustada;
+    const dataPartidaStr = `${partida.dateEvent}T${horaBrasil}`;
+    const dataPartida = new Date(dataPartidaStr);
     
-    if (partida.intHomeScore !== null && partida.intAwayScore !== null) {
+    if (isNaN(dataPartida.getTime())) {
+      return "proxima";
+    }
+    
+    const dataFimPartida = new Date(dataPartida.getTime() + (2 * 60 * 60 * 1000));
+    
+    if (agora < dataPartida) {
+      return "proxima";
+    } else if (agora >= dataPartida && agora <= dataFimPartida) {
+      return "ao-vivo";
+    } else {
       return "finalizada";
     }
     
-    if (!partida.dateEvent || !partida.strTime) {
-      return "proxima";
-    }
-    
-    // Ajusta o horário para o fuso do Brasil antes de criar a data
-    const horaBrasil = ajustarHorarioBrasil(partida.strTime);
-    const dataPartidaStr = `${partida.dateEvent}T${horaBrasil}`;
-    let dataPartida;
-    
-    try {
-      dataPartida = new Date(dataPartidaStr);
-      
-      if (isNaN(dataPartida.getTime())) {
-        return "proxima";
-      }
-      
-      if (dataPartida < agora) {
-        return "ao-vivo";
-      }
-      
-      return "proxima";
-      
-    } catch (error) {
-      return "proxima";
-    }
-  };
+  } catch (error) {
+    return "proxima";
+  }
+};
+
+useEffect(() => {
+  // Debug: verificar partidas com status ao_vivo
+  const partidasAoVivoBackend = partidas.filter(p => p.status === 'ao_vivo');
+  console.log('Partidas com status "ao_vivo" no backend:', partidasAoVivoBackend);
+  
+  partidasAoVivoBackend.forEach(p => {
+    const statusFrontend = getStatusPartida(p);
+    console.log('Partida:', p.strHomeTeam, 'vs', p.strAwayTeam, 
+                'Backend status:', p.status, 
+                'Frontend status:', statusFrontend);
+  });
+}, [partidas]);
+
 
   const isPartidaSalva = (idEvent) => {
     return partidasSalvas.some(ps => ps.idEvent === idEvent);
   };
 
-  const filtrarPartidas = () => {
-    return partidas.filter((p) => {
-      if (filtros.data) {
-        const filtroData = new Date(filtros.data);
-        const dataPartida = new Date(p.dateEvent);
-
-        if (
-          filtroData.getFullYear() !== dataPartida.getFullYear() ||
-          filtroData.getMonth() !== dataPartida.getMonth() ||
-          filtroData.getDate() !== dataPartida.getDate()
-        ) {
-          return false;
-        }
-      }
-
-      if (filtros.liga && p.strLeague !== filtros.liga) return false;
+const filtrarPartidas = () => {
+  const partidasFiltradas = partidas.filter((p) => {
+    if (filtros.data) {
+      const filtroData = new Date(filtros.data);
+      const dataPartida = new Date(p.dateEvent);
 
       if (
-        filtros.time &&
-        !(
-          p.strHomeTeam.toLowerCase().includes(filtros.time.toLowerCase()) ||
-          p.strAwayTeam.toLowerCase().includes(filtros.time.toLowerCase())
-        )
-      )
+        filtroData.getFullYear() !== dataPartida.getFullYear() ||
+        filtroData.getMonth() !== dataPartida.getMonth() ||
+        filtroData.getDate() !== dataPartida.getDate()
+      ) {
         return false;
-
-      if (filtros.status) {
-        const statusPartida = getStatusPartida(p);
-        if (filtros.status !== statusPartida) return false;
       }
+    }
 
-      return true;
-    });
-  };
+    if (filtros.liga && p.strLeague !== filtros.liga) return false;
 
+    if (
+      filtros.time &&
+      !(
+        p.strHomeTeam.toLowerCase().includes(filtros.time.toLowerCase()) ||
+        p.strAwayTeam.toLowerCase().includes(filtros.time.toLowerCase())
+      )
+    )
+      return false;
+
+    if (filtros.status) {
+      const statusPartida = getStatusPartida(p);
+      console.log('Filtrando:', p.strHomeTeam, 'Status partida:', statusPartida, 'Filtro:', filtros.status);
+      if (filtros.status !== statusPartida) return false;
+    }
+
+    return true;
+  });
+  
+  console.log('Partidas após filtro:', partidasFiltradas);
+  return partidasFiltradas;
+};
   const partidasOrdenadas = filtrarPartidas().sort((a, b) => {
     const horaA = ajustarHorarioBrasil(a.strTime);
     const horaB = ajustarHorarioBrasil(b.strTime);
@@ -226,8 +253,9 @@ function Partidas() {
     };
     return data.toLocaleDateString('pt-BR', options);
   };
-
+  
   return (
+
     <div className="partidas-container">
       <div className="hero-section">
         <div className="hero-content">
