@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import mysql.connector
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
@@ -12,13 +11,11 @@ app.secret_key = 'chave_teste'
 CORS(app)
 
 # ==================== CONFIGURAÇÕES ====================
-DATABASE_AUTH = 'users.db'  # SQLite para autenticação
-
-DATABASE_FUTEBOL = 'futebol_feminino'  # MySQL para partidas
-
+DATABASE_AUTH = 'users.db'  # SQLite para contas
+DATABASE_FUTEBOL = 'futebol_feminino.db'  # SQLite para partidas
 SECRET_KEY = secrets.token_urlsafe(64)
 
-# ==================== AUTENTICAÇÃO (SQLite) ====================
+# ==================== CONEXÕES SQLite ====================
 def init_db_auth():
     conn = sqlite3.connect(DATABASE_AUTH)
     cursor = conn.cursor()
@@ -37,14 +34,9 @@ def get_db_connection_auth():
     conn.row_factory = sqlite3.Row
     return conn
 
-# ==================== PARTIDAS (MySQL) ====================
 def get_db_connection_futebol():
-    conn = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="root",
-        database=DATABASE_FUTEBOL
-    )
+    conn = sqlite3.connect(DATABASE_FUTEBOL)
+    conn.row_factory = sqlite3.Row 
     return conn
 
 # ==================== ROTAS DE AUTENTICAÇÃO ====================
@@ -114,9 +106,12 @@ def login():
 @app.route("/ligas", methods=["GET"])
 def listar_ligas():
     conn = get_db_connection_futebol()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor()
     cur.execute("SELECT idLeague, strLeague, strSport, strLeagueAlternate FROM ligas ORDER BY strLeague")
-    ligas = cur.fetchall()
+    
+    columns = [column[0] for column in cur.description]
+    ligas = [dict(zip(columns, row)) for row in cur.fetchall()]
+    
     cur.close()
     conn.close()
     return jsonify(ligas)
@@ -135,19 +130,22 @@ def listar_partidas():
     params = []
 
     if league_id:
-        sql += " AND p.idLeague = %s"
+        sql += " AND p.idLeague = ?"
         params.append(league_id)
 
     if season:
-        sql += " AND p.strSeason = %s"
+        sql += " AND p.strSeason = ?"
         params.append(season)
 
     sql += " ORDER BY p.dateEvent, p.strTime"
 
     conn = get_db_connection_futebol()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor()
     cur.execute(sql, params)
-    partidas = cur.fetchall()
+    
+    columns = [column[0] for column in cur.description]
+    partidas = [dict(zip(columns, row)) for row in cur.fetchall()]
+    
     cur.close()
     conn.close()
     return jsonify(partidas)
@@ -167,11 +165,11 @@ def salvar_partida():
     try:
         cur.execute("""
             INSERT INTO partidas_salvas (idEvent, idUsuario)
-            VALUES (%s, %s)
+            VALUES (?, ?)
         """, (id_event, id_usuario))
         conn.commit()
         return jsonify({"success": True, "message": "Partida salva com sucesso!"})
-    except mysql.connector.IntegrityError:
+    except sqlite3.IntegrityError:
         return jsonify({"error": "Partida já salva para este usuário"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -182,18 +180,20 @@ def salvar_partida():
 @app.route("/partidas/salvas/<id_usuario>", methods=["GET"])
 def listar_partidas_salvas(id_usuario):
     conn = get_db_connection_futebol()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor()
     
     cur.execute("""
         SELECT p.*, l.strLeague, ps.data_criacao
         FROM partidas_salvas ps
         JOIN partidas p ON ps.idEvent = p.idEvent
         LEFT JOIN ligas l ON p.idLeague = l.idLeague
-        WHERE ps.idUsuario = %s
+        WHERE ps.idUsuario = ?
         ORDER BY p.dateEvent, p.strTime
     """, (id_usuario,))
     
-    partidas = cur.fetchall()
+    columns = [column[0] for column in cur.description]
+    partidas = [dict(zip(columns, row)) for row in cur.fetchall()]
+    
     cur.close()
     conn.close()
     
@@ -212,7 +212,7 @@ def remover_partida_salva():
     cur = conn.cursor()
     
     try:
-        cur.execute("DELETE FROM partidas_salvas WHERE idEvent = %s AND idUsuario = %s", 
+        cur.execute("DELETE FROM partidas_salvas WHERE idEvent = ? AND idUsuario = ?", 
                    (id_event, id_usuario))
         conn.commit()
         

@@ -116,7 +116,6 @@ function Partidas() {
 
   const ligasUnicas = [...new Set(partidas.map((p) => p.strLeague))];
 
-  // Função para ajustar o horário UTC para o fuso do Brasil (-3 horas)
   const ajustarHorarioBrasil = (horaUTC) => {
     if (!horaUTC) return '--:--';
     
@@ -174,7 +173,7 @@ const getStatusPartida = (partida) => {
 };
 
 useEffect(() => {
-  // Debug: verificar partidas com status ao_vivo
+  
   const partidasAoVivoBackend = partidas.filter(p => p.status === 'ao_vivo');
   console.log('Partidas com status "ao_vivo" no backend:', partidasAoVivoBackend);
   

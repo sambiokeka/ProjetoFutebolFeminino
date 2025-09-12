@@ -1,9 +1,10 @@
 import requests
-import mysql.connector
+import sqlite3
 import time
 from datetime import datetime, timedelta
 import pytz
 import threading
+import os
 
 API_KEY = "123"
 BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}/"
@@ -11,7 +12,7 @@ BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}/"
 # Ligas que queremos monitorar
 LEAGUE_NAMES = ["Brazil Brasileiro Women", "International Friendlies Women", "English Womens Super League"]
 
-# Datas dos jogos (TEMOS Q USAR ASSIM PQ N ASSINAMOS A API PREMIUM)
+# Datas dos jogos
 LEAGUE_DATES = {
     "Brazil Brasileiro Women": [
         "2025-03-22", "2025-03-23", "2025-03-25", "2025-03-26", "2025-03-27",
@@ -38,56 +39,50 @@ LEAGUE_DATES = {
     ],
 }
 
-# Conexão com MySQL
-conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="root",
-    database="futebol_feminino",
-    ssl_disabled=True
-)
+# Conexão com SQLite
+DB_PATH = "futebol_feminino.db"
+conn = sqlite3.connect(DB_PATH, check_same_thread=False)
 cursor = conn.cursor()
 
 # ---- Criação de tabelas ----
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS ligas (
-    idLeague VARCHAR(50) PRIMARY KEY,
-    strLeague VARCHAR(255),
-    strSport VARCHAR(100),
-    strLeagueAlternate VARCHAR(255)
+    idLeague TEXT PRIMARY KEY,
+    strLeague TEXT,
+    strSport TEXT,
+    strLeagueAlternate TEXT
 )
 """)
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS partidas (
-    idEvent VARCHAR(50) PRIMARY KEY,
-    strEvent VARCHAR(255),
+    idEvent TEXT PRIMARY KEY,
+    strEvent TEXT,
     dateEvent DATE,
-    strTime VARCHAR(20),
-    strHomeBadge VARCHAR(255),
-    strAwayBadge VARCHAR(255),
-    strSeason VARCHAR(20),
-    strHomeTeam VARCHAR(100),
-    strAwayTeam VARCHAR(100),
-    intHomeScore INT,
-    intAwayScore INT,
-    strVenue VARCHAR(255),
-    idLeague VARCHAR(50),
-    status ENUM('proximas','ao_vivo','finalizadas') DEFAULT 'proximas',
+    strTime TEXT,
+    strHomeBadge TEXT,
+    strAwayBadge TEXT,
+    strSeason TEXT,
+    strHomeTeam TEXT,
+    strAwayTeam TEXT,
+    intHomeScore INTEGER,
+    intAwayScore INTEGER,
+    strVenue TEXT,
+    idLeague TEXT,
+    status TEXT CHECK(status IN ('proximas', 'ao_vivo', 'finalizadas')) DEFAULT 'proximas',
     FOREIGN KEY (idLeague) REFERENCES ligas(idLeague)
 )
 """)
 
-
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS partidas_salvas (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    idEvent VARCHAR(50) NOT NULL,
-    idUsuario VARCHAR(100) NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    idEvent TEXT NOT NULL,
+    idUsuario TEXT NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    notificado TINYINT(1) DEFAULT 0,
+    notificado INTEGER DEFAULT 0,
     FOREIGN KEY (idEvent) REFERENCES partidas(idEvent),
-    UNIQUE KEY unique_partida_usuario (idEvent, idUsuario)
+    UNIQUE (idEvent, idUsuario)
 )
 """)
 
@@ -96,12 +91,8 @@ def save_league_info(league):
     if not league.get("idLeague"):
         return
     cursor.execute("""
-        INSERT INTO ligas (idLeague, strLeague, strSport, strLeagueAlternate)
-        VALUES (%s,%s,%s,%s)
-        ON DUPLICATE KEY UPDATE
-            strLeague=VALUES(strLeague),
-            strSport=VALUES(strSport),
-            strLeagueAlternate=VALUES(strLeagueAlternate)
+        INSERT OR REPLACE INTO ligas (idLeague, strLeague, strSport, strLeagueAlternate)
+        VALUES (?,?,?,?)
     """, (
         league.get("idLeague"),
         league.get("strLeague"),
@@ -116,7 +107,7 @@ def get_status(date_str, time_str, home_score=None, away_score=None):
     if not time_str:
         time_str = "00:00:00"
     
-    # Converter formato AM/PM para 24h se necessário
+    # Converter formato AM/PM para 24h, já que a API retorna assim
     if "AM" in time_str or "PM" in time_str:
         time_part, modifier = time_str.split(" ")
         hours, minutes = map(int, time_part.split(":"))
@@ -138,7 +129,7 @@ def get_status(date_str, time_str, home_score=None, away_score=None):
         agora_brasil = datetime.now(fuso_brasil)
         
         # Verificar se o jogo já começou mas ainda não terminou
-        duracao_jogo = timedelta(hours=2)  # Assumindo 2 horas de duração
+        duracao_jogo = timedelta(hours=2)  # Provavelmente 2 horas de duração
         
         # Se o jogo está acontecendo agora
         if hora_jogo_brasil <= agora_brasil <= hora_jogo_brasil + duracao_jogo:
@@ -180,24 +171,11 @@ def save_events(events):
         status = get_status(e.get("dateEvent"), e.get("strTime"))
 
         cursor.execute("""
-            INSERT INTO partidas (idEvent, strEvent, dateEvent, strTime, strSeason, 
-                                strHomeTeam, strAwayTeam, intHomeScore, intAwayScore, 
-                                strVenue, idLeague, status, strHomeBadge, strAwayBadge)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-            ON DUPLICATE KEY UPDATE
-                strEvent=VALUES(strEvent),
-                dateEvent=VALUES(dateEvent),
-                strTime=VALUES(strTime),
-                strSeason=VALUES(strSeason),
-                strHomeTeam=VALUES(strHomeTeam),
-                strAwayTeam=VALUES(strAwayTeam),
-                intHomeScore=VALUES(intHomeScore),
-                intAwayScore=VALUES(intAwayScore),
-                strVenue=VALUES(strVenue),
-                idLeague=VALUES(idLeague),
-                status=VALUES(status),
-                strHomeBadge=VALUES(strHomeBadge),
-                strAwayBadge=VALUES(strAwayBadge)
+            INSERT OR REPLACE INTO partidas 
+            (idEvent, strEvent, dateEvent, strTime, strSeason, 
+             strHomeTeam, strAwayTeam, intHomeScore, intAwayScore, 
+             strVenue, idLeague, status, strHomeBadge, strAwayBadge)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         """, (
             e.get("idEvent"),
             e.get("strEvent"),
@@ -223,7 +201,7 @@ def process_league(league_name):
         events = get_events_by_day(date, league_name)
         print(f"[{league_name} | {date}] Jogos encontrados: {len(events)}")
         save_events(events)
-        # Pausa de 3 segundos a cada 5 pulls
+        # Pausa de 3 segundos a cada 5 pulls para não sobrecarregar a API
         if i % 5 == 0:
             time.sleep(3)
         else:
@@ -234,7 +212,6 @@ def monitorar_jogos_ao_vivo():
     """Monitora jogos e atualiza status em tempo real"""
     while True:
         try:
-            # Buscar todos os jogos que não estão finalizados
             cursor.execute("""
                 SELECT idEvent, dateEvent, strTime, intHomeScore, intAwayScore 
                 FROM partidas 
@@ -245,19 +222,17 @@ def monitorar_jogos_ao_vivo():
             for jogo in jogos_ativos:
                 id_event, date_event, str_time, home_score, away_score = jogo
                 
-                # Determinar novo status
                 novo_status = get_status(date_event, str_time, home_score, away_score)
                 
-                # Verificar status atual
-                cursor.execute("SELECT status FROM partidas WHERE idEvent = %s", (id_event,))
-                status_atual = cursor.fetchone()[0]
+                cursor.execute("SELECT status FROM partidas WHERE idEvent = ?", (id_event,))
+                result = cursor.fetchone()
+                status_atual = result[0] if result else None
                 
-                # Atualizar status se mudou
                 if status_atual != novo_status:
                     cursor.execute("""
                         UPDATE partidas 
-                        SET status = %s 
-                        WHERE idEvent = %s
+                        SET status = ? 
+                        WHERE idEvent = ?
                     """, (novo_status, id_event))
                     
                     if cursor.rowcount > 0:
@@ -267,7 +242,6 @@ def monitorar_jogos_ao_vivo():
             
             conn.commit()
             
-            # Esperar 1 minuto antes da próxima verificação
             time.sleep(60)
             
         except Exception as e:
@@ -296,8 +270,8 @@ def atualizar_resultados_em_tempo_real():
                         # Atualizar placar
                         cursor.execute("""
                             UPDATE partidas 
-                            SET intHomeScore = %s, intAwayScore = %s 
-                            WHERE idEvent = %s
+                            SET intHomeScore = ?, intAwayScore = ? 
+                            WHERE idEvent = ?
                         """, (
                             evento.get('intHomeScore'), 
                             evento.get('intAwayScore'), 
@@ -310,7 +284,7 @@ def atualizar_resultados_em_tempo_real():
                     print(f"Erro ao atualizar jogo {id_event}: {e}")
             
             conn.commit()
-            time.sleep(30)  # Verificar a cada 30 segundos
+            time.sleep(30)  
             
         except Exception as e:
             print(f"Erro na atualização de resultados: {e}")
@@ -323,7 +297,7 @@ def enviar_notificacao_mudanca_status(id_event, status_antigo, status_novo):
         SELECT ps.idUsuario, p.strHomeTeam, p.strAwayTeam 
         FROM partidas_salvas ps 
         JOIN partidas p ON ps.idEvent = p.idEvent 
-        WHERE ps.idEvent = %s AND ps.notificado = 0
+        WHERE ps.idEvent = ? AND ps.notificado = 0
     """, (id_event,))
     
     usuarios = cursor.fetchall()
@@ -332,38 +306,30 @@ def enviar_notificacao_mudanca_status(id_event, status_antigo, status_novo):
         id_usuario, home_team, away_team = usuario
         mensagem = f"Status alterado: {home_team} vs {away_team} - {status_novo}"
         
-        # Aqui você implementaria o envio de notificação
-        # (email, push notification, etc.)
         print(f"Notificação para {id_usuario}: {mensagem}")
-        
-        # Marcar como notificado
+
         cursor.execute("""
             UPDATE partidas_salvas 
             SET notificado = 1 
-            WHERE idEvent = %s AND idUsuario = %s
+            WHERE idEvent = ? AND idUsuario = ?
         """, (id_event, id_usuario))
     
     conn.commit()
 
 # ---- Execução principal ----
 if __name__ == "__main__":
-    # Primeiro, processar as ligas normalmente
     for league_name in LEAGUE_DATES.keys():
         process_league(league_name)
     
     print("Processamento inicial concluído. Iniciando monitoramento...")
     
-    # Iniciar monitoramento em threads separadas
     try:
-        # Thread para monitorar status dos jogos
         thread_monitor = threading.Thread(target=monitorar_jogos_ao_vivo, daemon=True)
         thread_monitor.start()
         
-        # Thread para atualizar resultados
         thread_resultados = threading.Thread(target=atualizar_resultados_em_tempo_real, daemon=True)
         thread_resultados.start()
         
-        # Manter o programa rodando
         while True:
             time.sleep(60)
             
