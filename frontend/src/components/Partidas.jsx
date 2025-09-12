@@ -114,7 +114,9 @@ function Partidas() {
     setFiltros((prev) => ({ ...prev, [name]: value }));
   };
 
-  const ligasUnicas = [...new Set(partidas.map((p) => p.strLeague))];
+const ligasUnicas = [...new Set(partidas.map((p) => p.strLeague))].sort((a, b) => 
+  a.localeCompare(b, 'pt-BR', { sensitivity: 'base' })
+);
 
   const ajustarHorarioBrasil = (horaUTC) => {
     if (!horaUTC) return '--:--';
@@ -293,19 +295,19 @@ const filtrarPartidas = () => {
 
           <div className="filtro-group">
             <label>Liga/Campeonato</label>
-            <select 
-              name="liga" 
-              value={filtros.liga} 
-              onChange={handleFiltroChange}
-              className="filtro-select"
-            >
-              <option value="">Todos os campeonatos</option>
-              {ligasUnicas.map((liga) => (
-                <option key={liga} value={liga}>
-                  {liga}
-                </option>
-              ))}
-            </select>
+              <select 
+                name="liga" 
+                value={filtros.liga} 
+                onChange={handleFiltroChange}
+                className="filtro-select"
+              >
+                <option value="">Todos os campeonatos</option>
+                {ligasUnicas.map((liga) => (
+                  <option key={liga} value={liga}>
+                    {liga}
+                  </option>
+                ))}
+              </select>
           </div>
 
           <div className="filtro-group">

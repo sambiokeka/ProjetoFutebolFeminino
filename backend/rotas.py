@@ -10,12 +10,10 @@ app = Flask(__name__)
 app.secret_key = 'chave_teste'
 CORS(app)
 
-# ==================== CONFIGURAÇÕES ====================
 DATABASE_AUTH = 'users.db'  # SQLite para contas
 DATABASE_FUTEBOL = 'futebol_feminino.db'  # SQLite para partidas
 SECRET_KEY = secrets.token_urlsafe(64)
 
-# ==================== CONEXÕES SQLite ====================
 def init_db_auth():
     conn = sqlite3.connect(DATABASE_AUTH)
     cursor = conn.cursor()
@@ -39,7 +37,6 @@ def get_db_connection_futebol():
     conn.row_factory = sqlite3.Row 
     return conn
 
-# ==================== ROTAS DE AUTENTICAÇÃO ====================
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -102,7 +99,6 @@ def login():
     else:
         return jsonify({'message': 'Usuário ou senha incorretos'}), 401
 
-# ==================== ROTAS DE PARTIDAS ====================
 @app.route("/ligas", methods=["GET"])
 def listar_ligas():
     conn = get_db_connection_futebol()
@@ -231,7 +227,22 @@ def remover_partida_salva():
 def test():
     return jsonify({"message": "Backend funcionando!", "status": "OK"})
 
-# ==================== INICIALIZAÇÃO ====================
 if __name__ == '__main__':
     init_db_auth() 
     app.run(debug=True, port=5000)
+
+
+@app.route('/webhook/placar', methods=['POST'])
+def webhook_placar():
+    try:
+        data = request.get_json()
+        
+        print(f"Webhook recebido - Jogo: {data['homeTeam']} {data['homeScore']} x {data['awayScore']} {data['awayTeam']}")
+        print(f"ID Evento: {data['idEvent']}")
+        print(f"Timestamp: {datetime.fromtimestamp(data['timestamp'])}")
+        
+        return jsonify({"success": True, "message": "Webhook recebido"})
+        
+    except Exception as e:
+        print(f"Erro no webhook: {e}")
+        return jsonify({"error": str(e)}), 500

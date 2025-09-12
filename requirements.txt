@@ -11,3 +11,5 @@ flask_cors
 pytz 
 
 flask-jwt-extended
+
+pysqlite3
