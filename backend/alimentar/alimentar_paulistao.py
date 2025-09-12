@@ -1,4 +1,3 @@
-# alimentar.py
 import sqlite3
 from datetime import datetime, timedelta
 
@@ -430,6 +429,9 @@ for partida in dados_paulistao:
         nova_hora = hora_original + timedelta(hours=3)
         # Formata o objeto datetime de volta para uma string de hora
         partida['strTime'] = nova_hora.strftime('%H:%M:%S')
+
+    if partida['strTime'] == None:
+        partida['strTime'] = 'A definir'
 
     cursor.execute("""
         INSERT OR REPLACE INTO partidas 
