@@ -137,13 +137,12 @@ def get_status(date_str, time_str, home_score=None, away_score=None):
 # ---- Busca eventos de uma liga em uma data específica ----
 def get_events_by_day(date, league_name):
     url = f"{BASE_URL}eventsday.php?d={date}&l={league_name}"
-    response = requests.get(url)
     try:
+        response = requests.get(url, verify=False)  
         data = response.json()
         return data.get("events", []) or []
     except Exception as e:
         print(f"Erro ao processar {date} | {league_name}: {e}")
-        print("Conteúdo bruto:", response.text)
         return []
 
 # ---- Salva eventos no banco ----
