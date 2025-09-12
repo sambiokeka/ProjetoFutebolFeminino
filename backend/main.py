@@ -106,17 +106,6 @@ def save_league_info(league):
 def get_status(date_str, time_str, home_score=None, away_score=None):
     if not time_str:
         time_str = "00:00:00"
-    
-    # Converter formato AM/PM para 24h, já que a API retorna assim
-    if "AM" in time_str or "PM" in time_str:
-        time_part, modifier = time_str.split(" ")
-        hours, minutes = map(int, time_part.split(":"))
-        if modifier.upper() == "PM" and hours < 12:
-            hours += 12
-        if modifier.upper() == "AM" and hours == 12:
-            hours = 0
-        time_str = f"{hours:02d}:{minutes:02d}:00"
-    
     try:
         # Criar datetime do jogo em UTC
         hora_jogo_utc = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M:%S")
