@@ -173,14 +173,14 @@ dados_paulistao = [
     },
     {
         'idEvent': 'paulistao_R6_03', 'strEvent': 'São Paulo Women vs Realidade Jovem Women',
-        'dateEvent': '2025-13-08', 'strTime': None, 'strSeason': '2025',
+        'dateEvent': '2025-12-11', 'strTime': None, 'strSeason': '2025',
         'strHomeTeam': 'São Paulo Women', 'strAwayTeam': 'Realidade Jovem Women',
         'intHomeScore': 1, 'intAwayScore': 0, 'strVenue': None,
         'idLeague': 'paulistao_2025', 'status': 'finalizadas'
     },
     {
         'idEvent': 'paulistao_R6_04', 'strEvent': 'Palmeiras Women vs Santos Women',
-        'dateEvent': '2025-14-08', 'strTime': None, 'strSeason': '2025',
+        'dateEvent': '2025-12-11', 'strTime': None, 'strSeason': '2025',
         'strHomeTeam': 'Palmeiras Women', 'strAwayTeam': 'Santos Women',
         'intHomeScore': 1, 'intAwayScore': 0, 'strVenue': None,
         'idLeague': 'paulistao_2025', 'status': 'finalizadas'
@@ -447,4 +447,4 @@ conn.commit()
 conn.close()
 
 print("Dados do Paulistão Feminino 2025 (14 rodadas) inseridos com sucesso!")
-print(f"Total de {len(dados_paulistao)} partidas inseridas")
+print(f"Total de {len(dados_paulistao)} partidas inseridas/atualizadas")

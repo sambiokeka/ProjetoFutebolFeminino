@@ -254,11 +254,11 @@
   width: 70px;
   height: 70px;
   border-radius: 50%;
-  background: linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 3px solid #dee2e6;
+  border: 10px solid #ffffff;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 

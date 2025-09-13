@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import '../styles/Partidas.css';
 import { traduzirNome } from '../utils/traduzir';
 import { getEscudoTime } from '../utils/escudos';
-
 
 function Partidas() {
   const [partidas, setPartidas] = useState([]);
@@ -14,12 +13,33 @@ function Partidas() {
     status: ""
   });
 
+  const partidasSectionRef = useRef(null);
   const [usuario] = useState(localStorage.getItem('username') || '');
   
   useEffect(() => {
     carregarPartidas();
     carregarPartidasSalvas();
   }, []);
+
+  const handleCalendarioClick = (e) => {
+    e.preventDefault();
+    setFiltros(prev => ({
+      ...prev,
+      status: "proxima",
+      data: "",
+      liga: "",
+      time: ""
+    }));
+    
+    setTimeout(() => {
+      if (partidasSectionRef.current) {
+        partidasSectionRef.current.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }, 100);
+  };
 
   const traduzirPartidas = (partidas) => {
     return partidas.map(partida => ({
@@ -114,121 +134,121 @@ function Partidas() {
     setFiltros((prev) => ({ ...prev, [name]: value }));
   };
 
-const ligasUnicas = [...new Set(partidas.map((p) => p.strLeague))].sort((a, b) => 
-  a.localeCompare(b, 'pt-BR', { sensitivity: 'base' })
-);
+  const ligasUnicas = [...new Set(partidas.map((p) => p.strLeague))].sort((a, b) => 
+    a.localeCompare(b, 'pt-BR', { sensitivity: 'base' })
+  );
 
-  const ajustarHorarioBrasil = (horaUTC) => {
-    if (!horaUTC) return '--:--';
-    
-    const [hours, minutes] = horaUTC.split(':');
-    let horasBrasil = parseInt(hours) - 3;
-    
-    if (horasBrasil < 0) {
-      horasBrasil += 24;
-    }
-    
-    return `${horasBrasil.toString().padStart(2, '0')}:${minutes}`;
-  };
+const ajustarHorarioBrasil = (horaUTC, status = "proxima") => {
+  if (!horaUTC) {
+    return status === "proxima" ? "--" : "--:--";
+  }
+  
+  const [hours, minutes] = horaUTC.split(':');
+  let horasBrasil = parseInt(hours) - 3;
+  
+  if (horasBrasil < 0) {
+    horasBrasil += 24;
+  }
+  
+  return `${horasBrasil.toString().padStart(2, '0')}:${minutes}`;
+};
 
-const getStatusPartida = useCallback((partida) => {
-  if (partida.status) {
-    const statusMap = {
-      'proximas': 'proxima',
-      'ao_vivo': 'ao-vivo', 
-      'finalizadas': 'finalizada'
-    };
-    return statusMap[partida.status] || 'proxima';
-  }
-  const agora = new Date();
-  
-  if (partida.intHomeScore !== null && partida.intAwayScore !== null) {
-    return "finalizada";
-  }
-  
-  if (!partida.dateEvent || !partida.strTime) {
-    return "proxima";
-  }
-  
-  try {
-    const horaBrasil = ajustarHorarioBrasil(partida.strTime);
-    const dataPartidaStr = `${partida.dateEvent}T${horaBrasil}`;
-    const dataPartida = new Date(dataPartidaStr);
-    
-    if (isNaN(dataPartida.getTime())) {
-      return "proxima";
+  const getStatusPartida = useCallback((partida) => {
+    if (partida.status) {
+      const statusMap = {
+        'proximas': 'proxima',
+        'ao_vivo': 'ao-vivo', 
+        'finalizadas': 'finalizada'
+      };
+      return statusMap[partida.status] || 'proxima';
     }
+    const agora = new Date();
     
-    const dataFimPartida = new Date(dataPartida.getTime() + (2 * 60 * 60 * 1000));
-    
-    if (agora < dataPartida) {
-      return "proxima";
-    } else if (agora >= dataPartida && agora <= dataFimPartida) {
-      return "ao-vivo";
-    } else {
+    if (partida.intHomeScore !== null && partida.intAwayScore !== null) {
       return "finalizada";
     }
     
-  } catch {
-    return "proxima";
-  }
-}, []);
+    if (!partida.dateEvent || !partida.strTime) {
+      return "proxima";
+    }
+    
+    try {
+      const horaBrasil = ajustarHorarioBrasil(partida.strTime);
+      const dataPartidaStr = `${partida.dateEvent}T${horaBrasil}`;
+      const dataPartida = new Date(dataPartidaStr);
+      
+      if (isNaN(dataPartida.getTime())) {
+        return "proxima";
+      }
+      
+      const dataFimPartida = new Date(dataPartida.getTime() + (2 * 60 * 60 * 1000));
+      
+      if (agora < dataPartida) {
+        return "proxima";
+      } else if (agora >= dataPartida && agora <= dataFimPartida) {
+        return "ao-vivo";
+      } else {
+        return "finalizada";
+      }
+      
+    } catch {
+      return "proxima";
+    }
+  }, []);
 
-useEffect(() => {
-  const partidasAoVivoBackend = partidas.filter(p => p.status === 'ao_vivo');
-  console.log('Partidas com status "ao_vivo" no backend:', partidasAoVivoBackend);
-  
-  partidasAoVivoBackend.forEach(p => {
-    const statusFrontend = getStatusPartida(p);
-    console.log('Partida:', p.strHomeTeam, 'vs', p.strAwayTeam, 
-                'Backend status:', p.status, 
-                'Frontend status:', statusFrontend);
-  });
-}, [partidas, getStatusPartida]);
-
+  useEffect(() => {
+    const partidasAoVivoBackend = partidas.filter(p => p.status === 'ao_vivo');
+    console.log('Partidas com status "ao_vivo" no backend:', partidasAoVivoBackend);
+    
+    partidasAoVivoBackend.forEach(p => {
+      const statusFrontend = getStatusPartida(p);
+      console.log('Partida:', p.strHomeTeam, 'vs', p.strAwayTeam, 
+                  'Backend status:', p.status, 
+                  'Frontend status:', statusFrontend);
+    });
+  }, [partidas, getStatusPartida]);
 
   const isPartidaSalva = (idEvent) => {
     return partidasSalvas.some(ps => ps.idEvent === idEvent);
   };
 
-const filtrarPartidas = () => {
-  const partidasFiltradas = partidas.filter((p) => {
-    if (filtros.data) {
-      const filtroData = new Date(filtros.data);
-      const dataPartida = new Date(p.dateEvent);
+  const filtrarPartidas = () => {
+    const partidasFiltradas = partidas.filter((p) => {
+      if (filtros.data) {
+        const filtroData = new Date(filtros.data);
+        const dataPartida = new Date(p.dateEvent);
+
+        if (
+          filtroData.getFullYear() !== dataPartida.getFullYear() ||
+          filtroData.getMonth() !== dataPartida.getMonth() ||
+          filtroData.getDate() !== dataPartida.getDate()
+        ) {
+          return false;
+        }
+      }
+
+      if (filtros.liga && p.strLeague !== filtros.liga) return false;
 
       if (
-        filtroData.getFullYear() !== dataPartida.getFullYear() ||
-        filtroData.getMonth() !== dataPartida.getMonth() ||
-        filtroData.getDate() !== dataPartida.getDate()
-      ) {
-        return false;
-      }
-    }
-
-    if (filtros.liga && p.strLeague !== filtros.liga) return false;
-
-    if (
-      filtros.time &&
-      !(
-        p.strHomeTeam.toLowerCase().includes(filtros.time.toLowerCase()) ||
-        p.strAwayTeam.toLowerCase().includes(filtros.time.toLowerCase())
+        filtros.time &&
+        !(
+          p.strHomeTeam.toLowerCase().includes(filtros.time.toLowerCase()) ||
+          p.strAwayTeam.toLowerCase().includes(filtros.time.toLowerCase())
+        )
       )
-    )
-      return false;
+        return false;
 
-    if (filtros.status) {
-      const statusPartida = getStatusPartida(p);
-      console.log('Filtrando:', p.strHomeTeam, 'Status partida:', statusPartida, 'Filtro:', filtros.status);
-      if (filtros.status !== statusPartida) return false;
-    }
+      if (filtros.status) {
+        const statusPartida = getStatusPartida(p);
+        if (filtros.status !== statusPartida) return false;
+      }
 
-    return true;
-  });
-  
-  console.log('Partidas após filtro:', partidasFiltradas);
-  return partidasFiltradas;
-};
+      return true;
+    });
+    
+    return partidasFiltradas;
+  };
+
   const partidasOrdenadas = filtrarPartidas().sort((a, b) => {
     const horaA = ajustarHorarioBrasil(a.strTime);
     const horaB = ajustarHorarioBrasil(b.strTime);
@@ -243,20 +263,24 @@ const filtrarPartidas = () => {
     return acc;
   }, {});
 
-  const formatarData = (dataStr) => {
-    const data = new Date(dataStr);
-    const options = { 
+const formatarData = (dataStr) => {
+  try {
+    const dataUTC = new Date(dataStr + 'T12:00:00Z'); 
+    
+    const dataBrasil = new Date(dataUTC.getTime() - (3 * 60 * 60 * 1000));
+    
+    return dataBrasil.toLocaleDateString('pt-BR', { 
       weekday: 'long', 
       day: 'numeric', 
       month: 'long', 
-      year: 'numeric',
-      timeZone: 'America/Sao_Paulo'
-    };
-    return data.toLocaleDateString('pt-BR', options);
-  };
+      year: 'numeric' 
+    });
+  } catch (error) {
+    return dataStr;
+  }
+};
   
   return (
-
     <div className="partidas-container">
       <div className="hero-section">
         <div className="hero-content">
@@ -264,11 +288,11 @@ const filtrarPartidas = () => {
           <p>Acompanhe todas as partidas, estatísticas e notícias do futebol feminino.<br />
           Celebramos o talento, a paixão e a força das mulheres no esporte.</p>
           <div className="hero-actions">
-            <a href="#" className="icon-btn">
+            <a href="/Salvo" className="icon-btn">
               <i className="fas fa-play-circle"></i>
-              Encontrar partidas ao vivo
+              Ver meus jogos Salvos
             </a>
-            <a href="#" className="icon-btn">
+            <a href="#" className="icon-btn" onClick={handleCalendarioClick}>
               <i className="fas fa-calendar-alt"></i>
               Calendário de jogos
             </a>
@@ -276,7 +300,7 @@ const filtrarPartidas = () => {
         </div>
       </div>
 
-      <div className="filtros-section">
+      <div ref={partidasSectionRef} className="filtros-section">
         <h2>Todas as partidas</h2>
         <p className="subtitulo">Acompanhe os jogos mais importantes de futebol feminino</p>
         
@@ -384,9 +408,9 @@ const filtrarPartidas = () => {
                       
                       <div className="placar">
                         {status === "proxima" ? (
-                          <span className="partida-horario">
-                            {p.strTime ? ajustarHorarioBrasil(p.strTime).substring(0, 5) : '--:--'}
-                          </span>
+                            <span className="partida-horario">
+                              {ajustarHorarioBrasil(p.strTime, status)}
+                            </span>
                         ) : (
                           <>
                             <span className="placar-numero">{p.intHomeScore !== null ? p.intHomeScore : '-'}</span>

@@ -24,7 +24,7 @@ export const escudosTimes = {
   'AD Taubaté Feminino' : 'https://upload.wikimedia.org/wikipedia/pt/9/91/Escudo_do_Taubat%C3%A9_Futebol_Feminino.png',
   'Bragantino Feminino' : 'https://www.futbox.com/img/v1/43c/2d3/5f8/3d4/d46917fcb15759ae7b73_zoom.png',
   'Realidade Jovem Feminino' : 'https://www.ogol.com.br/img_icon/logos/equipas/244772_imgbank_1712575877.png',
-  'UDA-AL Feminino' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9d7KPkgbjcMJGZboITnqFrYusxD-iMFjtIQ&s',
+  'UDA-AL Feminino' : 'https://upload.wikimedia.org/wikipedia/pt/b/ba/UDA_Alagoas.png',
   'Coritiba Feminino' : 'https://cdn-img.zerozero.pt/img/logos/equipas/2235_imgbank_1683624576.png',  
   'Toledo Feminino' : 'https://www.ogol.com.br/img/logos/equipas/13691_imgbank.png',
   'Brasil de Farroupilha Feminino' : 'https://www.ogol.com.br/img_icon/logos/equipas/11646_imgbank_1688481819.png',
