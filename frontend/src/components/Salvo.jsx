@@ -1,30 +1,18 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import "../styles/Salvo.css";
+import { traduzirNome } from '../utils/traduzir';
+import { getEscudoTime } from '../utils/escudos';
 
 function Salvo() {
   const [partidasSalvas, setPartidasSalvas] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
   const [mostrarModalExclusao, setMostrarModalExclusao] = useState(false);
+  const [abaAtiva, setAbaAtiva] = useState("proximas");
   
   const [usuario] = useState(localStorage.getItem('username') || '');
 
-  useEffect(() => {
-    if (usuario) {
-      carregarPartidasSalvas();
-    } else {
-      setErro("Usuário não está logado");
-      setCarregando(false);
-    }
-  }, [usuario]);
-
   const carregarPartidasSalvas = () => {
-    if (!usuario) {
-      setErro("Usuário não está logado");
-      setCarregando(false);
-      return;
-    }
-
-    console.log("Carregando partidas salvas para:", usuario);
     setCarregando(true);
     
     fetch(`http://localhost:5000/partidas/salvas/${usuario}`)
@@ -36,7 +24,13 @@ function Salvo() {
       })
       .then((data) => {
         console.log("Partidas salvas recebidas:", data);
-        setPartidasSalvas(data);
+        const partidasTraduzidas = data.map(partida => ({
+          ...partida,
+          strHomeTeam: traduzirNome(partida.strHomeTeam),
+          strAwayTeam: traduzirNome(partida.strAwayTeam),
+          strLeague: traduzirNome(partida.strLeague)
+        }));
+        setPartidasSalvas(partidasTraduzidas);
         setCarregando(false);
       })
       .catch((err) => {
@@ -45,6 +39,86 @@ function Salvo() {
         setCarregando(false);
       });
   };
+
+  useEffect(() => {
+    if (usuario) {
+      carregarPartidasSalvas();
+    } else {
+      setErro("Usuário não está logado");
+      setCarregando(false);
+    }
+  }, [usuario]); 
+
+  const ajustarHorarioBrasil = (horaUTC, status = "proxima") => {
+    if (!horaUTC) {
+      return status === "proxima" ? "--" : "--:--";
+    }
+    
+    const [hours, minutes] = horaUTC.split(':');
+    let horasBrasil = parseInt(hours) - 3;
+    
+    if (horasBrasil < 0) {
+      horasBrasil += 24;
+    }
+    
+    return `${horasBrasil.toString().padStart(2, '0')}:${minutes}`;
+  };
+
+  const getStatusPartida = useCallback((partida) => {
+    if (partida.status) {
+      const statusMap = {
+        'proximas': 'proxima',
+        'ao_vivo': 'ao-vivo', 
+        'finalizadas': 'finalizada'
+      };
+      return statusMap[partida.status] || 'proxima';
+    }
+    
+    const agora = new Date();
+
+    const homeScore = partida.intHomeScore !== null && partida.intHomeScore !== undefined 
+      ? partida.intHomeScore 
+      : (partida.homeScore !== null && partida.homeScore !== undefined 
+        ? partida.homeScore 
+        : null);
+        
+    const awayScore = partida.intAwayScore !== null && partida.intAwayScore !== undefined 
+      ? partida.intAwayScore 
+      : (partida.awayScore !== null && partida.awayScore !== undefined 
+        ? partida.awayScore 
+        : null);
+    
+    if (homeScore !== null && awayScore !== null) {
+      return "finalizada";
+    }
+    
+    if (!partida.dateEvent || !partida.strTime) {
+      return "proxima";
+    }
+    
+    try {
+      const horaBrasil = ajustarHorarioBrasil(partida.strTime);
+      const dataPartidaStr = `${partida.dateEvent}T${horaBrasil}`;
+      const dataPartida = new Date(dataPartidaStr);
+      
+      if (isNaN(dataPartida.getTime())) {
+        return "proxima";
+      }
+      
+      const dataFimPartida = new Date(dataPartida.getTime() + (2 * 60 * 60 * 1000));
+      
+      if (agora < dataPartida) {
+        return "proxima";
+      } else if (agora >= dataPartida && agora <= dataFimPartida) {
+        return "ao-vivo";
+      } else {
+        return "finalizada";
+      }
+      
+    } catch {
+      return "proxima";
+    }
+  }, []);
 
   const removerPartida = async (idEvent) => {
     if (!usuario) {
@@ -106,7 +180,6 @@ function Salvo() {
       
       if (result.success) {
         alert("Conta excluída com sucesso!");
-        // Limpa localStorage e redireciona para login
         localStorage.removeItem('token');
         localStorage.removeItem('username');
         window.location.href = '/login';
@@ -125,166 +198,215 @@ function Salvo() {
     window.location.href = '/login';
   };
 
+  const formatarData = (dataString) => {
+    if (!dataString) return "Data não disponível";
+    const data = new Date(dataString);
+    return data.toLocaleDateString("pt-BR", { 
+      weekday: 'short', 
+      day: '2-digit', 
+      month: '2-digit'
+    });
+  };
+
+  const partidasFiltradas = partidasSalvas.filter((partida) => {
+    const status = getStatusPartida(partida);
+    return abaAtiva === "proximas" ? status === "proxima" : status === "finalizada";
+  });
+
+  const proximasCount = partidasSalvas.filter((p) => getStatusPartida(p) === "proxima").length;
+  const finalizadasCount = partidasSalvas.filter((p) => getStatusPartida(p) === "finalizada").length;
+
   if (carregando) {
     return (
-      <div style={{ padding: '20px' }}>
-        <h1>Partidas Salvas</h1>
-        <p>Carregando partidas salvas...</p>
+      <div className="salvo-container">
+        <div className="loading">
+          <div className="spinner"></div>
+          <p>Carregando partidas salvas...</p>
+        </div>
       </div>
     );
   }
 
   if (erro) {
     return (
-      <div style={{ padding: '20px' }}>
-        <h1>Partidas Salvas</h1>
-        <p style={{ color: 'red' }}>{erro}</p>
-        <button onClick={carregarPartidasSalvas}>
-          Tentar Novamente
-        </button>
+      <div className="salvo-container">
+        <div className="error-container">
+          <h4>Erro</h4>
+          <p>{erro}</p>
+          <button className="btn-tentar-novamente" onClick={carregarPartidasSalvas}>
+            Tentar Novamente
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+    <div className="salvo-container">
+      {/* Header */}
+      <div className="salvo-header">
         <h1>Partidas Salvas</h1>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button 
-            onClick={logout}
-            style={{
-              backgroundColor: '#666',
-              color: 'white',
-              border: 'none',
-              padding: '8px 16px',
-              borderRadius: '5px',
-              cursor: 'pointer'
-            }}
-          >
-            Sair
-          </button>
-          <button 
-            onClick={() => setMostrarModalExclusao(true)}
-            style={{
-              backgroundColor: '#ff4444',
-              color: 'white',
-              border: 'none',
-              padding: '8px 16px',
-              borderRadius: '5px',
-              cursor: 'pointer'
-            }}
-          >
-            Excluir Minha Conta
-          </button>
-        </div>
+        <p>Gerencie suas partidas favoritas</p>
       </div>
 
-      <p>Usuário: <strong>{usuario}</strong></p>
-      <p>Total de partidas salvas: {partidasSalvas.length}</p>
-      
-      {partidasSalvas.length === 0 ? (
-        <p>Nenhuma partida salva.</p>
-      ) : (
-        <div>
-          <h2>Lista de Partidas Salvas:</h2>
-          <table border="1" style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#f0f0f0' }}>
-                <th style={{ padding: '8px', textAlign: 'left' }}>ID</th>
-                <th style={{ padding: '8px', textAlign: 'left' }}>Partida</th>
-                <th style={{ padding: '8px', textAlign: 'left' }}>Data</th>
-                <th style={{ padding: '8px', textAlign: 'left' }}>Hora</th>
-                <th style={{ padding: '8px', textAlign: 'left' }}>Liga</th>
-                <th style={{ padding: '8px', textAlign: 'left' }}>Salvo em</th>
-                <th style={{ padding: '8px', textAlign: 'left' }}>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {partidasSalvas.map((partida) => (
-                <tr key={partida.idEvent} style={{ borderBottom: '1px solid #ddd' }}>
-                  <td style={{ padding: '8px' }}>{partida.idEvent}</td>
-                  <td style={{ padding: '8px' }}>
-                    <strong>{partida.strHomeTeam}</strong> vs <strong>{partida.strAwayTeam}</strong>
-                  </td>
-                  <td style={{ padding: '8px' }}>{partida.dateEvent}</td>
-                  <td style={{ padding: '8px' }}>{partida.strTime || 'N/A'}</td>
-                  <td style={{ padding: '8px' }}>{partida.strLeague}</td>
-                  <td style={{ padding: '8px' }}>
-                    {partida.data_criacao ? new Date(partida.data_criacao).toLocaleString('pt-BR') : 'N/A'}
-                  </td>
-                  <td style={{ padding: '8px' }}>
-                    <button 
-                      onClick={() => removerPartida(partida.idEvent)}
-                      style={{
-                        backgroundColor: '#ff4444',
-                        color: 'white',
-                        border: 'none',
-                        padding: '5px 10px',
-                        borderRadius: '3px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Remover
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {/* Abas */}
+      <div className="abas-container">
+        <button
+          onClick={() => setAbaAtiva("proximas")}
+          className={`aba ${abaAtiva === "proximas" ? "ativa" : ""}`}
+        >
+          Próximas ({proximasCount})
+        </button>
+        <button
+          onClick={() => setAbaAtiva("finalizadas")}
+          className={`aba ${abaAtiva === "finalizadas" ? "ativa" : ""}`}
+        >
+          Finalizadas ({finalizadasCount})
+        </button>
+      </div>
 
-      {/* Modal de Confirmação de Exclusão */}
+      <div className="partidas-lista">
+        {partidasFiltradas.length === 0 ? (
+          <div className="partida-vazia">
+            <p>
+              {abaAtiva === "proximas" 
+                ? "Nenhuma partida próxima salva." 
+                : "Nenhuma partida finalizada salva."}
+            </p>
+          </div>
+        ) : (
+          partidasFiltradas.map((partida) => {
+            const status = getStatusPartida(partida);
+            const isProxima = status === "proxima";
+            const isFinalizada = status === "finalizada";
+            
+            const homeScore = partida.intHomeScore !== null && partida.intHomeScore !== undefined 
+              ? partida.intHomeScore 
+              : (partida.homeScore !== null && partida.homeScore !== undefined 
+                ? partida.homeScore 
+                : null);
+                
+            const awayScore = partida.intAwayScore !== null && partida.intAwayScore !== undefined 
+              ? partida.intAwayScore 
+              : (partida.awayScore !== null && partida.awayScore !== undefined 
+                ? partida.awayScore 
+                : null);
+                
+            const placarDisponivel = homeScore !== null && awayScore !== null;
+            
+            return (
+              <div key={partida.idEvent} className="partida-card">
+                <div className="partida-header">
+                  <span className="liga">{partida.strLeague}</span>
+                  <span className={`status ${isProxima ? "proxima" : "finalizada"}`}>
+                    {isProxima ? "PRÓXIMA" : "FINALIZADA"}
+                  </span>
+                </div>
+
+                <div className="partida-content">
+                  <div className="time time-casa">
+                    <div className="time-logo">
+                      <img
+                        src={getEscudoTime(partida.strHomeTeam)} 
+                        alt={partida.strHomeTeam}
+                        className="escudo-time"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                      <div className="escudo-placeholder" style={{display: 'none'}}>
+                        <i className="fas fa-shield-alt"></i>
+                      </div>
+                    </div>
+                    <span className="time-nome">{partida.strHomeTeam}</span>
+                  </div>
+
+                  <div className="partida-info">
+                    {isProxima ? (
+                      <>
+                        <span className="hora">{ajustarHorarioBrasil(partida.strTime)}</span>
+                        <span className="data">{formatarData(partida.dateEvent)}</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="placar">
+                          <span>{placarDisponivel ? homeScore : "-"}</span>
+                          <span className="divisor">×</span>
+                          <span>{placarDisponivel ? awayScore : "-"}</span>
+                        </div>
+                        <span className="data">{formatarData(partida.dateEvent)}</span>
+                      </>
+                    )}
+                  </div>
+                  
+                  <div className="time time-visitante">
+                    <div className="time-logo">
+                      <img
+                        src={getEscudoTime(partida.strAwayTeam)} 
+                        alt={partida.strAwayTeam}
+                        className="escudo-time"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                      <div className="escudo-placeholder" style={{display: 'none'}}>
+                        <i className="fas fa-shield-alt"></i>
+                      </div>
+                    </div>
+                    <span className="time-nome">{partida.strAwayTeam}</span>
+                  </div>
+                </div>
+
+                <div className="partida-actions">
+                  <button 
+                    className="btn-remover"
+                    onClick={() => removerPartida(partida.idEvent)}
+                  >
+                    <span>Remover</span>
+                  </button>
+                </div>
+
+                <div className="partida-footer">
+                  <span>Salvo no dia {partida.data_criacao ? formatarData(partida.data_criacao) : "Data não disponível"}</span>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      <div className="acoes-container">
+        <button className="btn-logout" onClick={logout}>
+          Sair
+        </button>
+        <button 
+          className="btn-excluir-conta"
+          onClick={() => setMostrarModalExclusao(true)}
+        >
+          Excluir Minha Conta
+        </button>
+      </div>
+
       {mostrarModalExclusao && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            padding: '20px',
-            borderRadius: '10px',
-            width: '400px',
-            textAlign: 'center'
-          }}>
+        <div className="modal-overlay">
+          <div className="modal-content">
             <h3>Excluir Conta</h3>
             <p>Tem certeza que deseja excluir sua conta?</p>
-            <p style={{ color: 'red', fontWeight: 'bold' }}>
+            <p className="warning-text">
               Esta ação não pode ser desfeita! Todas as suas partidas salvas serão perdidas.
             </p>
-            <div style={{ marginTop: '20px', display: 'flex', gap: '10px', justifyContent: 'center' }}>
+            <div className="modal-actions">
               <button 
+                className="btn-cancelar"
                 onClick={() => setMostrarModalExclusao(false)}
-                style={{
-                  backgroundColor: '#666',
-                  color: 'white',
-                  border: 'none',
-                  padding: '10px 20px',
-                  borderRadius: '5px',
-                  cursor: 'pointer'
-                }}
               >
                 Cancelar
               </button>
               <button 
+                className="btn-confirmar-exclusao"
                 onClick={excluirConta}
-                style={{
-                  backgroundColor: '#ff4444',
-                  color: 'white',
-                  border: 'none',
-                  padding: '10px 20px',
-                  borderRadius: '5px',
-                  cursor: 'pointer'
-                }}
               >
                 Sim, Excluir Conta
               </button>
