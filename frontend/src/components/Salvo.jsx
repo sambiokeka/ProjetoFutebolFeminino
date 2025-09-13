@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import "../styles/Salvo.css"; 
 
 function Salvo() {
   const [partidasSalvas, setPartidasSalvas] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
   const [usuario] = useState("user123");
+  const [abaAtiva, setAbaAtiva] = useState("proximas");
 
   useEffect(() => {
     carregarPartidasSalvas();
@@ -60,84 +62,179 @@ function Salvo() {
     }
   };
 
+  const isUpcoming = (dateEvent, strTime) => {
+    if (!dateEvent) return false;
+    
+    const [hours, minutes] = strTime ? strTime.split(':') : [0, 0];
+    const matchDate = new Date(dateEvent);
+    matchDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    
+    return matchDate > new Date();
+  };
+
+  const formatarData = (dataString) => {
+    if (!dataString) return "Data não disponível";
+    const data = new Date(dataString);
+    return data.toLocaleDateString("pt-BR", { 
+      weekday: 'short', 
+      day: '2-digit', 
+      month: '2-digit'
+    });
+  };
+
+  const formatarHora = (horaString) => {
+    if (!horaString) return "--:--";
+    const [hours, minutes] = horaString.split(':');
+    return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+  };
+
+  const partidasFiltradas = partidasSalvas.filter((partida) => {
+    const upcoming = isUpcoming(partida.dateEvent, partida.strTime);
+    return abaAtiva === "proximas" ? upcoming : !upcoming;
+  });
+
+  const proximasCount = partidasSalvas.filter((p) => isUpcoming(p.dateEvent, p.strTime)).length;
+  const finalizadasCount = partidasSalvas.length - proximasCount;
+
   if (carregando) {
     return (
-      <div style={{ padding: '20px' }}>
-        <h1>Partidas Salvas</h1>
-        <p>Carregando partidas salvas...</p>
+      <div className="salvo-container">
+        <div className="loading">
+          <div className="spinner"></div>
+          <p>Carregando partidas salvas...</p>
+        </div>
       </div>
     );
   }
 
   if (erro) {
     return (
-      <div style={{ padding: '20px' }}>
-        <h1>Partidas Salvas</h1>
-        <p style={{ color: 'red' }}>{erro}</p>
-        <button onClick={carregarPartidasSalvas}>
-          Tentar Novamente
-        </button>
+      <div className="salvo-container">
+        <div className="error-container">
+          <h4>Erro</h4>
+          <p>{erro}</p>
+          <button className="btn-tentar-novamente" onClick={carregarPartidasSalvas}>
+            Tentar Novamente
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1>Partidas Salvas - VISUALIZAÇÃO BRUTA</h1>
-      <p>Usuário: {usuario}</p>
-      <p>Total de partidas salvas: {partidasSalvas.length}</p>
-      
-      {partidasSalvas.length === 0 ? (
-        <p>Nenhuma partida salva.</p>
-      ) : (
-        <div>
-          <h2>Lista de Partidas Salvas:</h2>
-          <table border="1" style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#f0f0f0' }}>
-                <th style={{ padding: '8px', textAlign: 'left' }}>ID</th>
-                <th style={{ padding: '8px', textAlign: 'left' }}>Partida</th>
-                <th style={{ padding: '8px', textAlign: 'left' }}>Data</th>
-                <th style={{ padding: '8px', textAlign: 'left' }}>Hora</th>
-                <th style={{ padding: '8px', textAlign: 'left' }}>Liga</th>
-                <th style={{ padding: '8px', textAlign: 'left' }}>Salvo em</th>
-                <th style={{ padding: '8px', textAlign: 'left' }}>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {partidasSalvas.map((partida) => (
-                <tr key={partida.idEvent} style={{ borderBottom: '1px solid #ddd' }}>
-                  <td style={{ padding: '8px' }}>{partida.idEvent}</td>
-                  <td style={{ padding: '8px' }}>
-                    <strong>{partida.strHomeTeam}</strong> vs <strong>{partida.strAwayTeam}</strong>
-                  </td>
-                  <td style={{ padding: '8px' }}>{partida.dateEvent}</td>
-                  <td style={{ padding: '8px' }}>{partida.strTime || 'N/A'}</td>
-                  <td style={{ padding: '8px' }}>{partida.strLeague}</td>
-                  <td style={{ padding: '8px' }}>
-                    {partida.data_criacao ? new Date(partida.data_criacao).toLocaleString('pt-BR') : 'N/A'}
-                  </td>
-                  <td style={{ padding: '8px' }}>
-                    <button 
-                      onClick={() => removerPartida(partida.idEvent)}
-                      style={{
-                        backgroundColor: '#ff4444',
-                        color: 'white',
-                        border: 'none',
-                        padding: '5px 10px',
-                        borderRadius: '3px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Remover
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="salvo-container">
+      {/* Hero Section com fundo rosa */}
+      <div className="hero-section">
+        <div className="hero-content">
+          <h1>Jogos Salvos</h1>
+          <p>Veja as partidas que você escolheu acompanhar</p>
         </div>
-      )}
+      </div>
+
+      {/* Abas */}
+      <div className="abas-container">
+        <button
+          onClick={() => setAbaAtiva("proximas")}
+          className={`aba ${abaAtiva === "proximas" ? "ativa" : ""}`}
+        >
+          Próximas ({proximasCount})
+        </button>
+        <button
+          onClick={() => setAbaAtiva("finalizadas")}
+          className={`aba ${abaAtiva === "finalizadas" ? "ativa" : ""}`}
+        >
+          Finalizadas ({finalizadasCount})
+        </button>
+      </div>
+
+      {/* Lista de Partidas */}
+      <div className="partidas-lista">
+        {partidasFiltradas.length === 0 ? (
+          <div className="partida-vazia">
+            <p>
+              {abaAtiva === "proximas" 
+                ? "Nenhuma partida próxima salva." 
+                : "Nenhuma partida finalizada salva."}
+            </p>
+          </div>
+        ) : (
+          partidasFiltradas.map((partida) => {
+            const isProxima = isUpcoming(partida.dateEvent, partida.strTime);
+            return (
+              <div key={partida.idEvent} className="partida-card">
+                <div className="partida-header">
+                  <span className="liga">{partida.strLeague}</span>
+                  <span className={`status ${isProxima ? "proxima" : "finalizada"}`}>
+                    {isProxima ? "PRÓXIMA" : "FINALIZADA"}
+                  </span>
+                </div>
+
+                <div className="partida-content">
+                  <div className="time time-casa">
+                    <div className="time-logo">
+                      <img
+                        src={`/abstract-geometric-shapes.png?height=80&width=80&query=${partida.strHomeTeam} logo`}
+                        alt={partida.strHomeTeam}
+                        onError={(e) => {
+                          e.target.src = `https://via.placeholder.com/80/EFEFEF/666666?text=${partida.strHomeTeam?.charAt(0) || 'T'}`;
+                        }}
+                      />
+                    </div>
+                    <span className="time-nome">{partida.strHomeTeam}</span>
+                  </div>
+
+                  <div className="partida-info">
+                    {isProxima ? (
+                      <>
+                        <span className="hora">{formatarHora(partida.strTime)}</span>
+                        <span className="data">{formatarData(partida.dateEvent)}</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="placar">
+                          <span>{partida.intHomeScore !== null ? partida.intHomeScore : "-"}</span>
+                          <span className="divisor">×</span>
+                          <span>{partida.intAwayScore !== null ? partida.intAwayScore : "-"}</span>
+                        </div>
+                        <span className="data">{formatarData(partida.dateEvent)}</span>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="time time-visitante">
+                    <div className="time-logo">
+                      <img
+                        src={`/abstract-geometric-shapes.png?height=80&width=80&query=${partida.strAwayTeam} logo`}
+                        alt={partida.strAwayTeam}
+                        onError={(e) => {
+                          e.target.src = `https://via.placeholder.com/80/EFEFEF/666666?text=${partida.strAwayTeam?.charAt(0) || 'T'}`;
+                        }}
+                      />
+                    </div>
+                    <span className="time-nome">{partida.strAwayTeam}</span>
+                  </div>
+                </div>
+
+                <div className="partida-actions">
+                  <button className="btn-lembrar">
+                    <span>Lembrar-me</span>
+                  </button>
+                  <button 
+                    className="btn-remover"
+                    onClick={() => removerPartida(partida.idEvent)}
+                  >
+                    <span>Remover</span>
+                  </button>
+                </div>
+
+                <div className="partida-footer">
+                  <span>Salvo no dia {partida.data_criacao ? formatarData(partida.data_criacao) : "31/08/2025"}</span>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }

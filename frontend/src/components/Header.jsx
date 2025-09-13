@@ -29,7 +29,7 @@ const Header = () => {
             <span className="navbar-toggler-icon"></span>
           </button>
 
-          <div className={`collapse navbar-collapse ${menuOpen ? 'show' : ''}`}>
+          <div className={`navbar-collapse ${menuOpen ? 'show' : 'hidden'} md:flex`}>
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
                 <a className="nav-link" href="/" onClick={() => setMenuOpen(false)}>Início</a>
