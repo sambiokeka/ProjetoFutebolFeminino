@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import '../styles/Partidas.css';
 import { traduzirNome } from '../utils/traduzir';
 import { getEscudoTime } from '../utils/escudos';
+import Popup from '../components/Popup';
 
 function Partidas() {
   const [partidas, setPartidas] = useState([]);
@@ -12,10 +13,12 @@ function Partidas() {
     time: "",
     status: ""
   });
+  const [showPopup, setShowPopup] = useState(false);
+  const [partidaParaSalvar, setPartidaParaSalvar] = useState(null);
 
   const partidasSectionRef = useRef(null);
   const [usuario] = useState(localStorage.getItem('username') || '');
-  
+
   useEffect(() => {
     carregarPartidas();
     carregarPartidasSalvas();
@@ -75,31 +78,48 @@ function Partidas() {
       .catch((err) => console.error("Erro ao carregar partidas salvas:", err));
   };
 
-  const salvarPartida = async (idEvent) => {
-    try {
-      const response = await fetch("http://localhost:5000/partidas/salvar", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          idEvent: idEvent,
-          idUsuario: usuario
-        }),
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        alert("Partida salva! Você será notificado antes do início.");
-        carregarPartidasSalvas();
-      } else {
-        alert(result.error || "Erro ao salvar partida");
-      }
-    } catch (error) {
-      console.error("Erro:", error);
-      alert("Erro ao conectar com o servidor");
+ const salvarPartida = async (idEvent) => {
+  if (!usuario) {
+    setPartidaParaSalvar(idEvent);
+    setShowPopup(true); 
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:5000/partidas/salvar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        idEvent: idEvent,
+        idUsuario: usuario
+      }),
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      carregarPartidasSalvas();
+    } else {
+      alert(result.error || "Erro ao salvar partida");
     }
+  } catch (error) {
+    console.error("Erro:", error);
+    alert("Erro ao conectar com o servidor");
+  }
+};
+
+  const handleLoginPopupClose = () => {
+    setShowPopup(false);
+    setPartidaParaSalvar(null);
+  };
+
+  const handleLoginRedirect = () => {
+    setShowPopup(false);
+    // Redireciona para login e depois volta para salvar a partida
+    localStorage.setItem('partidaParaSalvar', partidaParaSalvar);
+    window.location.href = '/login';
   };
 
   const removerPartida = async (idEvent) => {
@@ -118,7 +138,6 @@ function Partidas() {
       const result = await response.json();
       
       if (result.success) {
-        alert("Partida removida da sua lista.");
         carregarPartidasSalvas();
       } else {
         alert(result.error || "Erro ao remover partida");
@@ -282,6 +301,12 @@ const formatarData = (dataStr) => {
   
   return (
     <div className="partidas-container">
+      <Popup 
+      isOpen={showPopup}
+      onClose={handleLoginPopupClose}
+      onLoginRedirect={handleLoginRedirect}
+      />
+
       <div className="hero-section">
         <div className="hero-content">
           <h1>O Futuro do Futebol Feminino</h1>

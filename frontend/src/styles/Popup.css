@@ -1,0 +1,148 @@
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.popup-container {
+  background: white;
+  border-radius: 16px;
+  padding: 0;
+  max-width: 450px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: popupIn 0.3s ease-out;
+}
+
+@keyframes popupIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.popup-header h2 {
+  margin: 0;
+  color: #2d3748;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.popup-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.popup-content p {
+    font-size: 0.2rem;
+}
+
+.popup-close:hover {
+  background-color: #f8f9fa;
+  color: #495057;
+}
+
+.popup-content {
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.popup-icon {
+  font-size: 3rem;
+  color: #6f42c1;
+  margin-bottom: 1.5rem;
+}
+
+.popup-content p {
+  margin: 0.5rem 0;
+  color: #4a5568;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.popup-footer {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.5rem 1.5rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.popup-btn-cancel,
+.popup-btn-login {
+  flex: 1;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.popup-btn-cancel {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  border: 2px solid #e9ecef;
+}
+
+.popup-btn-cancel:hover {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.popup-btn-login {
+  background: linear-gradient(135deg, #6f42c1 0%, #8b5cf6 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3);
+}
+
+.popup-btn-login:hover {
+  background: linear-gradient(135deg, #5a32a3 0%, #7c3aed 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(111, 66, 193, 0.4);
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .popup-container {
+    margin: 1rem;
+  }
+  
+  .popup-footer {
+    flex-direction: column;
+  }
+  
+  .popup-content {
+    padding: 1.5rem 1rem;
+  }
+  
+  .popup-header {
+    padding: 1rem 1rem 0.5rem;
+  }
+}

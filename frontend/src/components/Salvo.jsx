@@ -256,7 +256,7 @@ function Salvo() {
             width: '400px',
             textAlign: 'center'
           }}>
-            <h3>⚠️ Excluir Conta</h3>
+            <h3>Excluir Conta</h3>
             <p>Tem certeza que deseja excluir sua conta?</p>
             <p style={{ color: 'red', fontWeight: 'bold' }}>
               Esta ação não pode ser desfeita! Todas as suas partidas salvas serão perdidas.

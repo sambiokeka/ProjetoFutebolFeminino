@@ -1,13 +1,48 @@
-// PrivateRoute.jsx
-import React from "react";
-import { Navigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import Popup from './Popup';
 
-export default function PrivateRoute({ children }) {
-  const token = localStorage.getItem("token"); 
+const PrivateRoute = ({ children }) => {
+  const [showPopup, setShowPopup] = useState(false);
+  const isAuthenticated = localStorage.getItem('token');
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setShowPopup(true);
+    }
+  }, [isAuthenticated]);
+
+  const handleLogin = () => {
+    window.location.href = '/login';
+  };
+
+  const handleClose = () => {
+    setShowPopup(false);
+    window.location.href = '/';
+  };
+
+  if (isAuthenticated) {
+    return children;
   }
 
-  return children;
-}
+  return (
+    <>
+      <Popup 
+        isOpen={showPopup}
+        onClose={handleClose}
+        onLoginRedirect={handleLogin}
+      />
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '50vh',
+        color: '#666',
+        fontSize: '1.1rem'
+      }}>
+        <p>Verificando acesso...</p>
+      </div>
+    </>
+  );
+};
+
+export default PrivateRoute;
