@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import '../styles/Partidas.css';
 import { traduzirNome } from '../utils/traduzir';
 import { getEscudoTime } from '../utils/escudos';
@@ -131,7 +131,7 @@ const ligasUnicas = [...new Set(partidas.map((p) => p.strLeague))].sort((a, b) =
     return `${horasBrasil.toString().padStart(2, '0')}:${minutes}`;
   };
 
-const getStatusPartida = (partida) => {
+const getStatusPartida = useCallback((partida) => {
   if (partida.status) {
     const statusMap = {
       'proximas': 'proxima',
@@ -151,7 +151,7 @@ const getStatusPartida = (partida) => {
   }
   
   try {
-    const horaBrasil = ajustarHorarioBrasil(partida.strTime, partida.dateEvent).horaAjustada;
+    const horaBrasil = ajustarHorarioBrasil(partida.strTime);
     const dataPartidaStr = `${partida.dateEvent}T${horaBrasil}`;
     const dataPartida = new Date(dataPartidaStr);
     
@@ -172,10 +172,9 @@ const getStatusPartida = (partida) => {
   } catch {
     return "proxima";
   }
-};
+}, []);
 
 useEffect(() => {
-  
   const partidasAoVivoBackend = partidas.filter(p => p.status === 'ao_vivo');
   console.log('Partidas com status "ao_vivo" no backend:', partidasAoVivoBackend);
   
@@ -185,7 +184,7 @@ useEffect(() => {
                 'Backend status:', p.status, 
                 'Frontend status:', statusFrontend);
   });
-}, [partidas]);
+}, [partidas, getStatusPartida]);
 
 
   const isPartidaSalva = (idEvent) => {
