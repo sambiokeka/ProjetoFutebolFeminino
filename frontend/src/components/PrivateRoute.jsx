@@ -35,7 +35,7 @@ const PrivateRoute = ({ children }) => {
         display: 'flex', 
         justifyContent: 'center', 
         alignItems: 'center', 
-        height: '50vh',
+        height: '80vh',
         color: '#666',
         fontSize: '1.1rem'
       }}>
