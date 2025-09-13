@@ -1,4 +1,3 @@
-# monitor.py
 import time
 import threading
 import requests

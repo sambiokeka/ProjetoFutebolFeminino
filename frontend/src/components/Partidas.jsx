@@ -169,7 +169,7 @@ const getStatusPartida = (partida) => {
       return "finalizada";
     }
     
-  } catch (error) {
+  } catch {
     return "proxima";
   }
 };

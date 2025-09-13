@@ -19,6 +19,12 @@ export const traducoes = {
     'Ceará Women': 'Ceará Feminino',
     'Fortaleza Women': 'Fortaleza Feminino',
     'Goiás Women': 'Goiás Feminino',
+    'AD Taubaté Women' : 'AD Taubaté Feminino',
+    'Bragantino Women' : 'Bragantino Feminino',
+    '3B da Amazônia' : '3B da Amazônia Feminino',
+    '3B da Amazônia Women' : '3B da Amazônia Feminino',
+    'Juventude-RS Feminino' : 'Juventude Feminino',
+
 
     'Sport Women': 'Sport Feminino',
     'Vitória Women': 'Vitória Feminino',

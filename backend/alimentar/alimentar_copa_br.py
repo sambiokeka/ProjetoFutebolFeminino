@@ -1,4 +1,3 @@
-# alimentar_copa_br.py
 import sqlite3
 from datetime import datetime, timedelta
 
@@ -6,10 +5,9 @@ from datetime import datetime, timedelta
 conn = sqlite3.connect('futebol_feminino.db')
 cursor = conn.cursor()
 
-# Dados para a Copa do Brasil Feminina 2025 (Exemplo com a fase de oitavas de final)
 # Dados para a Copa do Brasil Feminina 2025
 dados_copa_do_brasil = [
-    # 3ª Fase (Resultados de agosto)
+    # 3ª Fase
     {
         'idEvent': 'copa_br_f3_01', 'strEvent': 'Atlético Piauiense Women vs São José-SP Women',
         'dateEvent': '2025-08-05', 'strTime': '15:00:00', 'strSeason': '2025',
@@ -351,7 +349,7 @@ dados_copa_do_brasil = [
         'idLeague': 'copa_br_2025', 'status': 'finalizadas'
     },
     
-    # Oitavas de Final (Já informadas por você, apenas re-organizadas)
+    # Oitavas de Final
     {
         'idEvent': 'copa_br_oitavas_01', 'strEvent': 'Sport Women vs Realidade Jovem Women',
         'dateEvent': '2025-09-16', 'strTime': '15:00:00', 'strSeason': '2025',
