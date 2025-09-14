@@ -1,0 +1,30 @@
+# Arquivos de log gerados automaticamente
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Ignora todas as pastas node_modules
+# A barra no início faz com que a regra seja aplicada a partir da raiz
+/frontend/node_modules/
+/node_modules/
+
+# Ignora as pastas de build e cache do frontend (Vite)
+/frontend/dist/
+/frontend/.vite/
+
+# Ignora as pastas de cache do backend (Python)
+/backend/__pycache__/
+/backend/venv/
+
+# Ignora pastas e arquivos de editores de código
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
