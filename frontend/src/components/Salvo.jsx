@@ -33,7 +33,6 @@ function Salvo() {
         }));
         setPartidasSalvas(partidasTraduzidas);
         
-        // Inicializar estado de notificações
         const notificacoesIniciais = {};
         partidasTraduzidas.forEach(partida => {
           notificacoesIniciais[partida.idEvent] = partida.notificacao_ativa || false;
@@ -76,7 +75,6 @@ function Salvo() {
   const ajustarDataBrasil = (dataString) => {
     if (!dataString) return new Date();
     
-    // Cria a data no UTC
     const dataUTC = new Date(dataString + 'T12:00:00Z');
     
     // Ajusta para o fuso horário do Brasil (-3 horas)
@@ -333,13 +331,11 @@ function Salvo() {
 
   return (
     <div className="salvo-container">
-      {/* Header */}
       <div className="salvo-header">
         <h1>Partidas Salvas</h1>
         <p>Gerencie suas partidas favoritas</p>
       </div>
 
-      {/* Abas */}
       <div className="abas-container">
         <button
           onClick={() => setAbaAtiva("proximas")}

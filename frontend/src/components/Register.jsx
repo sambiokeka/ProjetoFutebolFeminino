@@ -12,7 +12,6 @@ export default function RegisterForm() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
- // No handleSubmit do Register.jsx:
 const handleSubmit = async (e) => {
   e.preventDefault();
 

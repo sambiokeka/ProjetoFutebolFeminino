@@ -8,7 +8,7 @@ const Popup = ({ isOpen, onClose, onLoginRedirect }) => {
       <div className="popup-container" onClick={(e) => e.stopPropagation()}>
         <div className="popup-header">
           <h2>Conta necessária</h2>
-          <button className="popup-close" onClick={onClose}>
+          <button className="popup-close" onClick={onClose} aria-label="Fechar popup">
             <i className="fas fa-times"></i>
           </button>
         </div>
