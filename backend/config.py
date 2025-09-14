@@ -1,7 +1,12 @@
+# A chave de API da TheSportsDB.
 API_KEY = "123"
+
+# Todas as requisições serão feitas a partir desta URL.
 BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}/"
 
+# Lista de nomes das ligas de futebol feminino que serão processadas.
 LEAGUE_NAMES = ["Brazil Brasileiro Women", "International Friendlies Women", "English Womens Super League"]
+
 
 
 # Tenho que chamar os jogos por data, preciso fazer assim pq a chave q usamos da api é gratuita, então se fosse pra listar os jogos de algum campeonato usando a api ele retornario miseros 15 jogos, e são os 

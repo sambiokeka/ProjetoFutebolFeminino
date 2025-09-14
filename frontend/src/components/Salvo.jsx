@@ -9,6 +9,7 @@ function Salvo() {
   const [erro, setErro] = useState(null);
   const [mostrarModalExclusao, setMostrarModalExclusao] = useState(false);
   const [abaAtiva, setAbaAtiva] = useState("proximas");
+  const [notificacoesAtivas, setNotificacoesAtivas] = useState({});
   
   const [usuario] = useState(localStorage.getItem('username') || '');
 
@@ -31,6 +32,14 @@ function Salvo() {
           strLeague: traduzirNome(partida.strLeague)
         }));
         setPartidasSalvas(partidasTraduzidas);
+        
+        // Inicializar estado de notificações
+        const notificacoesIniciais = {};
+        partidasTraduzidas.forEach(partida => {
+          notificacoesIniciais[partida.idEvent] = partida.notificacao_ativa || false;
+        });
+        setNotificacoesAtivas(notificacoesIniciais);
+        
         setCarregando(false);
       })
       .catch((err) => {
@@ -62,6 +71,18 @@ function Salvo() {
     }
     
     return `${horasBrasil.toString().padStart(2, '0')}:${minutes}`;
+  };
+
+  const ajustarDataBrasil = (dataString) => {
+    if (!dataString) return new Date();
+    
+    // Cria a data no UTC
+    const dataUTC = new Date(dataString + 'T12:00:00Z');
+    
+    // Ajusta para o fuso horário do Brasil (-3 horas)
+    const dataBrasil = new Date(dataUTC.getTime());
+    
+    return dataBrasil;
   };
 
   const getStatusPartida = useCallback((partida) => {
@@ -98,7 +119,12 @@ function Salvo() {
     
     try {
       const horaBrasil = ajustarHorarioBrasil(partida.strTime);
-      const dataPartidaStr = `${partida.dateEvent}T${horaBrasil}`;
+      
+      // CORREÇÃO: Usar a data ajustada para o Brasil
+      const dataAjustada = ajustarDataBrasil(partida.dateEvent);
+      const dataFormatada = dataAjustada.toISOString().split('T')[0];
+      
+      const dataPartidaStr = `${dataFormatada}T${horaBrasil}`;
       const dataPartida = new Date(dataPartidaStr);
       
       if (isNaN(dataPartida.getTime())) {
@@ -119,6 +145,44 @@ function Salvo() {
       return "proxima";
     }
   }, []);
+
+  const toggleNotificacao = async (idEvent, notificacaoAtual) => {
+    if (!usuario) {
+      alert("Usuário não está logado");
+      return;
+    }
+
+    try {
+      const novaNotificacao = !notificacaoAtual;
+      
+      const response = await fetch("http://localhost:5000/partidas/salvas/notificacao", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idEvent: idEvent,
+          idUsuario: usuario,
+          notificacaoAtiva: novaNotificacao
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setNotificacoesAtivas(prev => ({
+          ...prev,
+          [idEvent]: novaNotificacao
+        }));
+        
+      } else {
+        alert(result.error || "Erro ao atualizar notificação");
+      }
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao conectar com o servidor");
+    }
+  };
 
   const removerPartida = async (idEvent) => {
     if (!usuario) {
@@ -200,12 +264,38 @@ function Salvo() {
 
   const formatarData = (dataString) => {
     if (!dataString) return "Data não disponível";
-    const data = new Date(dataString);
-    return data.toLocaleDateString("pt-BR", { 
+    
+    // Usa a mesma lógica de ajuste de fuso horário
+    const dataAjustada = ajustarDataBrasil(dataString);
+    
+    return dataAjustada.toLocaleDateString("pt-BR", { 
       weekday: 'short', 
       day: '2-digit', 
       month: '2-digit'
     });
+  };
+
+  const formatarDataCriacao = (dataCriacao) => {
+    if (!dataCriacao) return "Data não disponível";
+    
+    try {
+      // Tenta parsear a data no formato do banco (provavelmente ISO string)
+      const data = new Date(dataCriacao);
+      
+      // Verifica se a data é válida
+      if (isNaN(data.getTime())) {
+        return "Data não disponível";
+      }
+      
+      // Formata apenas a data (dia/mês) sem o dia da semana
+      return data.toLocaleDateString("pt-BR", { 
+        day: '2-digit', 
+        month: '2-digit'
+      });
+    } catch (error) {
+      console.error("Erro ao formatar data de criação:", error, dataCriacao);
+      return "Data não disponível";
+    }
   };
 
   const partidasFiltradas = partidasSalvas.filter((partida) => {
@@ -293,6 +383,7 @@ function Salvo() {
                 : null);
                 
             const placarDisponivel = homeScore !== null && awayScore !== null;
+            const notificacaoAtiva = notificacoesAtivas[partida.idEvent] || false;
             
             return (
               <div key={partida.idEvent} className="partida-card">
@@ -361,15 +452,26 @@ function Salvo() {
 
                 <div className="partida-actions">
                   <button 
+                    className={`btn-notificar ${notificacaoAtiva ? 'ativo' : ''}`}
+                    onClick={() => toggleNotificacao(partida.idEvent, notificacaoAtiva)}
+                    title={notificacaoAtiva ? "Desativar notificações" : "Ativar notificações"}
+                  >
+                    <i className={`fas ${notificacaoAtiva ? 'fa-bell' : 'fa-bell-slash'}`}></i>
+                    <span>{notificacaoAtiva ? 'Notificar' : 'Notificar'}</span>
+                  </button>
+                  
+                  <button 
                     className="btn-remover"
                     onClick={() => removerPartida(partida.idEvent)}
+                    title="Remover partida"
                   >
+                    <i className="fas fa-trash"></i>
                     <span>Remover</span>
                   </button>
                 </div>
 
                 <div className="partida-footer">
-                  <span>Salvo no dia {partida.data_criacao ? formatarData(partida.data_criacao) : "Data não disponível"}</span>
+                  <span>Salvo em {partida.data_criacao ? formatarDataCriacao(partida.data_criacao) : "Data não disponível"}</span>
                 </div>
               </div>
             );

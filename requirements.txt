@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-=======
 react-router-dom 
 
->>>>>>> apresentar
 mysql-connector-python
 
 requests
@@ -11,12 +8,8 @@ flask
 
 flask_cors
 
-<<<<<<< HEAD
-react-router-dom
-=======
 pytz 
 
 flask-jwt-extended
 
 pysqlite3
->>>>>>> apresentar

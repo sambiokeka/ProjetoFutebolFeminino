@@ -4,6 +4,7 @@
   padding: 1rem 1rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   min-height: 100vh;
+  position: relative;
 }
 
 /* ===== HEADER ===== */
@@ -239,6 +240,38 @@
   justify-content: center;
   gap: 0.8rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Botão de Notificação */
+.btn-notificar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  color: white;
+}
+
+.btn-notificar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 18px rgba(108, 117, 125, 0.3);
+}
+
+.btn-notificar.ativo {
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+}
+
+.btn-notificar.ativo:hover {
+  box-shadow: 0 5px 18px rgba(76, 175, 80, 0.3);
 }
 
 .btn-remover {
@@ -272,7 +305,7 @@
   font-size: 0.8rem;
   color: #999;
   border-top: 1px solid #eee;
-  padding-top: 0.8rem;
+  padding-top: 1.5rem;
 }
 
 /* Estados vazios */
@@ -289,6 +322,7 @@
 .partida-vazia p {
   font-size: 1.1rem;
   font-weight: 500;
+  margin-top: 1.3rem;
 }
 
 .partida-vazia i {
@@ -420,6 +454,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  min-height: 100vh;
 }
 
 .modal-content {
@@ -429,6 +464,8 @@
   max-width: 500px;
   width: 90%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-content h3 {
@@ -489,7 +526,7 @@
 /* ===================== RESPONSIVIDADE ===================== */
 @media (max-width: 768px) {
   .salvo-container {
-    padding: 1rem 0.5rem;
+    padding: 1rem 0.9rem;
   }
   
   .salvo-header h1 {
@@ -545,6 +582,11 @@
   .modal-actions {
     flex-direction: column;
   }
+  
+  .modal-content {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -556,9 +598,12 @@
     padding: 1.2rem;
   }
   
+  .btn-notificar,
   .btn-remover {
     padding: 0.7rem 1.2rem;
     font-size: 0.9rem;
+    width: 100%;
+    justify-content: center;
   }
   
   .hora {
@@ -567,5 +612,19 @@
   
   .placar span {
     font-size: 1.5rem;
+  }
+  
+  .modal-content {
+    padding: 1rem;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .btn-cancelar,
+  .btn-confirmar-exclusao {
+    width: 100%;
+    text-align: center;
   }
 }
