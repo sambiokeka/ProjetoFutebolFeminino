@@ -32,7 +32,7 @@
 - Salvar partidas para acompanhamento
 - Lista pessoal de partidas salvas
 - Controle de notificações por partida
-- Organização por status (Próximas/Finalizadas)
+- Organização por status (Próximas, Ao Vivo, Finalizadas)
 
 ### Recursos Técnicos
 - Interface responsiva para mobile e desktop
