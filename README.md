@@ -1,10 +1,10 @@
-# <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/26bd.svg" width="32" alt="Bola de futebol" /> Passa a Bola - Plataforma de Futebol Feminino
+# Passa a Bola - Plataforma de Futebol Feminino
 
 **Passa a Bola** é uma plataforma web completa para acompanhamento de partidas de futebol feminino. O sistema permite que usuários visualizem jogos de diversas ligas, salvem partidas de interesse e recebam notificações sobre atualizações.
 
 ---
 
-## <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f465.svg" width="24" alt="Equipe" /> Equipe
+## Equipe
 
 - Erick Jooji (RM: 564482)
 - Luiz Dalboni (RM: 564189)
@@ -14,27 +14,27 @@
 
 ---
 
-## <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3ae.svg" width="24" alt="Funcionalidades" /> Funcionalidades
+## Funcionalidades
 
-### <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f512.svg" width="20" alt="Cadeado" /> Sistema de Autenticação
+### Sistema de Autenticação
 - Registro e login de usuários
 - Autenticação via JWT
 - Opção "Manter-me conectado"
 - Logout seguro
 
-### <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c6.svg" width="20" alt="Troféu" /> Gerenciamento de Partidas
+### Gerenciamento de Partidas
 - Listagem completa de partidas por data, liga e status
 - Filtros avançados por data, liga, time e status
 - Visualização de placares em tempo real
 - Status das partidas (Próximas, Ao Vivo, Finalizadas)
 
-### <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2764.svg" width="20" alt="Coração" /> Sistema de Favoritos
+### Sistema de Favoritos
 - Salvar partidas para acompanhamento
 - Lista pessoal de partidas salvas
 - Controle de notificações por partida
 - Organização por status (Próximas, Ao Vivo, Finalizadas)
 
-### <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4bb.svg" width="20" alt="Computador" /> Recursos Técnicos
+### Recursos Técnicos
 - Interface responsiva para mobile e desktop
 - Atualização automática de placares
 - Fusos horários ajustados para Brasil
@@ -42,7 +42,7 @@
 
 ---
 
-## <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4c8.svg" width="24" alt="Tecnologias" /> Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 ### Frontend
 - React.js com hooks
@@ -60,7 +60,7 @@
 
 ---
 
-## <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4c1.svg" width="24" alt="Estrutura de pastas" /> Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 ProjetoFutebolFeminino/
@@ -105,7 +105,7 @@ ProjetoFutebolFeminino/
 
 ---
 
-## <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f527.svg" width="24" alt="Instalação" /> Instalação e Configuração
+## Instalação e Configuração
 
 ### Pré-requisitos
 - Node.js (v14 ou superior)
@@ -126,13 +126,8 @@ ProjetoFutebolFeminino/
    ```bash
    python rotas.py
    ```
-<<<<<<< HEAD
-4. Acompanhe ao vivo:
-   Caso tenha algum jogo de alguma dessas ligas ["Brazil Brasileiro Women", "International Friendlies Women", "English Womens Super League"] (se quiser adicionar mais ligas, fique à vontade, mas essas são as ligas que inserimos para nosso MVP) acontecendo no momento em que você estiver com o `rotas.py` rodando, é só fazer o seguinte:
-=======
 4. Para acompanhamento ao vivo:
    Caso esteja acontecendo algum jogo de uma das ligas suportadas, rode:
->>>>>>> e4644579c3defab3c5a6691dcbec2ff866b1afea
    ```bash
    python monitor.py
    ```
@@ -160,7 +155,7 @@ ProjetoFutebolFeminino/
 
 ---
 
-## <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c3.svg" width="24" alt="Ligas" /> Ligas Suportadas
+## Ligas Suportadas
 
 Por enquanto para nosso MVP (ou seja podemos aumentar tranquilamente), estamos contando com 3 ligas:
 
@@ -199,11 +194,10 @@ O sistema utiliza dois bancos SQLite:
 
 ---
 
-## <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f91d.svg" width="24" alt="Colabore" /> Contribuição
+## Contribuição
 
 1. Faça um fork do projeto
 2. Crie uma branch para sua feature
 3. Commit suas mudanças
 4. Push para a branch
 5. Abra um Pull Request
-
