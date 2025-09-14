@@ -1,9 +1,9 @@
 import { Routes, Route } from 'react-router-dom';
-import Login from './components/Login';
-import Register from './components/Register';
-import Partidas from './components/Partidas';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Partidas from './pages/Partidas';
 import Layout from './components/Layout';
-import Salvo from './components/Salvo';
+import Salvo from './pages/Salvo';
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
