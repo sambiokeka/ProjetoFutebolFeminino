@@ -12,6 +12,9 @@ LEAGUE_NAMES = ["Brazil Brasileiro Women", "International Friendlies Women", "En
 # Tenho que chamar os jogos por data, preciso fazer assim pq a chave q usamos da api é gratuita, então se fosse pra listar os jogos de algum campeonato usando a api ele retornario miseros 15 jogos, e são os 
 # 15 primeiros jogos do ano todo, geralmente fica lá pra março... ai se você pega por data ele pega todos os jogos que aconteceram em um dia, mas caso eu usasse a api premium, era só puxar
 # pela própria api que ele já mostrava os ultimos 3000 jogos do campeonatoKKKKKK, mas já basta o dinheiro q gasto na faculdade 
+
+
+# CASO NÃO ACREDITE EM MIM VEJA O TESTE.PY POR FAVOR ACREDITA EM MIM POR FAVORAAAAAAAAAAAAAAAAAA
 LEAGUE_DATES = {
     "Brazil Brasileiro Women": [
         "2025-03-22", "2025-03-23", "2025-03-25", "2025-03-26", "2025-03-27",
