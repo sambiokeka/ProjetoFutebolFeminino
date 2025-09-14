@@ -63,7 +63,7 @@
 ## Estrutura do Projeto
 
 ```
-passa-a-bola/
+ProjetoFutebolFeminino/
 ├── frontend/
 │   ├── components/
 │   │   ├── Header.jsx
