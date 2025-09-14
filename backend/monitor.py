@@ -1,9 +1,10 @@
 import time
 import threading
 import requests
+import sqlite3
 
 # import da database.py as funções get_db_connection e get_status
-from database import get_db_connection, get_status
+from database import get_status
 
 # Importa a URL base da API sportsdb.
 from config import BASE_URL
@@ -11,9 +12,24 @@ from config import BASE_URL
 # Define a URL do servidor Flask.
 FLASK_API_URL = "http://localhost:5000"
 
+# Armazenamento local por thread para conexões de banco de dados
+thread_local = threading.local()
+
+# Função para obter uma conexão de banco de dados por thread
+def get_thread_db_connection():
+
+    if not hasattr(thread_local, "conn"):
+        # Cria uma nova conexão para esta thread
+        thread_local.conn = sqlite3.connect('futebol_feminino.db')
+        thread_local.conn.row_factory = sqlite3.Row
+        print(f"Nova conexão de banco criada para thread {threading.get_ident()}")
+    return thread_local.conn
+
 # Função para notificar o backend sobre mudanças no placar.
 def notificar_mudanca_placar(id_event, home_team, away_team, home_score, away_score):
-
+    """
+    Notifica o servidor Flask sobre mudanças no placar de uma partida.
+    """
     try:
         # Envia os dados do placar para a rota `/webhook/placar` do Flask.
         response = requests.post(
@@ -26,7 +42,7 @@ def notificar_mudanca_placar(id_event, home_team, away_team, home_score, away_sc
                 "awayScore": away_score,
                 "timestamp": time.time()
             },
-            timeout=5  # Define um tempo limite de 5 segundos para a requisição, novamente respeitando a API q se irrita facil.
+            timeout=5  # Define um tempo limite de 5 segundos para a requisição
         )
         
         # Verifica se a notificação foi enviada com sucesso.
@@ -41,15 +57,19 @@ def notificar_mudanca_placar(id_event, home_team, away_team, home_score, away_sc
 
 # Função principal que monitora os jogos em tempo real.
 def monitorar_jogos_ao_vivo():
-    
+    """
+    Monitora continuamente os jogos ativos para detectar mudanças de status
+    e atualizações de placar.
+    """
     ultimos_placares = {}  # Dicionário para armazenar o último placar conhecido de cada jogo.
     
     while True:
         try:
-            conn = get_db_connection()
+            # Usa a conexão específica da thread
+            conn = get_thread_db_connection()
             cursor = conn.cursor()
             
-            # Seleciona todos os jogos que ainda não terminaram, ou seja jogos com status de proximo ou ao vivo.
+            # Seleciona todos os jogos que ainda não terminaram
             cursor.execute("""
                 SELECT idEvent, dateEvent, strTime, intHomeScore, intAwayScore,
                        strHomeTeam, strAwayTeam 
@@ -63,27 +83,23 @@ def monitorar_jogos_ao_vivo():
                 # Extrai os detalhes do jogo. 
                 id_event, date_event, str_time, home_score, away_score, home_team, away_team = jogo
                 
-                # Usa a função `get_status` para determinar o status atual do jogo (ao vivo ou próximo).
+                # Usa a função `get_status` para determinar o status atual do jogo
                 novo_status = get_status(date_event, str_time, home_score, away_score)
                 
                 # Verifica o status atual no banco de dados.
                 cursor.execute("SELECT status FROM partidas WHERE idEvent = ?", (id_event,))
-                # Pega o primeiro resultado (se houver).
                 result = cursor.fetchone()
-                # Define o status atual, ou None se não houver resultado.
                 status_atual = result[0] if result else None
                 
-                # Se o status mudou (de 'proximo' para 'ao_vivo'), atualiza o banco.
+                # Se o status mudou, atualiza o banco.
                 if status_atual != novo_status:
                     cursor.execute("UPDATE partidas SET status = ? WHERE idEvent = ?", (novo_status, id_event))
-                    # Se alguma linha foi afetada, significa que houve uma mudança de status.
                     if cursor.rowcount > 0:
                         print(f"Jogo {id_event} atualizado de '{status_atual}' para: '{novo_status}'")
-                        # Chama uma função para enviar notificações de mudança de status (se houver).
+                        # Envia notificações de mudança de status
                         enviar_notificacao_mudanca_status(id_event, status_atual, novo_status)
                 
                 # --- Lógica de verificação do placar ---
-                # Define o placar atual e o último placar conhecido.
                 placar_atual = (home_score, away_score)
                 placar_anterior = ultimos_placares.get(id_event)
                 
@@ -98,19 +114,22 @@ def monitorar_jogos_ao_vivo():
                 ultimos_placares[id_event] = placar_atual
             
             conn.commit()
-            conn.close()
             time.sleep(30)  # Pausa por 30 segundos antes da próxima verificação.
             
         except Exception as e:
             print(f"Erro no monitoramento: {e}")
-            time.sleep(30) # Pausa em caso de erro para evitar um loop infinito de falhas.
+            time.sleep(30) # Pausa em caso de erro
 
 # Função para atualizar os resultados dos jogos em tempo real.
 def atualizar_resultados_em_tempo_real():
+    """
+    Atualiza os resultados dos jogos em tempo real consultando a API externa.
+    """
     # Loop infinito para verificar atualizações.
     while True:
         try:
-            conn = get_db_connection()
+            # Usa a conexão específica da thread
+            conn = get_thread_db_connection()
             cursor = conn.cursor()
             
             # Seleciona apenas os jogos que estão com status 'ao_vivo'.
@@ -124,9 +143,9 @@ def atualizar_resultados_em_tempo_real():
                 try:
                     # Faz uma requisição pra API para obter os dados mais recentes do evento.
                     url = f"{BASE_URL}lookupevent.php?id={id_event}"
-                    response = requests.get(url, timeout=10) # Timeout de 10 segundos, para respeitar a API q novamente se irrita facil.
-                    # Decodifica a resposta JSON.
+                    response = requests.get(url, timeout=10)
                     data = response.json()
+                    
                     # Se houver eventos na resposta.
                     if data.get('events'):
                         # Pega o primeiro evento.
@@ -137,9 +156,10 @@ def atualizar_resultados_em_tempo_real():
                         # Compara o placar do banco com o placar da API.
                         cursor.execute("SELECT intHomeScore, intAwayScore FROM partidas WHERE idEvent = ?", (id_event,))
                         placar_atual = cursor.fetchone()
+                        
                         # Se o placar mudou.
                         if (placar_atual and (placar_atual[0] != novo_home_score or placar_atual[1] != novo_away_score)):
-                            # Se houver mudança, atualiza o placar no banco de dados.
+                            # Atualiza o placar no banco de dados.
                             cursor.execute("""
                                 UPDATE partidas 
                                 SET intHomeScore = ?, intAwayScore = ? 
@@ -147,26 +167,28 @@ def atualizar_resultados_em_tempo_real():
                             """, (novo_home_score, novo_away_score, id_event))
                             print(f"Placar atualizado: {home_team} {novo_home_score} x {novo_away_score} {away_team}")
                             
-                            # E notifica o servidor Flask.
+                            # Notifica o servidor Flask.
                             notificar_mudanca_placar(id_event, home_team, away_team, novo_home_score, novo_away_score)
-                # Captura erros específicos de cada jogo para evitar que um erro pare todo o processo.
+                
                 except Exception as e:
                     print(f"Erro ao atualizar jogo {id_event}: {e}")
             
             conn.commit()
-            conn.close()
             time.sleep(15)  # Verifica com mais frequência (15s) os jogos ao vivo.
 
-        # Captura erros genéricos.    
         except Exception as e:
             print(f"Erro na atualização de resultados: {e}")
-            # Em caso de erro, espera 15 segundos antes de tentar novamente.
             time.sleep(15)
 
 # Função para enviar notificações de mudança de status.
 def enviar_notificacao_mudanca_status(id_event, status_atual, status_novo):
-    conn = get_db_connection()
+    """
+    Envia notificações para usuários quando o status de uma partida muda.
+    """
+    # Usa a conexão específica da thread
+    conn = get_thread_db_connection()
     cursor = conn.cursor()
+    
     # Seleciona os usuários que salvaram essa partida e ainda não foram notificados.
     cursor.execute("""
         SELECT ps.idUsuario, p.strHomeTeam, p.strAwayTeam 
@@ -176,9 +198,9 @@ def enviar_notificacao_mudanca_status(id_event, status_atual, status_novo):
     """, (id_event,))
 
     usuarios = cursor.fetchall()
+    
     # Percorre cada usuário e envia a notificação.
     for usuario in usuarios:
-        # Extrai os detalhes do usuário e do jogo.
         id_usuario, home_team, away_team = usuario
         # Se o status mudou para 'ao_vivo', envia a notificação.
         mensagem = f"Status alterado: {home_team} vs {away_team} - {status_novo}"
@@ -191,13 +213,26 @@ def enviar_notificacao_mudanca_status(id_event, status_atual, status_novo):
         """, (id_event, id_usuario))
     
     conn.commit()
-    conn.close()
+
+# Função para fechar todas as conexões ao encerrar
+def fechar_conexoes():
+    """Fecha todas as conexões de banco de dados abertas."""
+    if hasattr(thread_local, "conn"):
+        try:
+            thread_local.conn.close()
+            print(f"Conexão fechada para thread {threading.get_ident()}")
+        except:
+            pass
 
 if __name__ == "__main__":
     # Inicia as threads para monitorar jogos ao vivo e atualizar resultados.
     print("Iniciando monitoramento em tempo real...")
-    # Retorno no console pra mostrar que ta conectado ao servidor Flask.
     print("Conectado ao servidor Flask em:", FLASK_API_URL)
+    
+    # Registra função para fechar conexões ao encerrar
+    import atexit
+    atexit.register(fechar_conexoes)
+    
     # Tenta iniciar as threads.
     try:
         thread_monitor = threading.Thread(target=monitorar_jogos_ao_vivo, daemon=True)
@@ -205,9 +240,12 @@ if __name__ == "__main__":
         
         thread_resultados = threading.Thread(target=atualizar_resultados_em_tempo_real, daemon=True)
         thread_resultados.start()
+        
         # Mantém o programa principal rodando.
         while True:
             time.sleep(60)
+            
     # Captura interrupção do teclado (Ctrl+C) para encerrar o programa.        
     except KeyboardInterrupt:
         print("Encerrando monitoramento...")
+        fechar_conexoes()

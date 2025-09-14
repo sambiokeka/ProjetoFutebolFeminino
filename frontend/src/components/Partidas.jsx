@@ -19,10 +19,50 @@ function Partidas() {
   const partidasSectionRef = useRef(null);
   const [usuario] = useState(localStorage.getItem('username') || '');
 
-  useEffect(() => {
-    carregarPartidas();
-    carregarPartidasSalvas();
+  const traduzirPartidas = (partidas) => {
+    return partidas.map(partida => ({
+      ...partida,
+      strHomeTeam: traduzirNome(partida.strHomeTeam),
+      strAwayTeam: traduzirNome(partida.strAwayTeam),
+      strLeague: traduzirNome(partida.strLeague),
+      strEvent: traduzirNome(partida.strEvent)
+    }));
+  };
+
+  const buscarPartidas = useCallback(async () => {
+    try {
+      const res = await fetch("http://localhost:5000/partidas");
+      if (!res.ok) {
+        throw new Error(`Erro HTTP! status: ${res.status}`);
+      }
+      const data = await res.json();
+      const partidasTraduzidas = traduzirPartidas(data);
+      setPartidas(partidasTraduzidas);
+    } catch (err) {
+      console.error("Erro ao carregar partidas:", err);
+    }
   }, []);
+
+  const carregarPartidasSalvas = () => {
+    fetch(`http://localhost:5000/partidas/salvas/${usuario}`)
+      .then((res) => res.json())
+      .then((data) => setPartidasSalvas(data))
+      .catch((err) => console.error("Erro ao carregar partidas salvas:", err));
+  };
+  
+  useEffect(() => {
+    buscarPartidas();
+
+    const intervalId = setInterval(() => {
+      buscarPartidas();
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [buscarPartidas]);
+
+  useEffect(() => {
+    carregarPartidasSalvas();
+  }, [usuario]);
 
   const handleCalendarioClick = (e) => {
     e.preventDefault();
@@ -44,71 +84,37 @@ function Partidas() {
     }, 100);
   };
 
-  const traduzirPartidas = (partidas) => {
-    return partidas.map(partida => ({
-      ...partida,
-      strHomeTeam: traduzirNome(partida.strHomeTeam),
-      strAwayTeam: traduzirNome(partida.strAwayTeam),
-      strLeague: traduzirNome(partida.strLeague),
-      strEvent: traduzirNome(partida.strEvent)
-    }));
-  };
-
-  const carregarPartidas = () => {
-    fetch("http://localhost:5000/partidas")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`Erro HTTP! status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        const partidasTraduzidas = traduzirPartidas(data);
-        setPartidas(partidasTraduzidas);
-      })
-      .catch((err) => {
-        console.error("Erro ao carregar partidas:", err);
-      });
-  };
-
-  const carregarPartidasSalvas = () => {
-    fetch(`http://localhost:5000/partidas/salvas/${usuario}`)
-      .then((res) => res.json())
-      .then((data) => setPartidasSalvas(data))
-      .catch((err) => console.error("Erro ao carregar partidas salvas:", err));
-  };
-
- const salvarPartida = async (idEvent) => {
-  if (!usuario) {
-    setPartidaParaSalvar(idEvent);
-    setShowPopup(true); 
-    return;
-  }
-
-  try {
-    const response = await fetch("http://localhost:5000/partidas/salvar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        idEvent: idEvent,
-        idUsuario: usuario
-      }),
-    });
-    
-    const result = await response.json();
-    
-    if (result.success) {
-      carregarPartidasSalvas();
-    } else {
-      alert(result.error || "Erro ao salvar partida");
+  const salvarPartida = async (idEvent) => {
+    if (!usuario) {
+      setPartidaParaSalvar(idEvent);
+      setShowPopup(true); 
+      return;
     }
-  } catch (error) {
-    console.error("Erro:", error);
-    alert("Erro ao conectar com o servidor");
-  }
-};
+
+    try {
+      const response = await fetch("http://localhost:5000/partidas/salvar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idEvent: idEvent,
+          idUsuario: usuario
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        carregarPartidasSalvas();
+      } else {
+        alert(result.error || "Erro ao salvar partida");
+      }
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao conectar com o servidor");
+    }
+  };
 
   const handleLoginPopupClose = () => {
     setShowPopup(false);
@@ -117,7 +123,6 @@ function Partidas() {
 
   const handleLoginRedirect = () => {
     setShowPopup(false);
-    // Redireciona para login e depois volta para salvar a partida
     localStorage.setItem('partidaParaSalvar', partidaParaSalvar);
     window.location.href = '/login';
   };
@@ -157,20 +162,20 @@ function Partidas() {
     a.localeCompare(b, 'pt-BR', { sensitivity: 'base' })
   );
 
-const ajustarHorarioBrasil = (horaUTC, status = "proxima") => {
-  if (!horaUTC) {
-    return status === "proxima" ? "--" : "--:--";
-  }
-  
-  const [hours, minutes] = horaUTC.split(':');
-  let horasBrasil = parseInt(hours) - 3;
-  
-  if (horasBrasil < 0) {
-    horasBrasil += 24;
-  }
-  
-  return `${horasBrasil.toString().padStart(2, '0')}:${minutes}`;
-};
+  const ajustarHorarioBrasil = (horaUTC, status = "proxima") => {
+    if (!horaUTC) {
+      return status === "proxima" ? "--" : "--:--";
+    }
+    
+    const [hours, minutes] = horaUTC.split(':');
+    let horasBrasil = parseInt(hours) - 3;
+    
+    if (horasBrasil < 0) {
+      horasBrasil += 24;
+    }
+    
+    return `${horasBrasil.toString().padStart(2, '0')}:${minutes}`;
+  };
 
   const getStatusPartida = useCallback((partida) => {
     if (partida.status) {
@@ -214,18 +219,6 @@ const ajustarHorarioBrasil = (horaUTC, status = "proxima") => {
       return "proxima";
     }
   }, []);
-
-  useEffect(() => {
-    const partidasAoVivoBackend = partidas.filter(p => p.status === 'ao_vivo');
-    console.log('Partidas com status "ao_vivo" no backend:', partidasAoVivoBackend);
-    
-    partidasAoVivoBackend.forEach(p => {
-      const statusFrontend = getStatusPartida(p);
-      console.log('Partida:', p.strHomeTeam, 'vs', p.strAwayTeam, 
-                  'Backend status:', p.status, 
-                  'Frontend status:', statusFrontend);
-    });
-  }, [partidas, getStatusPartida]);
 
   const isPartidaSalva = (idEvent) => {
     return partidasSalvas.some(ps => ps.idEvent === idEvent);
@@ -282,22 +275,22 @@ const ajustarHorarioBrasil = (horaUTC, status = "proxima") => {
     return acc;
   }, {});
 
-const formatarData = (dataStr) => {
-  try {
-    const dataUTC = new Date(dataStr + 'T12:00:00Z'); 
-    
-    const dataBrasil = new Date(dataUTC.getTime() - (3 * 60 * 60 * 1000));
-    
-    return dataBrasil.toLocaleDateString('pt-BR', { 
-      weekday: 'long', 
-      day: 'numeric', 
-      month: 'long', 
-      year: 'numeric' 
-    });
-  } catch (error) {
-    return dataStr;
-  }
-};
+  const formatarData = (dataStr) => {
+    try {
+      const dataUTC = new Date(dataStr + 'T12:00:00Z'); 
+      
+      const dataBrasil = new Date(dataUTC.getTime() - (3 * 60 * 60 * 1000));
+      
+      return dataBrasil.toLocaleDateString('pt-BR', { 
+        weekday: 'long', 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric' 
+      });
+    } catch (error) {
+      return dataStr;
+    }
+  };
   
   return (
     <div className="partidas-container">

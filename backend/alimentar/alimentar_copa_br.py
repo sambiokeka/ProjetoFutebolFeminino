@@ -420,7 +420,6 @@ for partida in dados_copa_do_brasil:
     if partida['strTime'] and partida['status'] == 'proximas':
         # Converte a string de hora para um objeto datetime
         hora_original = datetime.strptime(partida['strTime'], '%H:%M:%S')
-        # Adiciona 3 horas
         nova_hora = hora_original + timedelta(hours=3)
         # Formata o objeto datetime de volta para uma string de hora
         partida['strTime'] = nova_hora.strftime('%H:%M:%S')
