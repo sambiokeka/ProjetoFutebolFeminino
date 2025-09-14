@@ -157,6 +157,8 @@ ProjetoFutebolFeminino/
 
 ## Ligas Suportadas
 
+Por enquanto para nosso MVP (ou seja podemos aumentar tranquilamente), estamos contando com 3 ligas:
+
 - Brazil Brasileiro Women
 - International Friendlies Women
 - English Womens Super League
