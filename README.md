@@ -32,7 +32,7 @@
 - Salvar partidas para acompanhamento
 - Lista pessoal de partidas salvas
 - Controle de notificações por partida
-- Organização por status (Próximas/Finalizadas)
+- Organização por status (Próximas, Ao Vivo, Finalizadas)
 
 ### <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4bb.svg" width="20" alt="Computador" /> Recursos Técnicos
 - Interface responsiva para mobile e desktop
@@ -63,7 +63,7 @@
 ## <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4c1.svg" width="24" alt="Estrutura de pastas" /> Estrutura do Projeto
 
 ```
-passa-a-bola/
+ProjetoFutebolFeminino/
 ├── frontend/
 │   ├── components/
 │   │   ├── Header.jsx
@@ -118,7 +118,7 @@ passa-a-bola/
    ```bash
    pip install -r requirements.txt
    ```
-2. Entre no backend:
+2. Entre na pasta backend:
    ```bash
    cd backend
    ```
@@ -126,19 +126,22 @@ passa-a-bola/
    ```bash
    python rotas.py
    ```
+<<<<<<< HEAD
 4. Acompanhe ao vivo:
    Caso tenha algum jogo de alguma dessas ligas ["Brazil Brasileiro Women", "International Friendlies Women", "English Womens Super League"] (se quiser adicionar mais ligas, fique à vontade, mas essas são as ligas que inserimos para nosso MVP) acontecendo no momento em que você estiver com o `rotas.py` rodando, é só fazer o seguinte:
+=======
+4. Para acompanhamento ao vivo:
+   Caso esteja acontecendo algum jogo de uma das ligas suportadas, rode:
+>>>>>>> e4644579c3defab3c5a6691dcbec2ff866b1afea
    ```bash
    python monitor.py
    ```
-   > **Nota:** Como os campeonatos do Paulistão Feminino e Copa do Brasil não estavam disponíveis na nossa versão gratuita da API, pegamos os dados e inserimos artificialmente, por isso eles não podem ser acompanhados ao vivo.
+   > **Nota:** Paulistão Feminino e Copa do Brasil tiveram dados inseridos artificialmente, pois não estavam disponíveis na versão gratuita da API. Não é possível acompanhá-los ao vivo.
 
-   **Extras:**
-   - Se quiser ver como a API funciona, você pode testar duas coisas. Primeiro, apenas rode o `main.py` (demora um pouco para ele pegar todos os dados, já que nossa API não é premium). Ele já vai chamar a API e outros arquivos `.py` e vai atualizar dados (se houver atualizações) do `futebol_feminino.db`.
-   - Se quiser ver tudo do zero, delete tanto:
-     - `futebol_feminino.db`
-     - `users.db`
-   - Rode o `main.py` e depois o `rotas.py`. Depois de esperar o `main.py` terminar, já está pronto. Se quiser ver dados de jogos adicionais, também rode os arquivos na pasta de alimentar. Eles não consomem a API e são apenas para ter mais jogos mesmo — inclusive não tem como acompanhá-los ao vivo.
+**Extras:**
+- Para testar a API: rode `main.py` para coletar dados da API e atualizar o banco de dados.
+- Para recriar tudo do zero: apague os arquivos `futebol_feminino.db` e `users.db`, rode `main.py` e depois `rotas.py`.
+- Para adicionar mais jogos, rode os arquivos da pasta `alimentar`. Esses dados não são ao vivo.
 
 ### Frontend
 
@@ -159,36 +162,40 @@ passa-a-bola/
 
 ## <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c3.svg" width="24" alt="Ligas" /> Ligas Suportadas
 
+Por enquanto para nosso MVP (ou seja podemos aumentar tranquilamente), estamos contando com 3 ligas:
+
 - Brazil Brasileiro Women
 - International Friendlies Women
 - English Womens Super League
 
 ### Ligas Artificiais 
-
-Por não estarem disponíveis na API v1 (gratuita), adicionamos jogos dos campeonatos:
-
+Adicionadas manualmente por limitação da API gratuita:
 - Copa do Brasil Feminina
 - Copa Paulista Feminina
 
-de maneira artificial. Os dados são reais, mas eles não são concedidos pela nossa API.
-
 ---
 
-## <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg" width="24" alt="Banco de Dados" /> Desenvolvimento
+## Arquivos importantes
 
 ### Estrutura de Banco de Dados
 
 O sistema utiliza dois bancos SQLite:
-- `futebol_feminino.db` - Dados de partidas e ligas
-- `users.db` - Dados de autenticação de usuários
+- `futebol_feminino.db` — Dados de partidas e ligas
+- `users.db` — Dados de autenticação de usuários
 
-### Scripts de Coleta de Dados
+### Scripts
 
-O `main.py` coleta os dados iniciais da API e insere no banco de dados `futebol_feminino.db`.
+- `main.py`: Consome a API e insere dados no banco.
+- `monitor.py`: Atualiza placares e status das partidas em tempo real.
+- `rotas.py`: Cria os endpoints e faz autenticação de usuários.
+- `config.py`: Configurações para requisições da API.
+- `database.py`: Cria o banco e tabelas se não existirem, além de gerenciar status dos jogos.
+- Arquivos em `alimentar/`: Inserção manual de partidas.
 
-### Monitoramento em Tempo Real
+### Frontend Utils
 
-O `monitor.py` verifica atualizações de placar e status das partidas periodicamente.
+- `traduzir.js`: Traduz nomes vindos da API (inglês → português).
+- `escudos.js`: Implementa os escudos dos times para exibição nas partidas.
 
 ---
 
@@ -200,10 +207,3 @@ O `monitor.py` verifica atualizações de placar e status das partidas periodica
 4. Push para a branch
 5. Abra um Pull Request
 
----
-
-## <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4dc.svg" width="24" alt="Licença" /> Licença
-
-Este projeto está sob licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
