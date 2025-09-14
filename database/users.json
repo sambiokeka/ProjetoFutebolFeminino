@@ -1,0 +1,9 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "username": "sambiokeka",
+      "password": "scrypt:32768:8:1$kb6BRCskdqwk0JQy$2a43d6004a97388bb0546d9668eed770729889aa70f3760adbb64e61f6da6e4f13318b694500339b5091f3904c523971fe9abc15d07cad2157afce6c6ce8c366"
+    }
+  ]
+}

@@ -1,9 +1,11 @@
-import sqlite3
+import os
+import sys
 from datetime import datetime, timedelta
 
-# Conexão com o banco
-conn = sqlite3.connect('futebol_feminino.db')
-cursor = conn.cursor()
+# Adiciona o diretório pai ao path para importar o json_database
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from json_database import save_liga, save_partida
 
 dados_paulistao = [
     # Rodada 1
@@ -414,10 +416,12 @@ dados_paulistao = [
 ]
 
 # Inserir liga Paulistão Feminino
-cursor.execute("""
-    INSERT OR IGNORE INTO ligas (idLeague, strLeague, strSport, strLeagueAlternate)
-    VALUES (?, ?, ?, ?)
-""", ('paulistao_2025', 'Campeonato Paulista Feminino', 'Soccer', 'Paulistão Feminino 2025'))
+save_liga({
+    'idLeague': 'paulistao_2025', 
+    'strLeague': 'Campeonato Paulista Feminino', 
+    'strSport': 'Soccer', 
+    'strLeagueAlternate': 'Paulistão Feminino 2025'
+})
 
 # Inserir partidas
 for partida in dados_paulistao:
@@ -429,21 +433,24 @@ for partida in dados_paulistao:
         # Formata o objeto datetime de volta para uma string de hora
         partida['strTime'] = nova_hora.strftime('%H:%M:%S')
         
-    cursor.execute("""
-        INSERT OR REPLACE INTO partidas 
-        (idEvent, strEvent, dateEvent, strTime, strSeason, strHomeTeam, strAwayTeam, 
-         intHomeScore, intAwayScore, strVenue, idLeague, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        partida['idEvent'], partida['strEvent'], partida['dateEvent'], 
-        partida['strTime'], partida['strSeason'], partida['strHomeTeam'], 
-        partida['strAwayTeam'], partida['intHomeScore'], partida['intAwayScore'], 
-        partida['strVenue'], partida['idLeague'], partida['status']
-    ))
-
-# Commit e fechar conexão
-conn.commit()
-conn.close()
+    # Prepara os dados da partida
+    partida_data = {
+        'idEvent': partida['idEvent'],
+        'strEvent': partida['strEvent'],
+        'dateEvent': partida['dateEvent'],
+        'strTime': partida['strTime'],
+        'strSeason': partida['strSeason'],
+        'strHomeTeam': partida['strHomeTeam'],
+        'strAwayTeam': partida['strAwayTeam'],
+        'intHomeScore': partida['intHomeScore'],
+        'intAwayScore': partida['intAwayScore'],
+        'strVenue': partida['strVenue'],
+        'idLeague': partida['idLeague'],
+        'status': partida['status']
+    }
+    
+    # Salva a partida
+    save_partida(partida_data)
 
 print("Dados do Paulistão Feminino 2025 (14 rodadas) inseridos com sucesso!")
 print(f"Total de {len(dados_paulistao)} partidas inseridas/atualizadas")

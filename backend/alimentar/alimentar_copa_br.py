@@ -1,11 +1,13 @@
-import sqlite3
+import os
+import sys
 from datetime import datetime, timedelta
 
-# Conexão com o banco
-conn = sqlite3.connect('futebol_feminino.db')
-cursor = conn.cursor()
+# Adiciona o diretório pai ao path para importar o json_database
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Dados para a Copa do Brasil Feminina 2025
+from json_database import save_liga, save_partida
+
+
 dados_copa_do_brasil = [
     # 3ª Fase
     {
@@ -409,10 +411,12 @@ dados_copa_do_brasil = [
 ]
 
 # Inserir liga Copa do Brasil Feminina
-cursor.execute("""
-    INSERT OR IGNORE INTO ligas (idLeague, strLeague, strSport, strLeagueAlternate)
-    VALUES (?, ?, ?, ?)
-""", ('copa_br_2025', 'Copa do Brasil Feminina', 'Soccer', 'Copa do Brasil Feminina 2025'))
+save_liga({
+    'idLeague': 'copa_br_2025', 
+    'strLeague': 'Copa do Brasil Feminina', 
+    'strSport': 'Soccer', 
+    'strLeagueAlternate': 'Copa do Brasil Feminina 2025'
+})
 
 # Inserir partidas
 for partida in dados_copa_do_brasil:
@@ -424,21 +428,24 @@ for partida in dados_copa_do_brasil:
         # Formata o objeto datetime de volta para uma string de hora
         partida['strTime'] = nova_hora.strftime('%H:%M:%S')
 
-    cursor.execute("""
-        INSERT OR REPLACE INTO partidas 
-        (idEvent, strEvent, dateEvent, strTime, strSeason, strHomeTeam, strAwayTeam, 
-         intHomeScore, intAwayScore, strVenue, idLeague, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        partida['idEvent'], partida['strEvent'], partida['dateEvent'], 
-        partida['strTime'], partida['strSeason'], partida['strHomeTeam'], 
-        partida['strAwayTeam'], partida['intHomeScore'], partida['intAwayScore'], 
-        partida['strVenue'], partida['idLeague'], partida['status']
-    ))
-
-# Commit e fechar conexão
-conn.commit()
-conn.close()
+    # Prepara os dados da partida
+    partida_data = {
+        'idEvent': partida['idEvent'],
+        'strEvent': partida['strEvent'],
+        'dateEvent': partida['dateEvent'],
+        'strTime': partida['strTime'],
+        'strSeason': partida['strSeason'],
+        'strHomeTeam': partida['strHomeTeam'],
+        'strAwayTeam': partida['strAwayTeam'],
+        'intHomeScore': partida['intHomeScore'],
+        'intAwayScore': partida['intAwayScore'],
+        'strVenue': partida['strVenue'],
+        'idLeague': partida['idLeague'],
+        'status': partida['status']
+    }
+    
+    # Salva a partida
+    save_partida(partida_data)
 
 print("Dados da Copa do Brasil Feminina 2025 inseridos com sucesso!")
 print(f"Total de {len(dados_copa_do_brasil)} partidas inseridas")
