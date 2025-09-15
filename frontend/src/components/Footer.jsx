@@ -1,4 +1,3 @@
-import React from 'react';
 import '../styles/Footer.css';
 import bolaIcon from '../assets/bola-icon.png';
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import '../styles/Header.css';
 import { useAuth } from './AuthContext';
 import bolaIcon from '../assets/bola-icon.png';

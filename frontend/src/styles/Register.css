@@ -1,9 +1,10 @@
 .register-main {
-  min-height: 100vh;
+  min-height: 140vh;
   background: linear-gradient(135deg, #da5b8f, #6c3cbd);
   display: flex;
   align-items: center;
   padding: 2rem 0;
+  margin-top: 0rem;
 }
 
 .register-section {
@@ -128,6 +129,7 @@
 /* Responsividade */
 @media (max-width: 768px) {
   .register-main {
+    max-height: 110vh;
     padding: 1rem;
     padding-bottom: 4rem;
     padding-top: 4rem;
@@ -147,6 +149,13 @@
 }
 
 @media (max-width: 576px) {
+    .register-main {
+    min-height: 110vh;
+    padding: 1rem;
+    padding-bottom: 4rem;
+    padding-top: 4rem;
+  }
+
   .register-form .row {
     margin: 0 -0.5rem;
   }
@@ -164,7 +173,6 @@
     height: 18px;
   }
 }
-
 
 /* Animações */
 @keyframes fadeInUp {

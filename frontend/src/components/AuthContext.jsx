@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
 
 const AuthContext = createContext();
 
@@ -28,7 +28,7 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
-
+// mano ele quer q eu mude mas n ta errado é só ele querendo q eu mude msm ele q ta no erro
 export function useAuth() {
   return useContext(AuthContext);
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Popup from './Popup';
 
 const PrivateRoute = ({ children }) => {
