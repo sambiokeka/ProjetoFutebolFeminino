@@ -1,8 +1,14 @@
 import sqlite3
 from datetime import datetime, timedelta
+import os 
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+DB_DIR = os.path.join(BASE_DIR, 'database')
+
+DATABASE_FUTEBOL = os.path.join(DB_DIR, 'futebol_feminino.db') # banco de dados de futebol mesmo
 
 # Conexão com o banco
-conn = sqlite3.connect('futebol_feminino.db')
+conn = sqlite3.connect(DATABASE_FUTEBOL)
 cursor = conn.cursor()
 
 # Dados para a Copa do Brasil Feminina 2025

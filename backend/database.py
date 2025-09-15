@@ -1,13 +1,19 @@
 import sqlite3
 from datetime import datetime, timedelta
 import pytz
+import os # le o import do os do rotas.py
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_DIR = os.path.join(BASE_DIR, 'database')
+
+DATABASE_FUTEBOL = os.path.join(DB_DIR, 'futebol_feminino.db') # banco de dados de futebol mesmo
 
 # Essa função cria e retorna uma conexão com o banco de dados SQLite.
 # O `check_same_thread=False` é necessário para usar a conexão em ambientes multi-thread,
 # como em um servidor web.
 # O `conn.row_factory = sqlite3.Row` permite acessar colunas pelo nome, não apenas pelo índice.
 def get_db_connection():
-    conn = sqlite3.connect('futebol_feminino.db', check_same_thread=False)
+    conn = sqlite3.connect(DATABASE_FUTEBOL, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 

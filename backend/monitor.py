@@ -2,12 +2,18 @@ import time
 import threading
 import requests
 import sqlite3
-
+import os # le os comentarios do import do os no rotas.py
 # import da database.py as funções get_db_connection e get_status
 from database import get_status
 
 # Importa a URL base da API sportsdb.
 from config import BASE_URL
+
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_DIR = os.path.join(BASE_DIR, 'database')
+
+DATABASE_FUTEBOL = os.path.join(DB_DIR, 'futebol_feminino.db') # banco de dados de futebol mesmo
 
 # Define a URL do servidor Flask.
 FLASK_API_URL = "http://localhost:5000"
@@ -20,7 +26,7 @@ def get_thread_db_connection():
 
     if not hasattr(thread_local, "conn"):
         # Cria uma nova conexão para esta thread
-        thread_local.conn = sqlite3.connect('futebol_feminino.db')
+        thread_local.conn = sqlite3.connect(DATABASE_FUTEBOL)
         thread_local.conn.row_factory = sqlite3.Row
         print(f"Nova conexão de banco criada para thread {threading.get_ident()}")
     return thread_local.conn

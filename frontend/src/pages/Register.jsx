@@ -51,7 +51,7 @@ const handleSubmit = async (e) => {
     } else {
       setError(data.message || 'Erro no registro');
     }
-  } catch (err) {
+  } catch {
     setError('Erro ao conectar com o servidor');
   }
 };

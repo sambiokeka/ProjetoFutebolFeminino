@@ -175,6 +175,7 @@ Adicionadas manualmente por limitação da API gratuita:
 ### Estrutura de Banco de Dados
 
 O sistema utiliza dois bancos SQLite:
+(ambos estão na pasta backend, dentro da pasta database)
 - `futebol_feminino.db` — Dados de partidas e ligas
 - `users.db` — Dados de autenticação de usuários
 

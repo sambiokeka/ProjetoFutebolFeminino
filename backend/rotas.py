@@ -4,7 +4,14 @@ import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash # Permite verificar senhas.
 import jwt # Tokens pra login, vamos precisar.
 from datetime import datetime, timedelta
+import os # O banco de dados ta sendo criado sempre nos lugares mais inóspitos, então vamo usar os.path 
 import secrets # secret é um import q cria chaves de segurança.
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_DIR = os.path.join(BASE_DIR, 'database')
+
+DATABASE_AUTH  = os.path.join(DB_DIR, 'users.db') # banco de dados de usuarios
+DATABASE_FUTEBOL = os.path.join(DB_DIR, 'futebol_feminino.db') # banco de dados de futebol mesmo
 
 # Cria a aplicação Flask.
 app = Flask(__name__)
@@ -14,10 +21,6 @@ app.secret_key = 'chave_teste'
 
 # Aplica o CORS em todas as rotas, permitindo acesso de qualquer origem, obrigado CORS.
 CORS(app)
-
-# Constantes do banco de dado
-DATABASE_AUTH = 'users.db'  # Banco de dados para usuários.
-DATABASE_FUTEBOL = 'futebol_feminino.db'  # Banco de dados para os dados das partidas.
 
 # Gera uma chave secreta segura para JWT. TUDO ISSO SÃO BOAS PRATICAS DE SEGURANÇA.
 SECRET_KEY = secrets.token_urlsafe(64)

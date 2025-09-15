@@ -31,9 +31,10 @@ function Partidas() {
 
   const buscarPartidas = useCallback(async () => {
     try {
+      {/* Aqui tem o fetch onde todas as partidas foram postadas */}
       const res = await fetch("http://localhost:5000/partidas");
       if (!res.ok) {
-        throw new Error(`Erro HTTP! status: ${res.status}`);
+        console.log('Erro!')
       }
       const data = await res.json();
       const partidasTraduzidas = traduzirPartidas(data);
@@ -42,7 +43,7 @@ function Partidas() {
       console.error("Erro ao carregar partidas:", err);
     }
   }, []);
-
+  
   const carregarPartidasSalvas = () => {
     fetch(`http://localhost:5000/partidas/salvas/${usuario}`)
       .then((res) => res.json())
@@ -287,7 +288,7 @@ function Partidas() {
         month: 'long', 
         year: 'numeric' 
       });
-    } catch (error) {
+    } catch {
       return dataStr;
     }
   };

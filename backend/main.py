@@ -1,7 +1,7 @@
 import time 
 from database import get_db_connection, create_tables, get_status 
 from config import LEAGUE_DATES, BASE_URL
-import requests 
+import requests
 
 # Função para buscar eventos de futebol por dia e liga.
 # Ela faz uma requisição para a API e retorna uma lista de eventos (jogos).
@@ -10,7 +10,9 @@ def get_events_by_day(date, league_name):
     url = f"{BASE_URL}eventsday.php?d={date}&l={league_name}"
     
     # Faz a requisição GET para a URL da API com um timeout para evitar que o script trave, não sei pq ele trava, mas as vezes acontecia.
-    response = requests.get(url, timeout=10)
+    
+    # response = requests.get(url, timeout=10, verify=False)# SE ESTIVER NA FIAP RODE ESTE, e comente o outro
+    response = requests.get(url, timeout=10) # rode esse se n tiver na fiap e deixe o outro comentado
     
     try:
         # Decodifica a resposta JSON.
