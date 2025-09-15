@@ -7,7 +7,6 @@ function Salvo() {
   const [partidasSalvas, setPartidasSalvas] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
-  const [mostrarModalExclusao, setMostrarModalExclusao] = useState(false);
   const [abaAtiva, setAbaAtiva] = useState("proximas");
   const [notificacoesAtivas, setNotificacoesAtivas] = useState({});
   
@@ -213,52 +212,6 @@ function Salvo() {
     }
   };
 
-  const excluirConta = async () => {
-    if (!usuario) {
-      alert("Usuário não está logado");
-      return;
-    }
-
-    if (!window.confirm("Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita e todos os seus dados serão perdidos!")) {
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('token');
-      
-      const response = await fetch("http://localhost:5000/excluir-conta", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          username: usuario
-        }),
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        alert("Conta excluída com sucesso!");
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
-        window.location.href = '/login';
-      } else {
-        alert(result.error || "Erro ao excluir conta");
-      }
-    } catch (error) {
-      console.error("Erro:", error);
-      alert("Erro ao conectar com o servidor");
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    window.location.href = '/login';
-  };
-
   const formatarData = (dataString) => {
     if (!dataString) return "Data não disponível";
     
@@ -363,7 +316,6 @@ function Salvo() {
           partidasFiltradas.map((partida) => {
             const status = getStatusPartida(partida);
             const isProxima = status === "proxima";
-            const isFinalizada = status === "finalizada";
             
             const homeScore = partida.intHomeScore !== null && partida.intHomeScore !== undefined 
               ? partida.intHomeScore 

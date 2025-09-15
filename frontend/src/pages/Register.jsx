@@ -28,6 +28,7 @@ const handleSubmit = async (e) => {
   setSuccess('');
 
   try {
+    {/* Aqui tem o fetch do registro de usuarios, aq ele registra usuarios, vai tomando */}
     const response = await fetch('http://localhost:5000/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

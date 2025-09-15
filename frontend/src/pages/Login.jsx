@@ -17,6 +17,7 @@ const handleSubmit = async (e) => {
   e.preventDefault();
 
   try {
+    {/* Aqui tem o fetch de login, ele envia os dados pro /login e se os dados baterem o usuario entra */}
     const response = await fetch('http://localhost:5000/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
