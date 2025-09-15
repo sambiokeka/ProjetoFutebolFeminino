@@ -80,31 +80,23 @@ def get_db_connection_futebol():
 
 @app.route('/register', methods=['POST'])
 def register():
-    # Rota para registrar um novo usuário.
-    # Recebe `username` e `password` da requisição POST.
-    # Cria um hash seguro da senha antes de salvar no banco.
-    # Gera um JWT para o novo usuário e o retorna na resposta.
-
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
     
-    # Verifica se os campos foram enviados.
     if not username or not password:
         return jsonify({'message': 'Usuário e senha são obrigatórios'}), 400
     
-    # Criptografa a senha para segurança.
     hashed_password = generate_password_hash(password)
     
+    conn = None  # Inicializa a variável de conexão fora do bloco
     try:
         conn = get_db_connection_auth()
         cursor = conn.cursor()
         cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
         user_id = cursor.lastrowid
         conn.commit()
-        conn.close()
         
-        # Cria um JWT com o ID do usuário e um tempo de expiração de 2 horas.
         token = jwt.encode({
             'user_id': user_id,
             'exp': datetime.utcnow() + timedelta(hours=2)
@@ -117,8 +109,14 @@ def register():
         }), 201
         
     except sqlite3.IntegrityError:
-        # Lida com o caso em que o nome de usuário já existe.
         return jsonify({'message': 'Usuário já existe'}), 409
+    except Exception as e:
+        # Captura qualquer erro
+        print(f"Erro no registro: {e}")
+        return jsonify({'message': 'Erro ao processar o registro'}), 500
+    finally:
+        if conn:
+            conn.close()
 
 @app.route('/login', methods=['POST'])
 def login():

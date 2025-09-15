@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useAuth } from '../components/AuthContext'; 
 import '../styles/Register.css';
@@ -13,6 +14,7 @@ export default function RegisterForm() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const navigate = useNavigate(); 
 
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -36,15 +38,16 @@ const handleSubmit = async (e) => {
 
     if (response.ok) {
       setSuccess(data.message);
-      
-  
-      localStorage.setItem('username', username);
-      localStorage.setItem('token', data.token); 
-      
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('username', data.username);  
+      login(data.username, data.token); 
+
       setUsername('');
       setPassword('');
       setConfirmPassword('');
       setEmail('');
+      navigate('/partidas');
     } else {
       setError(data.message || 'Erro no registro');
     }
@@ -80,12 +83,11 @@ const handleSubmit = async (e) => {
                     </div>
 
                     <div className="col-12 mb-3">
-                      <label htmlFor="email" className="form-label">Email</label>
+                      <label htmlFor="email" className="form-label" >Email</label>
                       <input 
                         type="email" 
                         className="form-control" 
                         id="email" 
-                        placeholder=""
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                       />
