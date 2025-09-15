@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useAuth } from '../components/AuthContext';
 import '../styles/Login.css';
 import googleIcon from '../assets/google-icon.png';
 import facebookIcon from '../assets/facebook-icon.png';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth(); 
   const [keepConnected, setKeepConnected] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -27,6 +29,8 @@ const handleSubmit = async (e) => {
 
     localStorage.setItem('token', data.token);
     localStorage.setItem('username', data.username);  
+
+    login(data.username, data.token);
 
     if (keepConnected) {
       localStorage.setItem('keepConnected', 'true');

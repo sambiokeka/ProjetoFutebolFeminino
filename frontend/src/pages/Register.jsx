@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useAuth } from '../components/AuthContext'; 
 import '../styles/Register.css';
 import googleIcon from '../assets/google-icon.png';
 import facebookIcon from '../assets/facebook-icon.png';
@@ -7,6 +8,7 @@ import facebookIcon from '../assets/facebook-icon.png';
 export default function RegisterForm() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState(''); 
+  const { login } = useAuth();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');

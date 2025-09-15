@@ -118,7 +118,6 @@ function Salvo() {
     try {
       const horaBrasil = ajustarHorarioBrasil(partida.strTime);
       
-      // CORREÇÃO: Usar a data ajustada para o Brasil
       const dataAjustada = ajustarDataBrasil(partida.dateEvent);
       const dataFormatada = dataAjustada.toISOString().split('T')[0];
       
@@ -474,44 +473,6 @@ function Salvo() {
           })
         )}
       </div>
-
-      <div className="acoes-container">
-        <button className="btn-logout" onClick={logout}>
-          Sair
-        </button>
-        <button 
-          className="btn-excluir-conta"
-          onClick={() => setMostrarModalExclusao(true)}
-        >
-          Excluir Minha Conta
-        </button>
-      </div>
-
-      {mostrarModalExclusao && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>Excluir Conta</h3>
-            <p>Tem certeza que deseja excluir sua conta?</p>
-            <p className="warning-text">
-              Esta ação não pode ser desfeita! Todas as suas partidas salvas serão perdidas.
-            </p>
-            <div className="modal-actions">
-              <button 
-                className="btn-cancelar"
-                onClick={() => setMostrarModalExclusao(false)}
-              >
-                Cancelar
-              </button>
-              <button 
-                className="btn-confirmar-exclusao"
-                onClick={excluirConta}
-              >
-                Sim, Excluir Conta
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
