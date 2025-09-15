@@ -14,7 +14,7 @@ const Footer = () => {
             <div className="col-md-5">
               <div className="footer-logo-container">
                 <img src={bolaIcon} alt="Ícone Bola" className="footer-logo-icon" />
-                <h3 className="footer-logo">passa a bola</h3>
+                <h3 className="footer-logo">Match Point</h3>
               </div>
               <p className="footer-description">
                 A plataforma completa para acompanhar o futebol feminino. 
@@ -51,7 +51,7 @@ const Footer = () => {
           <div className="row">
             <div className="col-12">
               <p className="copyright">
-                © 2025 Passa a Bola. Todos os direitos reservados.
+                © 2025 Match Point. Todos os direitos reservados.
               </p>
               <div className="legal-links">
                 <a href="#privacidade">Política de Privacidade</a>

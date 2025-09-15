@@ -29,7 +29,7 @@ const Header = () => {
           <a className="navbar-brand" href="/Partidas">
             <div className="logo-container">
               <img src={bolaIcon} alt="Ícone Bola" className="logo-icon" />
-              <h1 className="logo-text">passa a bola</h1>
+              <h1 className="logo-text">Match Point</h1>
             </div>
           </a>
           

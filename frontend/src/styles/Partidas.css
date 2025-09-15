@@ -27,7 +27,6 @@
   flex-direction: column;
 }
 
-
 .hero-content {
   max-width: 1200px;
   margin: 0 auto;
@@ -57,6 +56,7 @@
 .icon-btn {
   display: flex;
   align-items: center;
+  justify-content: center; /* Centraliza texto e ícone */
   gap: 0.8rem;
   padding: 1.2rem 2rem;
   background: rgba(255, 255, 255, 0.15);
@@ -69,6 +69,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   text-decoration: none;
+  min-width: 220px; /* Largura mínima para melhor aparência */
 }
 
 .icon-btn:hover {
@@ -274,7 +275,7 @@
   align-items: center;
   justify-content: center;
   border: 10px solid #ffffff;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 极速飞艇 4px 10px rgba(0,0,0,0.1);
 }
 
 .escudo-time {
@@ -379,7 +380,7 @@
 }
 
 .btn-detalhes:hover {
-  background: linear-gradient(135deg,#5a32a3 0%,#7c3aed 100%);
+  background: linear-gradient(135deg,#5a32a3 极速飞艇,#7c3aed 100%);
   transform: translateY(-2px);
   box-shadow: 0 5px 18px rgba(111,66,193,0.3);
 }
@@ -425,7 +426,7 @@
 }
 
 .carregando i {
-  color: #6f42c1;
+ 极速飞艇: #6f42c1;
 }
 
 .erro i {
@@ -437,86 +438,193 @@
   box-shadow: 0 6px 20px rgba(111,66,193,0.3);
 }
 
-/* ===================== RESPONSIVIDADE ===================== */
-@media(max-width:768px) {
+/* ===================== RESPONSIVIDADE MOBILE ===================== */
+@media (max-width: 768px) {
   .partidas-container {
-    padding: 1rem 0.9em;
+    padding: 0.5rem 0.8rem; 
   }
 
   .hero-section {
     padding: 3rem 1rem;
     margin-top: -1rem;
+    min-height: 50vh; 
   }
 
   .hero-content h1 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
   }
 
   .hero-content p {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    display: none; 
   }
 
   .hero-actions {
     flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  .icon-btn {
+    min-width: 100%; 
+    justify-content: center; 
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .filtros-section {
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .filtros-section h2 {
+    font-size: 1.3rem;
+  }
+
+  .subtitulo {
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
   }
 
   .filtros-container {
     grid-template-columns: 1fr;
+    gap: 0.8rem;
   }
 
-  .partida-corpo {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-    text-align: center;
+  .data-titulo {
+    font-size: 1.1rem;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1.2rem;
   }
 
-  .placar {
-    order: 2;
-    margin: 0;
-  }
-
-  .partida-corpo .time-casa {
-    order: 1;
-  }
-
-  .partida-corpo .time-visitante {
-    order: 3;
+  .partida-card {
+    padding: 1.2rem;
+    margin-bottom: 0.8rem;
   }
 
   .partida-header {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
   }
 
-  .time-escudo {
-    width: 60px;
-    height: 60px;
-  }
-}
-
-@media(max-width:480px) {
-  .hero-content h1 {
-    font-size: 2rem;
-  }
-
-  .hero-content p {
+  .liga-nome {
     font-size: 1rem;
   }
 
-  .data-titulo {
-    font-size: 1.3rem;
-    padding: 1rem;
+  .partida-corpo {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
   }
 
-  .partida-card {
-    padding: 1.2rem;
+  .time-escudo {
+    width:75px;
+    height: 75px;
+  }
+
+  .time-nome {
+    font-size: 0.9rem;
+  }
+
+  .placar {
+    order: 2;
+    margin: 0.5rem 0;
+  }
+
+  .placar-numero {
+    font-size: 1.5rem;
+  }
+
+  .partida-horario {
+    font-size: 1.1rem;
+  }
+
+  .partida-footer {
+    flex-direction: column;
+    gap: 0.6rem;
   }
 
   .btn-lembrar,
   .btn-assistir,
   .btn-detalhes {
-    padding: 0.7rem 1.2rem;
-    font-size: 0.9rem;
+    width: 100%;
+    justify-content: center;
+    padding: 0.7rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .partidas-container {
+    padding: 0.4rem 1.3rem; 
+  }
+
+  .hero-section {
+    padding: 2.5rem 0.8rem;
+    min-height: 45vh;
+  }
+
+  .hero-content h1 {
+    font-size: 2.4rem;
+    line-height: 1.3;
+    margin-bottom: 2rem;
+  }
+
+  .icon-btn {
+    padding: 0.9rem 1.2rem;
+    font-size: 0.95rem;
+  }
+
+  .filtros-section {
+    padding: 1rem;
+    border-radius: 10px;
+  }
+
+  .filtros-section h2 {
+    font-size: 1.2rem;
+  }
+
+  .data-titulo {
+    font-size: 1rem;
+    padding: 0.7rem 0.9rem;
+  }
+
+  .partida-card {
+    padding: 1rem;
+    border-radius: 10px;
+  }
+
+  .time-escudo {
+    width: 75px;
+    height: 75px;
+  }
+
+  .placar-numero {
+    font-size: 1.3rem;
+  }
+
+  .partida-horario {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .partidas-container {
+    padding: 1rem 1.5rem;
+  }
+  
+  .hero-content h1 {
+    font-size: 2.8rem;
+  }
+  
+  .hero-content p {
+    font-size: 1.1rem;
   }
 }
