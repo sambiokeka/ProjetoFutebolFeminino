@@ -1,0 +1,6 @@
+// MUDA PRO DA SUA MAQUINA VIRTUAL
+const BACKEND_HOST = "192.168.198.128";
+const BACKEND_PORT = "5000";
+
+// Monta a URL base
+export const API_URL = `http://${BACKEND_HOST}:${BACKEND_PORT}`;

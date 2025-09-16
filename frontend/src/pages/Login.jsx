@@ -18,7 +18,7 @@ const handleSubmit = async (e) => {
 
   try {
     {/* Aqui tem o fetch de login, ele envia os dados pro /login e se os dados baterem o usuario entra */}
-    const response = await fetch('http://192.168.198.128:5000/login', {
+    const response = await fetch('http://${BACKEND_HOST}:${BACKEND_PORT}login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),

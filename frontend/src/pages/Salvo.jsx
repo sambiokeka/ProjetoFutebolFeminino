@@ -15,7 +15,7 @@ function Salvo() {
   const carregarPartidasSalvas = () => {
     setCarregando(true);
     
-    fetch(`http://192.168.198.128:5000/partidas/salvas/${usuario}`)
+    fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}partidas/salvas/${usuario}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`Erro HTTP! status: ${res.status}`);
@@ -151,7 +151,7 @@ function Salvo() {
     try {
       const novaNotificacao = !notificacaoAtual;
       
-      const response = await fetch("http://192.168.198.128:5000/partidas/salvas/notificacao", {
+      const response = await fetch("http://${BACKEND_HOST}:${BACKEND_PORT}partidas/salvas/notificacao", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -187,7 +187,7 @@ function Salvo() {
     }
 
     try {
-      const response = await fetch("http://192.168.198.128:5000/partidas/salvas/remover", {
+      const response = await fetch("http://${BACKEND_HOST}:${BACKEND_PORT}partidas/salvas/remover", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

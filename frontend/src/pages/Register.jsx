@@ -29,7 +29,7 @@ const handleSubmit = async (e) => {
 
   try {
     {/* Aqui tem o fetch do registro de usuarios, aq ele registra usuarios, vai tomando */}
-    const response = await fetch('http://192.168.198.128:5000/register', {
+    const response = await fetch('http://${BACKEND_HOST}:${BACKEND_PORT}register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
