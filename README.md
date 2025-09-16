@@ -14,6 +14,60 @@
 
 ---
 
+## Requisitos Extras DOCKER
+
+Para esta Branch será necessário requisitos extras.
+
+O ambiente foi desenvolvido e testado em VMware com Ubuntu utilizando Docker para orquestrar os serviços.
+
+O projeto integra conceitos de IoT para monitoramento em tempo real e comunicação entre dispositivos virtuais, utilizando containers Docker.
+Essa abordagem permite:
+
+- Coleta contínua de dados
+- Execução de health checks
+- Automação de notificações para os usuários
+
+### Comandos principais
+
+Construir a imagem do backend:
+
+```bash
+sudo docker build -t futebol-backend ./backend
+```
+
+Executar o backend em um container:
+
+```bash
+sudo docker run -d -p 5000:5000 futebol-backend
+```
+
+Listar containers em execução:
+
+```bash
+sudo docker ps
+```
+
+Parar um container específico:
+
+```bash
+sudo docker stop <container_id>
+```
+
+## Configuração de Endpoints (`https.js`)
+
+Para facilitar o uso em diferentes ambientes (local, remoto, dockerizado), foi criado o arquivo `frontend/utils/https.js`,
+que centraliza a configuração do endereço do backend.
+
+```js
+// frontend/utils/https.js
+export const BACKEND_HOST = "192.168.198.128"; // ou "localhost"
+export const BACKEND_PORT = "5000";
+
+export const API_URL = `http://${BACKEND_HOST}:${BACKEND_PORT}`;
+```
+
+---
+
 ## Funcionalidades
 
 ### Sistema de Autenticação
