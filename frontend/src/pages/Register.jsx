@@ -5,6 +5,7 @@ import { useAuth } from '../components/AuthContext';
 import '../styles/Register.css';
 import googleIcon from '../assets/google-icon.png';
 import facebookIcon from '../assets/facebook-icon.png';
+import { API_URL } from '../utils/https.js';
 
 export default function RegisterForm() {
   const [username, setUsername] = useState('');
@@ -29,7 +30,7 @@ const handleSubmit = async (e) => {
 
   try {
     {/* Aqui tem o fetch do registro de usuarios, aq ele registra usuarios, vai tomando */}
-    const response = await fetch('http://${BACKEND_HOST}:${BACKEND_PORT}register', {
+    const response = await fetch(`${API_URL}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),

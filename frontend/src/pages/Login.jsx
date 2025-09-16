@@ -5,6 +5,8 @@ import { useAuth } from '../components/AuthContext';
 import '../styles/Login.css';
 import googleIcon from '../assets/google-icon.png';
 import facebookIcon from '../assets/facebook-icon.png';
+import { API_URL } from '../utils/https.js';
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ const handleSubmit = async (e) => {
 
   try {
     {/* Aqui tem o fetch de login, ele envia os dados pro /login e se os dados baterem o usuario entra */}
-    const response = await fetch('http://${BACKEND_HOST}:${BACKEND_PORT}login', {
+    const response = await fetch(`${API_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),

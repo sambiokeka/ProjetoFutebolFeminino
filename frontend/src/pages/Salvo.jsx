@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import "../styles/Salvo.css";
 import { traduzirNome } from '../utils/traduzir';
 import { getEscudoTime } from '../utils/escudos';
+import { API_URL } from '../utils/https.js';
 
 function Salvo() {
   const [partidasSalvas, setPartidasSalvas] = useState([]);
@@ -15,7 +16,7 @@ function Salvo() {
   const carregarPartidasSalvas = () => {
     setCarregando(true);
     
-    fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}partidas/salvas/${usuario}`)
+    fetch(`${API_URL}/partidas/salvas/${usuario}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`Erro HTTP! status: ${res.status}`);
@@ -151,7 +152,7 @@ function Salvo() {
     try {
       const novaNotificacao = !notificacaoAtual;
       
-      const response = await fetch("http://${BACKEND_HOST}:${BACKEND_PORT}partidas/salvas/notificacao", {
+      const response = await fetch(`${API_URL}/partidas/salvas/notificacao`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -187,7 +188,7 @@ function Salvo() {
     }
 
     try {
-      const response = await fetch("http://${BACKEND_HOST}:${BACKEND_PORT}partidas/salvas/remover", {
+      const response = await fetch(`${API_URL}/partidas/salvas/remover`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
