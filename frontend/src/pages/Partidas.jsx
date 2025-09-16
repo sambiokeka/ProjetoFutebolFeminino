@@ -32,7 +32,7 @@ function Partidas() {
   const buscarPartidas = useCallback(async () => {
     try {
       {/* Aqui tem o fetch onde todas as partidas foram postadas */}
-      const res = await fetch("http://localhost:5000/partidas");
+      const res = await fetch("http://192.168.198.128:5000/partidas");
       if (!res.ok) {
         console.log('Erro!')
       }
@@ -46,7 +46,7 @@ function Partidas() {
   
   const carregarPartidasSalvas = () => {
     {/* Aqui tem o fetch das partidas que foram salvas, coloca o nome de usuario na frente pra aparecer os jogos salvos dele, teste /erick dps */}
-    fetch(`http://localhost:5000/partidas/salvas/${usuario}`)
+    fetch(`http://192.168.198.128:5000/partidas/salvas/${usuario}`)
       .then((res) => res.json())
       .then((data) => setPartidasSalvas(data))
       .catch((err) => console.error("Erro ao carregar partidas salvas:", err));
@@ -95,7 +95,7 @@ function Partidas() {
 
     try {
       {/* Aqui tem o fetch pra postar os jogos nos jogos salvos */}
-      const response = await fetch("http://localhost:5000/partidas/salvar", {
+      const response = await fetch("http://192.168.198.128:5000/partidas/salvar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -133,7 +133,7 @@ function Partidas() {
   const removerPartida = async (idEvent) => {
     try {
        {/* Aqui tem o fetch pra deletar jogos, ele pega o id do evento e do usuario e deleta o id do evento do usuario, do salvos dele */}
-      const response = await fetch("http://localhost:5000/partidas/salvas/remover", {
+      const response = await fetch("http://192.168.198.128:5000/partidas/salvas/remover", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
