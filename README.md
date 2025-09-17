@@ -1,6 +1,6 @@
-# Passa a Bola - Plataforma de Futebol Feminino
+# Match Point - Plataforma de Futebol Feminino
 
-**Passa a Bola** é uma plataforma web completa para acompanhamento de partidas de futebol feminino. O sistema permite que usuários visualizem jogos de diversas ligas, salvem partidas de interesse e recebam notificações sobre atualizações.
+O **Match Point** é uma plataforma web completa para acompanhamento de partidas de futebol feminino. O sistema permite que usuários visualizem jogos de diversas ligas, salvem partidas de interesse e recebam notificações sobre atualizações.
 
 ---
 
