@@ -5,7 +5,7 @@ API_KEY = "123"
 BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}/"
 
 # Lista de nomes das ligas de futebol feminino que serão processadas.
-LEAGUE_NAMES = ["Brazil Brasileiro Women", "International Friendlies Women", "English Womens Super League"]
+LEAGUE_NAMES = ["Brazil Brasileiro Women", "International Friendlies Women", "English Womens Super League", "Brazilian Serie A"]
 
 
 
@@ -44,6 +44,11 @@ LEAGUE_DATES = {
         "2025-10-26",
         "2025-10-27"
     ],
+
+    'Brazilian Serie A': [
+        "2025-09-17",         
+    ],
+
     "English Womens Super League": [
         "2025-05-04","2025-05-05","2025-05-10","2025-05-10","2025-05-10",
         "2025-05-10","2025-05-10","2025-05-10","2025-09-05","2025-09-06",
@@ -51,4 +56,6 @@ LEAGUE_DATES = {
         "2025-09-12","2025-09-14","2025-09-14", "2025-09-19", "2025-09-21",
         "2025-09-27", "2025-09-28"
     ],
+
+
 }
