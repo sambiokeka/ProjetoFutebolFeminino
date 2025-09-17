@@ -7,4 +7,6 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
+# CMD ["sh", "-c", "python -u rotas.py & python -u monitor.py"]
+
 CMD ["python", "rotas.py"]
