@@ -360,14 +360,14 @@ dados_copa_do_brasil = [
         'idEvent': 'copa_br_oitavas_01', 'strEvent': 'Sport Women vs Realidade Jovem Women',
         'dateEvent': '2025-09-16', 'strTime': '15:00:00', 'strSeason': '2025',
         'strHomeTeam': 'Sport Women', 'strAwayTeam': 'Realidade Jovem Women',
-        'intHomeScore': None, 'intAwayScore': None, 'strVenue': None,
+        'intHomeScore': 3, 'intAwayScore': 1, 'strVenue': None,
         'idLeague': 'copa_br_2025', 'status': 'proximas'
     },
     {
         'idEvent': 'copa_br_oitavas_02', 'strEvent': 'Bahia Women vs Atlético-MG Women',
         'dateEvent': '2025-09-16', 'strTime': '18:00:00', 'strSeason': '2025',
         'strHomeTeam': 'Bahia Women', 'strAwayTeam': 'Atlético-MG Women',
-        'intHomeScore': None, 'intAwayScore': None, 'strVenue': None,
+        'intHomeScore': 1, 'intAwayScore': 0, 'strVenue': None,
         'idLeague': 'copa_br_2025', 'status': 'proximas'
     },
     {
