@@ -34,7 +34,14 @@ export const traducoes = {
     'USA Women' : 'EUA Feminino',
     'Estonia Women' : 'Estónia Feminino',
     'Serbia Women' : 'Sévia Feminino',
-    'England Women' : 'Inglaterra Feminino'
+    'England Women' : 'Inglaterra Feminino',
+    'Georgia Women' : 'Geórgia Feminino',
+    'Moldova Women' : 'Moldávia Feminino',
+    'Switzerland Women' : 'Suíça Feminino',
+    'Wales Women' : 'País de Gales Feminino',
+    'Slovakia Women' : 'Eslováquia Feminino',
+    'Ukraine Women' : 'Ucrânia Feminino',
+    'Brazil Women' : 'Brasil Feminino'
   },
 
   // Ligas/Campeonatos

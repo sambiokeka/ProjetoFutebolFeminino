@@ -109,7 +109,19 @@ export const escudosTimes = {
   'Chile Feminino' : 'https://upload.wikimedia.org/wikipedia/commons/6/6a/Logo_Federaci%C3%B3n_de_F%C3%BAtbol_de_Chile.png',
   'Bolivia Feminino' : 'https://upload.wikimedia.org/wikipedia/pt/9/9e/Federaci%C3%B3n_Boliviana_de_F%C3%BAtbol.png',
   'Panama Feminino' : 'https://upload.wikimedia.org/wikipedia/pt/a/aa/Panama_FA_2.svg.png',
-};
+  'Andorra Feminino' : 'https://www.ogol.com.br/img/bandeiras/186_and_imgbank_flag.png',
+  'Gibraltar Feminino' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmai-BHmrx1RJ8Q4UZw5LfzT9dxEFrz2J02w&s',
+  'Portugal Feminino' : 'https://upload.wikimedia.org/wikipedia/pt/7/75/Portugal_FPF.png',
+  'Geórgia Feminino' : 'https://escudosfc.com.br/images/georgia_time.png',
+  'Moldávia Feminino' : 'https://upload.wikimedia.org/wikipedia/pt/b/b5/FMoldoveneasc%C4%83F.png',
+  'Suíça Feminino' : 'https://upload.wikimedia.org/wikipedia/pt/thumb/9/96/SFV_Logo.svg.png/250px-SFV_Logo.svg.png',
+  'País de Gales Feminino' : 'https://upload.wikimedia.org/wikipedia/pt/0/05/FAWales.png',
+  'Eslováquia Feminino' : 'https://upload.wikimedia.org/wikipedia/pt/5/5e/SlovenskiFZ.png',
+  'Ucrânia Feminino' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Logo_F%C3%A9d%C3%A9ration_Ukraine_Football_2016.svg/250px-Logo_F%C3%A9d%C3%A9ration_Ukraine_Football_2016.svg.png',
+  'Brasil Feminino' : 'https://images.vexels.com/media/users/3/152348/isolated/preview/e292f8cec7eae5f8f4f25bcc36cfe5f5-logo-da-selecao-brasileira-de-futebol.png'
+
+
+}
 
 export const getEscudoTime = (nomeTime) => {
   return escudosTimes[nomeTime] || null;
