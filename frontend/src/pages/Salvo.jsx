@@ -215,7 +215,6 @@ function Salvo() {
   const formatarData = (dataString) => {
     if (!dataString) return "Data não disponível";
     
-    // Usa a mesma lógica de ajuste de fuso horário
     const dataAjustada = ajustarDataBrasil(dataString);
     
     return dataAjustada.toLocaleDateString("pt-BR", { 
@@ -229,15 +228,12 @@ function Salvo() {
     if (!dataCriacao) return "Data não disponível";
     
     try {
-      // Tenta parsear a data no formato do banco (provavelmente ISO string)
       const data = new Date(dataCriacao);
-      
-      // Verifica se a data é válida
+
       if (isNaN(data.getTime())) {
         return "Data não disponível";
       }
       
-      // Formata apenas a data (dia/mês) sem o dia da semana
       return data.toLocaleDateString("pt-BR", { 
         day: '2-digit', 
         month: '2-digit'
@@ -335,12 +331,16 @@ function Salvo() {
             return (
               <div key={partida.idEvent} className="partida-card">
                 <div className="partida-header">
-                  <span className="liga">{partida.strLeague}</span>
-                  <span className={`status ${isProxima ? "proxima" : "finalizada"}`}>
-                    {isProxima ? "PRÓXIMA" : "FINALIZADA"}
+
+                  <div className="header-info-salvo">
+                    <span className="liga">{partida.strLeague}</span>
+                    {partida.intRound && <span className="partida-rodada">· {partida.intRound}ª Rodada</span>}
+                  </div>
+                  
+                  <span className={`status ${status}`}>
+                    {status.replace('-', ' ').toUpperCase()}
                   </span>
                 </div>
-
                 <div className="partida-content">
                   <div className="time time-casa">
                     <div className="time-logo">

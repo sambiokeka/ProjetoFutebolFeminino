@@ -59,6 +59,7 @@ export const traducoes = {
 
   // Termos gerais
   terms: {
+
     'Women': 'Feminino',
     'Womens': 'Feminino',
     'Women\'s': 'Feminino',
@@ -67,28 +68,33 @@ export const traducoes = {
 };
 
 // Função para traduzir nomes
-export const traduzirNome = (nome) => {
+export const traduzirNome = (nome, options = {}) => {
   if (!nome) return nome;
-  
+
   let nomeTraduzido = nome;
-  
+
   // Primeiro tenta traduzir times específicos
   if (traducoes.teams[nomeTraduzido]) {
     return traducoes.teams[nomeTraduzido];
   }
-  
+
   // Tenta traduzir ligas específicas
   if (traducoes.leagues[nomeTraduzido]) {
     return traducoes.leagues[nomeTraduzido];
   }
-  
-  // Traduz termos gerais (Women → Feminino)
+
+  // Traduz termos gerais
   Object.keys(traducoes.terms).forEach(termoIngles => {
     const termoPortugues = traducoes.terms[termoIngles];
     if (nomeTraduzido.includes(termoIngles)) {
       nomeTraduzido = nomeTraduzido.replace(termoIngles, termoPortugues);
     }
   });
-  
+
+  // Exceção especial 
+  if (options.allowW && nomeTraduzido.endsWith(' W')) {
+    nomeTraduzido = nomeTraduzido.replace(/ W$/, ' Feminino');
+  }
+
   return nomeTraduzido;
 };
