@@ -119,6 +119,12 @@ export const escudosTimes = {
   'Eslováquia Feminino' : 'https://upload.wikimedia.org/wikipedia/pt/5/5e/SlovenskiFZ.png',
   'Ucrânia Feminino' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Logo_F%C3%A9d%C3%A9ration_Ukraine_Football_2016.svg/250px-Logo_F%C3%A9d%C3%A9ration_Ukraine_Football_2016.svg.png',
   'Brasil Feminino' : 'https://images.vexels.com/media/users/3/152348/isolated/preview/e292f8cec7eae5f8f4f25bcc36cfe5f5-logo-da-selecao-brasileira-de-futebol.png',
+  'Hugria Feminino' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTral9jTKG8vCsx6RIchhATowYMhFB34FWUgg&s',
+  'Luxemburgo Feminino' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Coat_of_arms_of_Luxembourg.svg/2121px-Coat_of_arms_of_Luxembourg.svg.png',
+  'Itália Feminino' : 'https://upload.wikimedia.org/wikipedia/commons/b/bf/Logo_Italy_National_Football_Team_-_2023.svg',
+  'Japão Feminino' : 'https://upload.wikimedia.org/wikipedia/pt/thumb/c/c3/Sele%C3%A7%C3%A3o_Japonesa_de_Futebol_Feminino.png/250px-Sele%C3%A7%C3%A3o_Japonesa_de_Futebol_Feminino.png',
+  'Nova Zelandia Feminino' : 'https://upload.wikimedia.org/wikipedia/pt/d/db/New_Zealand_Football.png',
+  
 
   'Botafogo': 'https://logodetimes.com/times/botafogo/logo-botafogo-256.png',
   'Mirassol' : 'https://www.ogol.com.br/img/logos/equipas/3348_imgbank_1685113760.png'

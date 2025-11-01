@@ -9,7 +9,7 @@ headers = {
     'x-rapidapi-key': f"{API_KEY}"
     }
 
-conn.request("GET", "/fixtures/statistics?fixture=215662&team=463", headers=headers)
+conn.request("GET", "/fixtures/statistics?fixture=215662", headers=headers)
 
 res = conn.getresponse()
 data = res.read()

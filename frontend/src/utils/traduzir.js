@@ -41,7 +41,12 @@ export const traducoes = {
     'Wales Women' : 'País de Gales Feminino',
     'Slovakia Women' : 'Eslováquia Feminino',
     'Ukraine Women' : 'Ucrânia Feminino',
-    'Brazil Women' : 'Brasil Feminino'
+    'Brazil Women' : 'Brasil Feminino',
+    'Hungary Women' : 'Hugria Feminino',
+    'Luxembourg Women' : 'Luxemburgo Feminino',
+    'Italy Women' : 'Itália Feminino',
+    'Japan Women' : 'Japão Feminino',
+    'New Zealand Women' : 'Nova Zelandia Feminino'
   },
 
   // Ligas/Campeonatos
@@ -59,7 +64,6 @@ export const traducoes = {
 
   // Termos gerais
   terms: {
-
     'Women': 'Feminino',
     'Womens': 'Feminino',
     'Women\'s': 'Feminino',

@@ -3,7 +3,7 @@ import '../styles/Partidas.css';
 import { traduzirNome } from '../utils/traduzir';
 import { getEscudoTime } from '../utils/escudos';
 import Popup from '../components/Popup';
-import DetalhesPartidaPopup from '../components/VerMaisPopup'
+import DetalhesPartidaPopup from '../components/detalhes/VerMaisPopup'
 
 function Partidas() {
   const [partidas, setPartidas] = useState([]);
@@ -57,31 +57,52 @@ function Partidas() {
     carregarPartidasSalvas();
   }, [usuario]);
 
-  const verDetalhes = (partida) => {
+const verDetalhes = (partida) => {
     const { idAPIfootball } = partida;
-    const url = `https://v3.football.api-sports.io/fixtures/lineups?fixture=${idAPIfootball}`;
 
-    fetch(url, {
-      method: "GET",
-      headers: {
-        "x-rapidapi-host": "v3.football.api-sports.io",
-        "x-rapidapi-key": "a1583d84589bc5a44bdcb3829e748f4c"
-      }
-    })
-    .then(response => {
-      if (!response.ok) throw new Error(`Erro HTTP! status: ${response.status}`);
-      return response.json(); 
-    })
-    .then(data => {
-      setModalData(data);     
-      setIsModalOpen(true);    
-    })
-    .catch(err => {
-      console.error("Erro ao buscar detalhes da partida:", err);
-      alert("Não foi possível carregar os detalhes da partida.");
+    // fetch de escalação e eventos
+    const urlLineups = `https://v3.football.api-sports.io/fixtures/lineups?fixture=${idAPIfootball}`;
+    const urlEvents = `https://v3.football.api-sports.io/fixtures/events?fixture=${idAPIfootball}`;
+
+    const headers = {
+      "x-rapidapi-host": "v3.football.api-sports.io",
+      "x-rapidapi-key": import.meta.env.VITE_API_KEY
+    };
+
+    const promiseLineups = fetch(urlLineups, { method: "GET", headers }).then(res => {
+        if (!res.ok) throw new Error('Falha ao buscar Lineups');
+        return res.json();
     });
+
+    const promiseEvents = fetch(urlEvents, { method: "GET", headers }).then(res => {
+        if (!res.ok) throw new Error('Falha ao buscar Events');
+        return res.json();
+    });
+
+    Promise.all([promiseLineups, promiseEvents])
+      .then(([dataLineups, dataEvents]) => {
+        
+        console.log("Resposta da API de Escalações (Lineups):", dataLineups);
+        console.log("Resposta da API de Eventos (Events):", dataEvents);
+
+        const dadosCombinados = {
+          lineups: dataLineups,
+          events: dataEvents,
+        };
+
+        console.log("Objeto de dados combinado final:", dadosCombinados);
+
+        setModalData(dadosCombinados);
+        setIsModalOpen(true);
+      })
+      .catch(err => {
+        console.error("Erro ao buscar detalhes da partida:", err);
+        alert("Não foi possível carregar os detalhes da partida.");
+      });
   };
 
+  
+  
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setModalData(null);

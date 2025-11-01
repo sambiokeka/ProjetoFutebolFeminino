@@ -2,12 +2,10 @@ const gerarGridPadrao = (jogadores, formacaoStr = "4-3-3") => {
   const formacao = formacaoStr.split('-').map(Number);
   const posicoes = [];
   let jogadorIndex = 0;
-
   if (jogadores[jogadorIndex]) {
     posicoes.push({ ...jogadores[jogadorIndex].player, x: 1, y: 1 });
     jogadorIndex++;
   }
-
   formacao.forEach((jogadorasPorLinha, i) => {
     const linhaX = i + 2;
     for (let j = 0; j < jogadorasPorLinha; j++) {
@@ -17,24 +15,24 @@ const gerarGridPadrao = (jogadores, formacaoStr = "4-3-3") => {
       }
     }
   });
-
   return posicoes;
 };
 
 const formatarNomeVisivel = (nomeCompleto) => {
-  if (!nomeCompleto) return ''; 
-
+  if (!nomeCompleto) return '';
   const partesDoNome = nomeCompleto.split(' ');
   const primeiroNome = partesDoNome[0];
-
-
+  let nomeFinal;
   if (primeiroNome.length <= 2 && partesDoNome.length > 1) {
-    return nomeCompleto
+    nomeFinal = partesDoNome[partesDoNome.length - 1];
+  } else {
+    nomeFinal = primeiroNome;
   }
-  
-  return primeiroNome;
+  if (nomeFinal.length > 7) {
+    return nomeFinal.substring(0, 6) + '...';
+  }
+  return nomeFinal;
 };
-
 
 const CampoTatico = ({ jogadores }) => {
   if (!jogadores || jogadores.length === 0) {
@@ -58,6 +56,7 @@ const CampoTatico = ({ jogadores }) => {
     return acc;
   }, {});
 
+
   return (
     <div 
       className="tw-relative tw-w-full tw-aspect-[2/3] tw-bg-green-600 dark:tw-bg-green-800 tw-border-4 tw-border-white/50 tw-rounded-lg tw-overflow-hidden"
@@ -71,7 +70,6 @@ const CampoTatico = ({ jogadores }) => {
         const totalNaLinha = jogadorasPorLinha[jogadora.x];
         const posicaoHorizontal = (jogadora.y * 100) / (totalNaLinha + 1);
         const posicaoVertical = (jogadora.x * 100) / 5.5;
-
         return (
           <div
             key={jogadora.id}

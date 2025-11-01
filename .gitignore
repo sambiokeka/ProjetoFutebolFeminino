@@ -5,6 +5,7 @@ npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
 lerna-debug.log*
+.env
 
 # Ignora todas as pastas node_modules
 # A barra no início faz com que a regra seja aplicada a partir da raiz
