@@ -112,7 +112,7 @@ const Header = () => {
               ? 'max-h-96 opacity-100 visible translate-y-0' 
               : 'max-h-0 opacity-0 invisible -translate-y-2'
           }`}>
-            <div className="bg-white rounded-lg shadow-lg mt-2 py-3 border border-gray-100">
+            <div className="bg-white rounded-lg shadow-lg mt-2 py-3 border border-gray-100 mb-4">
               <div className="flex flex-col space-y-1">
                 <a 
                   className="nav-link text-black px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200"
@@ -131,11 +131,9 @@ const Header = () => {
                 
                 {username ? (
                   <div className="border-t border-gray-100 pt-2 mt-2">
-                    <div className="px-4 py-2 text-gray-500">
-                      {username}
-                    </div>
+
                     <button 
-                      className="nav-link w-full text-left text-black px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                      className="nav-link w-full text-left text-black px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 mt-2"
                       onClick={handleLogout}
                     >
                       Sair
@@ -143,7 +141,7 @@ const Header = () => {
                   </div>
                 ) : (
                   <a 
-                    className="nav-link text-black px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 border-t border-gray-100 mt-2 pt-2"
+                    className="nav-link text-black px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 border-t border-gray-100 mt-2 pt-2 !-mb-1"
                     href="/Login"
                     onClick={() => setMenuOpen(false)}
                   >

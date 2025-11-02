@@ -1,18 +1,6 @@
 import { getEscudoTime } from '../utils/escudos';
-
-const ajustarHorarioBrasil = (horaUTC, status = "proxima") => {
-    if (!horaUTC) return status === "proxima" ? "--" : "--:--";
-    const [hours, minutes] = horaUTC.split(':');
-    let horasBrasil = parseInt(hours) - 3;
-    if (horasBrasil < 0) horasBrasil += 24;
-    return `${horasBrasil.toString().padStart(2, '0')}:${minutes}`;
-};
-
-const formatarData = (dataString) => {
-    if (!dataString) return "Data não disponível";
-    const dataAjustada = new Date(dataString + 'T12:00:00Z');
-    return dataAjustada.toLocaleDateString("pt-BR", { weekday: 'short', day: '2-digit', month: '2-digit' });
-};
+// Importa as funções de um ficheiro de utilitários central
+import { ajustarHorarioBrasil, formatarData } from '../utils/formatters'; 
 
 // --- O COMPONENTE DO CARD ---
 
@@ -31,6 +19,7 @@ const PartidaCard = ({
     const placarDisponivel = partida.intHomeScore !== null && partida.intAwayScore !== null;
 
     const renderFooter = () => {
+        // A classe base para todos os botões, com a correção do arredondamento
         const baseBtnClass = "flex items-center gap-2 px-5 py-2 text-sm font-semibold !rounded-xl cursor-pointer transition-all duration-300 ease-in-out shadow-md hover:-translate-y-0.5 hover:shadow-lg w-full md:w-auto justify-center";
 
         if (variant === 'partidas') {
@@ -38,22 +27,22 @@ const PartidaCard = ({
                 <>
                     {status === "proxima" && (
                         isSalvo ? (
-                            <button className={`${baseBtnClass} bg-gradient-to-r from-green-500 to-green-700 text-white`} onClick={() => onRemover(partida.idEvent)}>
+                            <button type="button" className={`${baseBtnClass} bg-gradient-to-r from-green-500 to-green-700 text-white`} onClick={() => onRemover(partida.idEvent)}>
                                 <i className="fas fa-check-circle text-sm"></i> Lembrar-me
                             </button>
                         ) : (
-                            <button className={`${baseBtnClass} bg-gradient-to-r from-purple-600 to-blue-500 hover:shadow-purple-300 text-white`} onClick={() => onSalvar(partida.idEvent)}>
+                            <button type="button" className={`${baseBtnClass} bg-gradient-to-r from-purple-600 to-blue-500 hover:shadow-purple-300 text-white`} onClick={() => onSalvar(partida.idEvent)}>
                                 <i className="fas fa-bell text-sm"></i> Lembrar-me
                             </button>
                         )
                     )}
                     {status === "ao-vivo" && (
-                        <button className={`${baseBtnClass} bg-gradient-to-r from-green-400 to-green-600 hover:shadow-green-300 text-white`}>
+                        <button type="button" className={`${baseBtnClass} bg-gradient-to-r from-green-400 to-green-600 hover:shadow-green-300 text-white`}>
                             <i className="fas fa-play-circle text-sm"></i> Assistir ao vivo
                         </button>
                     )}
                     {status === "finalizada" && (
-                        <button className={`${baseBtnClass} bg-gradient-to-r from-purple-700 to-purple-500 hover:shadow-purple-300 text-white`} onClick={() => onVerDetalhes(partida)}>
+                        <button type="button" className={`${baseBtnClass} bg-gradient-to-r from-purple-700 to-purple-500 hover:shadow-purple-300 text-white`} onClick={() => onVerDetalhes(partida)}>
                             <i className="fas fa-info-circle text-sm"></i> Ver detalhes
                         </button>
                     )}
@@ -65,6 +54,7 @@ const PartidaCard = ({
             return (
                 <>
                     <button
+                        type="button"
                         className={`${baseBtnClass} ${notificacaoAtiva ? 'bg-gradient-to-r from-green-500 to-green-700 text-white' : 'bg-gradient-to-r from-purple-600 to-blue-500 text-white'}`}
                         onClick={() => onToggleNotificacao(partida.idEvent, notificacaoAtiva)}
                         title={notificacaoAtiva ? "Desativar notificações" : "Ativar notificações"}
@@ -73,6 +63,7 @@ const PartidaCard = ({
                         <span>Notificar</span>
                     </button>
                     <button
+                        type="button"
                         className={`${baseBtnClass} bg-gradient-to-r from-red-600 to-red-700 text-white`}
                         onClick={() => onRemover(partida.idEvent)}
                         title="Remover partida"
@@ -150,7 +141,6 @@ const PartidaCard = ({
                             </span>
                         </div>
                     )}
-
                     {status !== 'finalizada' && (
                         <span className="text-sm text-gray-500">{formatarData(partida.dateEvent)}</span>
                     )}

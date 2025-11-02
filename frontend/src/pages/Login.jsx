@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
+
 import { useAuth } from '../components/AuthContext';
 import '../styles/Login.css';
 import googleIcon from '../assets/google-icon.png';
