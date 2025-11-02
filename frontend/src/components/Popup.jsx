@@ -1,49 +1,52 @@
-
 const Popup = ({ isOpen, onClose, onLoginRedirect }) => {
   if (!isOpen) {
     return null;
   }
 
   return (
-    <div
-      className="tw-fixed tw-inset-0 tw-z-[10000] tw-flex tw-items-center tw-justify-center tw-bg-gray-800 tw-bg-opacity-70 tw-p-5"
-      onClick={onClose}
-    >
       <div
-        className="tw-w-full tw-max-w-md tw-rounded-2xl tw-bg-white tw-shadow-2xl tw-animate-[popupIn_0.3s_ease-out]"
+        className="!fixed !inset-0 !z-[10000] !flex !items-center !justify-center !p-4 !bg-black/50"
+        onClick={onClose}
+      >
+      <div
+        className="!w-full !max-w-md !rounded-2xl !bg-white !shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="tw-flex tw-items-center tw-justify-between tw-border-b tw-border-gray-200 tw-p-6">
-          <h2 className="tw-text-2xl tw-font-bold tw-text-gray-800">Conta necessária</h2>
+        {/* Header */}
+        <div className="!flex !items-center !justify-between !p-6 !border-b !border-gray-100 !-mb-2">
+          <h2 className="!text-2xl !font-bold !text-gray-800 !-mb-1">Acesso necessário</h2>
           <button
-            className="tw-rounded-full tw-p-2 tw-text-gray-600 tw-transition-colors tw-duration-300 hover:tw-bg-gray-100 hover:tw-text-gray-900"
+            className="!text-gray-400 hover:!text-gray-600 !transition-colors !duration-200 !rounded-full !p-2 hover:!bg-gray-100"
             onClick={onClose}
-            aria-label="Fechar popup"
+            aria-label="Fechar"
           >
-            <i className="fas fa-times tw-text-lg"></i>
+            <i className="fas fa-times !text-lg"></i>
           </button>
         </div>
         
-        <div className="tw-py-8 tw-px-6 tw-text-center">
-          <div className="tw-mb-6 tw-text-5xl tw-text-purple-600">
-            <i className="fas fa-user-lock"></i>
+        {/* Conteúdo */}
+        <div className="!p-8 !text-center">
+          <div className="!mx-auto !w-20 !h-20 !bg-purple-100 !rounded-2xl !flex !items-center !justify-center !mb-3">
+            <i className="fas fa-user-lock !text-3xl !text-purple-600"></i>
           </div>
-          <p className="tw-text-base tw-font-semibold tw-text-gray-700">Faça login para continuar.</p>
+          <h3 className="!text-lg !font-semibold !text-gray-800 !mb-3">
+            Faça login para continuar
+          </h3>
+          <p className="!text-gray-600 !text-sm !leading-relaxed !p-2 !-mb-3">
+            Você precisa estar logado para salvar partidas e acessar recursos exclusivos.
+          </p>
         </div>
 
-        <div className="tw-flex tw-gap-4 tw-border-t tw-border-gray-200 tw-p-6">
+        {/* Botões */}
+        <div className="!flex !gap-4 !p-6 !border-t !border-gray-100">
           <button
-            className="tw-flex-1 tw-rounded-xl tw-border-2 tw-border-gray-300 tw-bg-gray-100 tw-p-3 tw-font-semibold tw-text-gray-600 tw-transition-colors tw-duration-300 hover:tw-bg-gray-200 hover:tw-text-gray-800"
+            className="!flex-1 !py-4 !px-6 !border !border-gray-300 !text-gray-700 !font-medium !rounded-xl hover:!bg-gray-50 !transition-colors !duration-200"
             onClick={onClose}
           >
             Cancelar
           </button>
           <button
-            className="tw-flex-1 tw-rounded-xl tw-p-3 tw-font-semibold tw-text-white tw-transition-transform tw-duration-300 hover:tw-scale-105"
-            style={{
-              background: 'linear-gradient(135deg, #6f42c1 0%, #8b5cf6 100%)',
-              boxShadow: '0 4px 15px rgba(111, 66, 193, 0.3)'
-            }}
+            className="!flex-1 !py-4 !px-6 !bg-purple-600 !text-white !font-medium !rounded-xl hover:!bg-purple-700 !transition-colors !duration-200 !shadow-md"
             onClick={onLoginRedirect}
           >
             Fazer Login

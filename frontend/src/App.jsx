@@ -1,23 +1,15 @@
-import { Routes, Route } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Partidas from './pages/Partidas';
-import Layout from './components/Layout';
-import Salvo from './pages/Salvo';
-import PrivateRoute from './components/PrivateRoute';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import { Outlet } from 'react-router-dom';
 
-function App() {
+export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Partidas />} />
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
-        <Route path="partidas" element={<Partidas />} />
-        <Route path="salvo" element={<PrivateRoute><Salvo /></PrivateRoute>} />
-      </Route>
-    </Routes>
+    <>
+      <Header />
+      <main>
+        <Outlet />
+      </main>
+      <Footer />
+    </>
   );
 }
-
-export default App;
