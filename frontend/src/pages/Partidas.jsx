@@ -16,7 +16,7 @@ export default function Partidas() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
-
+  
   const partidasSectionRef = useRef(null);
   const [usuario] = useState(localStorage.getItem('username') || '');
 
@@ -82,7 +82,7 @@ export default function Partidas() {
             alert("Não foi possível carregar os detalhes da partida.");
         });
   };
-
+  
   // --- FUNÇÕES DE EVENTOS ---
   const salvarPartida = async (idEvent) => {
     if (!usuario) {
@@ -337,7 +337,7 @@ export default function Partidas() {
                   isSalvo={isPartidaSalva(p.idEvent)}
                   onSalvar={salvarPartida}
                   onRemover={removerPartida}
-                  onVerDetalhes={verDetalhes} 
+                  onVerDetalhes={verDetalhes}
                   variant="partidas"
                 />
               ))}
