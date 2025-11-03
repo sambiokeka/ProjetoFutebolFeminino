@@ -17,7 +17,6 @@ lerna-debug.log*
 
 # Ignora as pastas de cache do backend (Python)
 /backend/__pycache__/
-/backend/venv/
 
 # Ignora pastas e arquivos de editores de código
 .vscode/
