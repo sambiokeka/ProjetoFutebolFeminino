@@ -16,11 +16,10 @@ export default function Partidas() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
-  
+
   const partidasSectionRef = useRef(null);
   const [usuario] = useState(localStorage.getItem('username') || '');
 
-  // --- FUNÇÕES DE DADOS E LÓGICA ---
   const traduzirPartidas = (partidas) => {
     return partidas.map(partida => ({
       ...partida,
@@ -59,8 +58,8 @@ export default function Partidas() {
     carregarPartidasSalvas();
   }, [carregarPartidasSalvas]);
 
-
-  const verDetalhes = (partida) => {
+const verDetalhes = (partida) => {
+    console.log("A função verDetalhes foi chamada para a partida:", partida.idAPIfootball);
     const { idAPIfootball } = partida;
     const urlLineups = `https://v3.football.api-sports.io/fixtures/lineups?fixture=${idAPIfootball}`;
     const urlEvents = `https://v3.football.api-sports.io/fixtures/events?fixture=${idAPIfootball}`;
@@ -68,22 +67,25 @@ export default function Partidas() {
         "x-rapidapi-host": "v3.football.api-sports.io",
         "x-rapidapi-key": import.meta.env.VITE_API_KEY
     };
+    console.log(headers)
+    console.log("A buscar dados...");
     const promiseLineups = fetch(urlLineups, { method: "GET", headers }).then(res => res.json());
     const promiseEvents = fetch(urlEvents, { method: "GET", headers }).then(res => res.json());
 
     Promise.all([promiseLineups, promiseEvents])
         .then(([dataLineups, dataEvents]) => {
+            console.log("Dados recebidos:", { dataLineups, dataEvents });
             const dadosCombinados = { lineups: dataLineups, events: dataEvents };
             setModalData(dadosCombinados);
             setIsModalOpen(true);
+            console.log("Popup deveria abrir agora.");
         })
         .catch(err => {
             console.error("Erro ao buscar detalhes da partida:", err);
             alert("Não foi possível carregar os detalhes da partida.");
         });
   };
-  
-  // --- FUNÇÕES DE EVENTOS ---
+
   const salvarPartida = async (idEvent) => {
     if (!usuario) {
       setPartidaParaSalvar(idEvent);
@@ -140,30 +142,25 @@ export default function Partidas() {
     }, 100);
   };
 
-  // --- FUNÇÕES DE FILTRO E ORDENAÇÃO ---
   const getStatusPartida = useCallback((partida) => {
     if (partida.status_calculado) {
         const statusMap = { 'proximas': 'proxima', 'ao_vivo': 'ao-vivo', 'finalizadas': 'finalizada' };
         return statusMap[partida.status_calculado];
     }
     const agora = new Date();
-    if (!partida.dateEvent || !partida.strTime) {
-      return "proxima";
-    }
+    if (!partida.dateEvent || !partida.strTime) return "proxima";
     try {
-      const [hours, minutes] = partida.strTime.split(':');
-      let horasBrasil = parseInt(hours) - 3;
-      if (horasBrasil < 0) horasBrasil += 24;
-      const horaBrasil = `${horasBrasil.toString().padStart(2, '0')}:${minutes}`;
-      const dataPartida = new Date(`${partida.dateEvent}T${horaBrasil}:00`);
-      const dataFimPartida = new Date(dataPartida.getTime() + (120 * 60 * 1000));
-      if (isNaN(dataPartida.getTime())) return "proxima";
-      if (agora > dataFimPartida) return "finalizada";
-      if (agora >= dataPartida) return "ao-vivo";
-      return "proxima";
-    } catch {
-      return "proxima";
-    }
+        const [hours, minutes] = partida.strTime.split(':');
+        let horasBrasil = parseInt(hours) - 3;
+        if (horasBrasil < 0) horasBrasil += 24;
+        const horaBrasil = `${horasBrasil.toString().padStart(2, '0')}:${minutes}`;
+        const dataPartida = new Date(`${partida.dateEvent}T${horaBrasil}:00`);
+        const dataFimPartida = new Date(dataPartida.getTime() + (120 * 60 * 1000));
+        if (isNaN(dataPartida.getTime())) return "proxima";
+        if (agora > dataFimPartida) return "finalizada";
+        if (agora >= dataPartida) return "ao-vivo";
+        return "proxima";
+    } catch { return "proxima"; }
   }, []);
 
   const isPartidaSalva = (idEvent) => partidasSalvas.some(ps => ps.idEvent === idEvent);
@@ -178,15 +175,8 @@ export default function Partidas() {
     });
   };
 
-  const partidasOrdenadas = filtrarPartidas().sort((a, b) => {
-    const dataA = new Date(`${a.dateEvent}T${a.strTime || "00:00"}`);
-    const dataB = new Date(`${b.dateEvent}T${b.strTime || "00:00"}`);
-    return dataA - dataB;
-  });
-
-  const partidasAgrupadas = partidasOrdenadas.reduce((acc, partida) => {
-    if (!acc[partida.dateEvent]) acc[partida.dateEvent] = [];
-    acc[partida.dateEvent].push(partida);
+  const partidasAgrupadas = filtrarPartidas().reduce((acc, p) => {
+    (acc[p.dateEvent] = acc[p.dateEvent] || []).push(p);
     return acc;
   }, {});
 
@@ -196,8 +186,6 @@ export default function Partidas() {
   };
 
   const ligasUnicas = [...new Set(partidas.map((p) => p.strLeague))].sort();
-
-  // --- RENDERIZAÇÃO ---
 
   return (
     <div className="!max-w-6xl !mx-auto !px-4 !py-4 !font-sans">
@@ -226,20 +214,20 @@ export default function Partidas() {
             Acompanhe todas as partidas, estatísticas e notícias do futebol feminino.<br />
             Celebramos o talento, a paixão e a força das mulheres no esporte.
           </p>
-          <div className="!flex !gap-6 !justify-center !flex-wrap">
+          <div className="!no-underline !flex !gap-6 !justify-center !flex-wrap">
             <Link 
               to="/salvo" 
-              className="!flex !items-center !justify-center !gap-3 !px-8 !py-5 !bg-white/20 !border-2 !border-white/40 !rounded-full !cursor-pointer !transition-all !duration-300 !backdrop-blur-md !text-white !text-lg !font-semibold !min-w-[220px] hover:!bg-white/30 hover:!-translate-y-1 hover:!shadow-xl"
+              className="!no-underline !flex !items-center !justify-center !gap-3 !px-8 !py-5 !bg-white/20 !border-2 !border-white/40 !rounded-full !cursor-pointer !transition-all !duration-300 !backdrop-blur-md !text-white !text-lg !font-semibold !min-w-[220px] hover:!bg-white/30 hover:!-translate-y-1 hover:!shadow-xl"
             >
-              <i className="fas fa-play-circle !text-xl !w-6 !text-center"></i>
+              <i className="!no-underline fas fa-play-circle !text-xl !w-6 !text-center"></i>
               Ver meus jogos Salvos
             </Link>
             <a 
               href="#" 
-              className="!flex !items-center !justify-center !gap-3 !px-8 !py-5 !bg-white/20 !border-2 !border-white/40 !rounded-full !cursor-pointer !transition-all !duration-300 !backdrop-blur-md !text-white !text-lg !font-semibold !min-w-[220px] hover:!bg-white/30 hover:!-translate-y-1 hover:!shadow-xl"
+              className="!no-underline !flex !items-center !justify-center !gap-3 !px-8 !py-5 !bg-white/20 !border-2 !border-white/40 !rounded-full !cursor-pointer !transition-all !duration-300 !backdrop-blur-md !text-white !text-lg !font-semibold !min-w-[220px] hover:!bg-white/30 hover:!-translate-y-1 hover:!shadow-xl"
               onClick={handleCalendarioClick}
             >
-              <i className="fas fa-calendar-alt !text-xl !w-6 !text-center"></i>
+              <i className="!no-underline fas fa-calendar-alt !text-xl !w-6 !text-center"></i>
               Calendário de jogos
             </a>
           </div>

@@ -119,6 +119,7 @@ export const escudosTimes = {
   'Eslováquia Feminino' : 'https://upload.wikimedia.org/wikipedia/pt/5/5e/SlovenskiFZ.png',
   'Ucrânia Feminino' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Logo_F%C3%A9d%C3%A9ration_Ukraine_Football_2016.svg/250px-Logo_F%C3%A9d%C3%A9ration_Ukraine_Football_2016.svg.png',
   'Brasil Feminino' : 'https://images.vexels.com/media/users/3/152348/isolated/preview/e292f8cec7eae5f8f4f25bcc36cfe5f5-logo-da-selecao-brasileira-de-futebol.png',
+  'Costa Rica Feminino' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Costa_Rica_national_football_team_logo.svg/901px-Costa_Rica_national_football_team_logo.svg.png',
 
   'Botafogo': 'https://logodetimes.com/times/botafogo/logo-botafogo-256.png',
   'Mirassol' : 'https://www.ogol.com.br/img/logos/equipas/3348_imgbank_1685113760.png'

@@ -1,5 +1,4 @@
 export const traducoes = {
-  // Times (Santos Women → Santos Feminino)
   teams: {
     'Santos Women': 'Santos Feminino',
     'Corinthians Women': 'Corinthians Feminino',
@@ -62,7 +61,9 @@ export const traducoes = {
     'Women': 'Feminino',
     'Womens': 'Feminino',
     'Women\'s': 'Feminino',
-    'Female': 'Feminino'
+    'Female': 'Feminino',
+    'W' : 'Feminino',
+    'FC' : ''
   }
 };
 

@@ -1,14 +1,12 @@
 import { useMemo } from 'react';
 import { traduzirNome } from '../../utils/traduzir';
 
-// --- COMPONENTES AUXILIARES ---
-
 const Icons = {
-    Goal: () => <svg className="tw-w-5 tw-h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" /></svg>,
-    YellowCard: () => <svg className="tw-w-4 tw-h-5" fill="currentColor" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="1" /></svg>,
-    RedCard: () => <svg className="tw-w-4 tw-h-5" fill="currentColor" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="1" /></svg>,
-    Subst: () => <svg className="tw-w-5 tw-h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" /></svg>,
-    Default: () => <svg className="tw-w-5 tw-h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" /></svg>,
+    Goal: () => <svg className="!w-5 !h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" /></svg>,
+    YellowCard: () => <svg className="!w-4 !h-5" fill="currentColor" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="1" /></svg>,
+    RedCard: () => <svg className="!w-4 !h-5" fill="currentColor" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="1" /></svg>,
+    Subst: () => <svg className="!w-5 !h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" /></svg>,
+    Default: () => <svg className="!w-5 !h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" /></svg>,
 };
 
 const getInfoEvento = (evento) => {
@@ -16,8 +14,8 @@ const getInfoEvento = (evento) => {
         case 'Goal':
             return {
                 icon: Icons.Goal,
-                color: 'tw-text-green-600 dark:tw-text-green-400',
-                bgColor: 'tw-bg-green-100 dark:tw-bg-green-900/30',
+                color: '!text-green-600',
+                bgColor: '!bg-green-100',
                 text: `Gol de ${evento.player?.name || 'Jogador'}`,
                 team: evento.team?.name
             };
@@ -25,39 +23,37 @@ const getInfoEvento = (evento) => {
             if (evento.detail === 'Yellow Card') {
                 return {
                     icon: Icons.YellowCard,
-                    color: 'tw-text-yellow-600 dark:tw-text-yellow-400',
-                    bgColor: 'tw-bg-yellow-100 dark:tw-bg-yellow-900/30',
+                    color: '!text-yellow-600',
+                    bgColor: '!bg-yellow-100',
                     text: `Cartão amarelo para ${evento.player?.name || 'Jogador'}`,
                     team: evento.team?.name
                 };
             }
             return {
                 icon: Icons.RedCard,
-                color: 'tw-text-red-600 dark:tw-text-red-400',
-                bgColor: 'tw-bg-red-100 dark:tw-bg-red-900/30',
+                color: '!text-red-600',
+                bgColor: '!bg-red-100',
                 text: `Cartão vermelho para ${evento.player?.name || 'Jogador'}`,
                 team: evento.team?.name
             };
         case 'subst':
             return {
                 icon: Icons.Subst,
-                color: 'tw-text-blue-600 dark:tw-text-blue-400',
-                bgColor: 'tw-bg-blue-100 dark:tw-bg-blue-900/30',
+                color: '!text-blue-600',
+                bgColor: '!bg-blue-100',
                 text: `Substituição: ${evento.player?.name || 'Sai'} → ${evento.assist?.name || 'Entra'}`,
                 team: evento.team?.name
             };
         default:
             return {
                 icon: Icons.Default,
-                color: 'tw-text-gray-600 dark:tw-text-gray-400',
-                bgColor: 'tw-bg-gray-100 dark:tw-bg-gray-800',
+                color: '!text-gray-600',
+                bgColor: '!bg-gray-100',
                 text: evento.detail || 'Evento do jogo',
                 team: evento.team?.name
             };
     }
 };
-
-// --- COMPONENTE PRINCIPAL ---
 
 const EstatisticasJogo = ({ eventsData }) => {
     const dadosTraduzidos = useMemo(() => {
@@ -73,16 +69,16 @@ const EstatisticasJogo = ({ eventsData }) => {
             return { ...eventsData, response: translatedResponse };
         } catch (err) {
             console.error("Erro ao traduzir eventos:", err);
-            return { ...eventsData, response: [] }; 
+            return { ...eventsData, response: [] };
         }
     }, [eventsData]);
 
     if (!dadosTraduzidos || dadosTraduzidos.results === 0) {
         return (
-            <div className="tw-text-center tw-p-8 tw-text-gray-500 dark:tw-text-gray-400 tw-bg-gray-50 dark:tw-bg-gray-800/50 tw-rounded-lg tw-m-4 tw-aspect-[2/3] tw-flex tw-flex-col tw-justify-center">
-                <svg className="tw-w-12 tw-h-12 tw-mx-auto tw-mb-4 tw-text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <p className="tw-text-lg tw-font-medium">Nenhum evento disponível</p>
-                <p className="tw-text-sm">Acompanhe os eventos da partida aqui</p>
+            <div className="!text-center !p-8 !text-gray-500 !bg-gray-50 !rounded-lg !m-4 !aspect-[2/3] !flex !flex-col !justify-center">
+                <svg className="!w-12 !h-12 !mx-auto !mb-4 !text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <p className="!text-lg !font-medium">Nenhum evento disponível</p>
+                <p className="!text-sm">Acompanhe os eventos da partida aqui</p>
             </div>
         );
     }
@@ -90,59 +86,64 @@ const EstatisticasJogo = ({ eventsData }) => {
     const eventos = dadosTraduzidos.response;
 
     return (
-        <div className="tw-bg-white dark:tw-bg-gray-900 tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 dark:tw-border-gray-700 tw-mx-2 tw-my-4 tw-aspect-[2/3] tw-flex tw-flex-col">
-            <div className="tw-px-4 tw-py-3 tw-border-b tw-border-gray-200 dark:tw-border-gray-700">
-                <h3 className="tw-mt-3 tw-text-lg tw-font-semibold tw-text-gray-900 dark:tw-text-gray-100">
+        <div className="!bg-white !rounded-xl !shadow-sm !border !border-gray-200 !mx-2 !my-4 !aspect-[2/3] !flex !flex-col">
+            <div className="!px-4 !py-3 !border-b !border-gray-200">
+                <h3 className="!mt-3 !text-lg !font-semibold !text-gray-900">
                     Cronologia do Jogo
                 </h3>
             </div>
-            
-            <div className="tw-flex-1 tw-p-4 tw-overflow-y-auto">
+
+            <div className="!mt-8 !flex-1 !p-4 !overflow-y-auto">
                 <style jsx>{`
-                    .tw-overflow-y-auto::-webkit-scrollbar { width: 6px; }
-                    .tw-overflow-y-auto::-webkit-scrollbar-track { background: transparent; }
-                    .tw-overflow-y-auto::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #93c5fd, #3b82f6); border-radius: 10px; }
+                    .overflow-y-auto::-webkit-scrollbar { width: 6px; }
+                    .overflow-y-auto::-webkit-scrollbar-track { background: transparent; }
+                    .overflow-y-auto::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #93c5fd, #3b82f6); border-radius: 10px; }
                 `}</style>
-                <div className="tw-flow-root">
-                    <ul className="-tw-mb-8">
-                        {eventos.map((evento, index) => {
-                            const info = getInfoEvento(evento);
-                            const IconComponent = info.icon;
-                            
-                            return (
-                                <li key={`${evento.time?.elapsed}-${index}-${evento.type}`}>
-                                    <div className="tw-relative tw-pb-6">
-                                        {index !== eventos.length - 1 && (
-                                            <span className="tw-absolute tw-top-8 tw-left-6 -tw-ml-px tw-h-full tw-w-0.5 tw-bg-gray-200 dark:tw-bg-gray-700" aria-hidden="true" />
-                                        )}
-                                        <div className="tw-relative tw-flex tw-items-start tw-gap-4">
-                                            <div className="tw-flex-shrink-0 tw-w-12 tw-text-right">
-                                                <span className="tw-inline-flex tw-items-center tw-justify-center tw-px-2 tw-py-1 tw-text-xs tw-font-medium tw-rounded-full tw-bg-gray-100 dark:tw-bg-gray-800 tw-text-gray-800 dark:tw-text-gray-200">
-                                                    {evento.time?.elapsed || '0'}'
-                                                </span>
-                                            </div>
-                                            <div className="tw-relative tw-flex-shrink-0">
-                                                <div className={`tw-h-12 tw-w-12 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-ring-8 tw-ring-white dark:tw-ring-gray-900 ${info.bgColor}`}>
-                                                    <span className={info.color}><IconComponent /></span>
-                                                </div>
-                                            </div>
-                                            <div className="tw-min-w-0 tw-flex-1 tw-pt-1.5">
-                                                <div className="tw-space-y-1">
-                                                    <p className="tw-text-sm tw-font-medium tw-text-gray-900 dark:tw-text-gray-100 tw-leading-tight">
-                                                        {info.text}
-                                                    </p>
-                                                    {info.team && (
-                                                        <p className="tw-text-xs tw-font-medium tw-text-gray-500 dark:tw-text-gray-400 tw-uppercase tw-tracking-wide">
-                                                            {info.team}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            );
-                        })}
+                <div className="!flow-root">
+                    <ul className="!-mb-8">
+                    {eventos.map((evento, index) => {
+                        const info = getInfoEvento(evento);
+                        const IconComponent = info.icon;
+
+                        return (
+                        <li key={`${evento.time?.elapsed}-${index}-${evento.type}`}>
+                            <div className="!relative !pb-6">
+                            {index !== eventos.length - 1 && (
+                                <span
+                                className="!absolute !top-8 !left-6 sm:!left-8 !-ml-px !h-full !w-0.5 !bg-gray-200"
+                                aria-hidden="true"
+                                />
+                            )}
+                            <div className="!relative !flex !items-start !gap-4 sm:!gap-6 !-ml-5 sm:!ml-0">
+                                <div className="!flex-shrink-0 !w-10 sm:!w-12 !text-right">
+                                <span className="!inline-flex !items-center !justify-center !px-2 !py-1 !text-xs !font-medium !rounded-full !bg-gray-100 !text-gray-800">
+                                    {evento.time?.elapsed || '0'}'
+                                </span>
+                                </div>
+
+                                <div className="!relative !flex-shrink-0">
+                                <div className={`!h-10 !w-10 sm:!h-12 sm:!w-12 !rounded-full !flex !items-center !justify-center !ring-8 !ring-white ${info.bgColor}`}>
+                                    <span className={info.color}><IconComponent /></span>
+                                </div>
+                                </div>
+
+                                <div className="!min-w-0 !flex-1 !pt-1.5">
+                                <div className="!space-y-1">
+                                    <p className="!text-sm !font-medium !text-gray-900 !leading-tight">
+                                    {info.text}
+                                    </p>
+                                    {info.team && (
+                                    <p className="!text-xs !font-medium !text-gray-500 !uppercase !tracking-wide">
+                                        {info.team}
+                                    </p>
+                                    )}
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </li>
+                        );
+                    })}
                     </ul>
                 </div>
             </div>

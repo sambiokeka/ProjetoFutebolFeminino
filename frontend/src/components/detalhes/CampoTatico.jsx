@@ -36,7 +36,7 @@ const formatarNomeVisivel = (nomeCompleto) => {
 
 const CampoTatico = ({ jogadores }) => {
   if (!jogadores || jogadores.length === 0) {
-    return <div className="tw-text-center tw-p-4 tw-aspect-[2/3] tw-flex tw-items-center tw-justify-center tw-text-gray-500">Sem dados de titulares.</div>;
+    return <div className="text-center p-4 aspect-[2/3] flex items-center justify-center text-gray-500">Sem dados de titulares.</div>;
   }
 
   const temGrid = jogadores.every(j => j.player.grid);
@@ -59,12 +59,12 @@ const CampoTatico = ({ jogadores }) => {
 
   return (
     <div 
-      className="tw-relative tw-w-full tw-aspect-[2/3] tw-bg-green-600 dark:tw-bg-green-800 tw-border-4 tw-border-white/50 tw-rounded-lg tw-overflow-hidden"
+      className="relative w-full aspect-[2/3] bg-green-600 dark:bg-green-800 border-4 border-white/50 rounded-lg overflow-hidden"
       style={{ position: 'relative' }} 
     >
-      <div className="tw-absolute tw-top-1/2 tw-left-0 tw-w-full tw-h-px tw-bg-white/30"></div>
-      <div className="tw-absolute tw-top-1/2 tw-left-1/2 tw--translate-x-1/2 tw--translate-y-1/2 tw-w-20 tw-h-20 md:tw-w-24 md:tw-h-24 tw-border-2 tw-border-white/30 tw-rounded-full"></div>
-      <div className="tw-absolute tw-top-0 tw-left-1/2 tw--translate-x-1/2 tw-w-1/2 tw-h-16 md:tw-h-20 tw-border-2 tw-border-white/30 tw-border-t-0 tw-rounded-b-lg"></div>
+      <div className="absolute top-1/2 left-0 w-full h-px bg-white/30"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 md:w-24 md:h-24 border-2 border-white/30 rounded-full"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-16 md:h-20 border-2 border-white/30 border-t-0 rounded-b-lg"></div>
 
       {posicoesJogadoras.map(jogadora => {
         const totalNaLinha = jogadorasPorLinha[jogadora.x];
@@ -73,18 +73,18 @@ const CampoTatico = ({ jogadores }) => {
         return (
           <div
             key={jogadora.id}
-            className="tw-absolute tw-transform tw--translate-x-1/2 tw--translate-y-1/2 tw-flex tw-flex-col tw-items-center"
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
             style={{
               top: `${posicaoVertical}%`,
               left: `${posicaoHorizontal}%`,
             }}
           >
-            <div className="tw-w-6 tw-h-6 md:tw-w-8 md:tw-h-8 tw-rounded-full tw-bg-blue-500 tw-border-2 tw-border-white tw-flex tw-items-center tw-justify-center tw-shadow-md">
-              <span className="tw-text-white tw-text-xs tw-font-bold">
+            <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center shadow-md">
+              <span className="text-white text-xs font-bold">
                 {jogadora.name.charAt(0)}
               </span>
             </div>
-            <span className="tw-text-xs tw-bg-black/70 tw-text-white tw-px-2 tw-py-1 tw-rounded-md tw-mt-1 tw-whitespace-nowrap">
+            <span className="text-xs bg-black/70 text-white px-2 py-1 rounded-md mt-1 whitespace-nowrap">
               {formatarNomeVisivel(jogadora.name)}
             </span>
           </div>

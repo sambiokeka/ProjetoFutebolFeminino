@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import "../styles/Salvo.css";
 import { traduzirNome } from '../utils/traduzir';
-import PartidaCard from "../components/PartidaCard"; // Importa o componente reutilizável
+import PartidaCard from "../components/PartidaCard"; 
 
 function Salvo() {
   const [partidasSalvas, setPartidasSalvas] = useState([]);
@@ -51,13 +51,13 @@ function Salvo() {
     carregarPartidasSalvas();
   }, [carregarPartidasSalvas]); 
 
-  // A função getStatusPartida continua aqui, pois é usada para filtrar as abas.
+
   const getStatusPartida = useCallback((partida) => {
     if (partida.status_calculado) {
       const statusMap = { 'proximas': 'proxima', 'ao_vivo': 'ao-vivo', 'finalizadas': 'finalizada' };
       return statusMap[partida.status_calculado];
     }
-    // Lógica de fallback se o status do backend não estiver disponível
+
     const agora = new Date();
     if (!partida.dateEvent || !partida.strTime) return "proxima";
     try {

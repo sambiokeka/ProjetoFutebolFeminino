@@ -1,5 +1,4 @@
 import { getEscudoTime } from '../utils/escudos';
-// Importa as funções de um ficheiro de utilitários central
 import { ajustarHorarioBrasil, formatarData } from '../utils/formatters'; 
 
 // --- O COMPONENTE DO CARD ---
@@ -19,7 +18,6 @@ const PartidaCard = ({
     const placarDisponivel = partida.intHomeScore !== null && partida.intAwayScore !== null;
 
     const renderFooter = () => {
-        // A classe base para todos os botões, com a correção do arredondamento
         const baseBtnClass = "flex items-center gap-2 px-5 py-2 text-sm font-semibold !rounded-xl cursor-pointer transition-all duration-300 ease-in-out shadow-md hover:-translate-y-0.5 hover:shadow-lg w-full md:w-auto justify-center";
 
         if (variant === 'partidas') {

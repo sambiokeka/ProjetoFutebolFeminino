@@ -86,7 +86,7 @@ const Header = () => {
               )}
             </div>
 
-            {/* Hamburger Menu Button (Mobile) */}
+            {/* Menu Hamburger */}
             <button 
               className={`lg:hidden flex flex-col justify-between w-8 h-6 bg-transparent border-none cursor-pointer p-0 relative ${
                 menuOpen ? 'active' : ''
@@ -106,7 +106,7 @@ const Header = () => {
             </button>
           </div>
 
-          {/* Mobile Menu */}
+          {/* Luiz aq ta o menu mobile */}
           <div className={`lg:hidden transition-all duration-300 ease-in-out ${
             menuOpen 
               ? 'max-h-96 opacity-100 visible translate-y-0' 

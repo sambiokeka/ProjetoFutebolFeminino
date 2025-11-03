@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-
+import { useState } from 'react';
 import VisualizacaoEscalacoes from './VisualizacaoEscalacoes';
 import EstatisticasJogo from './EstatisticasJogo';
 
@@ -8,15 +7,14 @@ function VerMaisPopup({ isOpen, onClose, data }) {
         return null;
     }
 
-
     const [abaPrincipal, setAbaPrincipal] = useState('escalacoes');
-    
 
     if (!data.lineups || !data.lineups.response || data.lineups.response.length === 0) {
         return (
-             <div className="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-70 tw-flex tw-justify-center tw-items-center tw-z-50" onClick={onClose}>
-                <div className="tw-bg-white dark:tw-bg-gray-800 tw-p-6 tw-rounded-lg tw-shadow-xl" onClick={(e) => e.stopPropagation()}>
-                    <p className="tw-text-center tw-text-gray-700 dark:tw-text-gray-200">Dados de escalação não disponíveis para esta partida.</p>
+            <div className="!fixed !inset-0 !z-[10000] !flex !items-center !justify-center !bg-opacity-50 !p-4" onClick={onClose}>
+                <div className="!bg-white !p-6 !rounded-lg !shadow-xl !text-center" onClick={(e) => e.stopPropagation()}>
+                    <h3 className="!font-bold !text-lg !mb-2">Erro ao carregar</h3>
+                    <p className="!text-gray-600">Os dados de escalação não estão disponíveis para esta partida.</p>
                 </div>
             </div>
         );
@@ -24,48 +22,41 @@ function VerMaisPopup({ isOpen, onClose, data }) {
 
     return (
         <div
-            className="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-70 tw-flex tw-justify-center tw-items-start tw-z-50 tw-p-4 tw-pt-24 tw-backdrop-blur-sm tw-overflow-y-auto"
+            className="!fixed !inset-0 !bg-black/50 !bg-opacity-50 !flex !justify-center !items-start !z-[10000] !p-4 !pt-24 !backdrop-blur-sm !overflow-y-auto"
             onClick={onClose}
         >
             <div
-                className="tw-mt-3 tw-bg-gradient-to-br tw-from-white tw-to-gray-50 dark:tw-from-gray-800 dark:tw-to-gray-900 tw-rounded-xl md:tw-rounded-3xl tw-shadow-2xl tw-p-3 md:tw-p-6 tw-w-full tw-max-w-4xl tw-relative tw-border tw-border-gray-200 dark:tw-border-gray-700 tw-flex tw-flex-col tw-max-h-[85vh]"
+                className="!bg-gray-50 !rounded-2xl !shadow-2xl !w-full !max-w-4xl !relative !border !border-gray-200 !flex !flex-col !max-h-[calc(100vh-8rem)]"
                 onClick={(e) => e.stopPropagation()}
             >
-                <button
-                    onClick={onClose}
-                    className="tw-absolute tw-top-2 tw-right-2 md:tw-top-4 md:tw-right-4 tw-w-6 tw-h-6 md:tw-w-8 md:tw-h-8 tw-bg-gray-100 dark:tw-bg-gray-700 hover:tw-bg-gray-200 dark:hover:tw-bg-gray-600 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-transition-all tw-duration-200 tw-group tw-shadow-sm tw-z-10"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="tw-h-3 tw-w-3 md:tw-h-4 md:tw-w-4 tw-text-gray-500 group-hover:tw-text-gray-700 dark:group-hover:tw-text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-                <div className="tw-text-center tw-mb-3 md:tw-mb-6">
-                     <h2 className="tw-text-lg md:tw-text-2xl tw-font-bold tw-text-gray-800 dark:tw-text-white tw-mb-1">
+                <div className="!p-4 !border-b !border-gray-200 !sticky !top-0 !bg-gray-50/80 !backdrop-blur-sm !z-10 !rounded-t-2xl">
+                    <button onClick={onClose} className="!absolute !top-4 !right-4 !text-gray-400 hover:!text-gray-600 !transition-colors">
+                        <i className="fas fa-times !text-xl"></i>
+                    </button>
+                    <h2 className="!text-xl !font-bold !text-center !text-gray-800">
                         {abaPrincipal === 'escalacoes' ? 'Detalhes da Partida' : 'Eventos do Jogo'}
                     </h2>
+                    <div className="!flex !mt-4 !border !border-gray-200 !rounded-lg !p-1 !bg-gray-200">
+                        <button
+                            onClick={() => setAbaPrincipal('escalacoes')}
+                            className={`!flex-1 !py-2 !text-sm !font-semibold !rounded-md !transition-all ${abaPrincipal === 'escalacoes' ? '!bg-white !text-purple-700 !shadow' : '!text-gray-600'}`}
+                        >
+                            Escalações
+                        </button>
+                        <button
+                            onClick={() => setAbaPrincipal('eventos')}
+                            className={`!flex-1 !py-2 !text-sm !font-semibold !rounded-md !transition-all ${abaPrincipal === 'eventos' ? '!bg-white !text-purple-700 !shadow' : '!text-gray-600'}`}
+                        >
+                            Eventos
+                        </button>
+                    </div>
                 </div>
 
-                <div className="tw-flex tw-mb-4 tw-border-b tw-border-gray-200 dark:tw-border-gray-700">
-                    <button
-                        onClick={() => setAbaPrincipal('escalacoes')}
-                        className={`tw-flex-1 tw-py-2 tw-font-medium ${abaPrincipal === 'escalacoes' ? 'tw-text-blue-500 tw-border-b-2 tw-border-blue-500' : 'tw-text-gray-500'}`}
-                    >
-                        Escalações
-                    </button>
-                    <button
-                        onClick={() => setAbaPrincipal('estatisticas')}
-                        className={`tw-flex-1 tw-py-2 tw-font-medium ${abaPrincipal === 'estatisticas' ? 'tw-text-blue-500 tw-border-b-2 tw-border-blue-500' : 'tw-text-gray-500'}`}
-                    >
-                        Eventos
-                    </button>
-                </div>
-                
-                <div className="tw-flex-1 tw-overflow-y-auto">
+                <div className="!flex-1 !overflow-y-auto !p-4">
                     {abaPrincipal === 'escalacoes' && (
-
                         <VisualizacaoEscalacoes data={data.lineups} />
                     )}
-
-                    {abaPrincipal === 'estatisticas' && (
-
+                    {abaPrincipal === 'eventos' && (
                         <EstatisticasJogo eventsData={data.events} />
                     )}
                 </div>
