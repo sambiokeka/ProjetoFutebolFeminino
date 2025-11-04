@@ -2,196 +2,145 @@ import sqlite3
 import os
 from datetime import datetime
 
-# --- CONFIGURAÇÃO DO BANCO DE DADOS ---
-# Garante que o script encontre o banco de dados, não importa de onde ele seja executado.
-# Esta parte é idêntica à configuração nos seus outros arquivos para manter a consistência.
+# Pega o caminho do arquivo atual e junta com a pasta 'database' para achar o banco
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_DIR = os.path.join(BASE_DIR, 'database')
-DATABASE_FUTEBOL = os.path.join(DB_DIR, 'futebol_feminino.db')
+DB_PATH = os.path.join(BASE_DIR, 'database', 'futebol_feminino.db')
 
-def get_db_connection():
-    """
-    Cria e retorna uma conexão com o banco de dados de futebol.
-    A conexão é configurada para retornar dicionários em vez de tuplas, facilitando o acesso aos dados.
-    """
-    conn = sqlite3.connect(DATABASE_FUTEBOL)
-    # conn.row_factory = sqlite3.Row permite acessar colunas pelo nome (ex: partida['strHomeTeam'])
-    conn.row_factory = sqlite3.Row
+
+# Conecta no banco de dados e configura pra retornar resultados como dicionário
+def connect_db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row  # Permite acessar os dados pelo nome da coluna
     return conn
 
-# --- OPERAÇÕES CRUD ---
 
-# CREATE (Criar)
-def create_partida(id_event, id_league, home_team, away_team, event_date, home_score=None, away_score=None):
-    """
-    Adiciona uma nova partida ao banco de dados.
+# Mostra todas as ligas cadastradas no banco vai servir pra opção 1 do menu
+def listar_ligas():
+    sql = "SELECT idLeague, strLeague FROM ligas"
+    with connect_db() as conn:
+        ligas = conn.execute(sql).fetchall()
 
-    Args:
-        id_event (str): O ID único do evento (Chave Primária).
-        id_league (str): O ID da liga.
-        home_team (str): Nome do time da casa.
-        away_team (str): Nome do time de fora.
-        event_date (str): Data do evento no formato 'YYYY-MM-DD'.
-        home_score (int, optional): Placar do time da casa. Padrão é None.
-        away_score (int, optional): Placar do time de fora. Padrão é None.
-    """
-    # A instrução SQL INSERT INTO é usada para adicionar um novo registro.
-    # Os '?' são placeholders que serão substituídos de forma segura pelos valores no tuple 'partida_data'.
-    # Isso previne ataques de injeção de SQL.
+    print("\n--- Ligas Disponíveis ---")
+    for liga in ligas:
+        print(f"{liga['idLeague']} - {liga['strLeague']}")
+    print("-------------------------\n")
+
+# Adiciona uma nova partida na tabela 'partidas' usando comando SQL INSERT
+def criar_partida(id_event, id_league, home, away, date, home_score=None, away_score=None):
     sql = """
         INSERT INTO partidas (idEvent, idLeague, strHomeTeam, strAwayTeam, dateEvent, intHomeScore, intAwayScore)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     """
-    partida_data = (id_event, id_league, home_team, away_team, event_date, home_score, away_score)
-    
-    conn = get_db_connection()
     try:
-        cursor = conn.cursor()
-        cursor.execute(sql, partida_data)
-        # conn.commit() é crucial para salvar as alterações no banco de dados. Sem isso, a operação é perdida.
-        conn.commit()
-        print(f"Partida '{home_team} vs {away_team}' (ID: {id_event}) criada com sucesso!")
+        # Conecta, executa o comando e fecha automaticamente com o "with"
+        with connect_db() as conn:
+            conn.execute(sql, (id_event, id_league, home, away, date, home_score, away_score))
+        print(f"[OK] Partida '{home} vs {away}' criada!")
     except sqlite3.IntegrityError:
-        print(f"ERRO: A partida com ID {id_event} já existe no banco de dados.")
-    except Exception as e:
-        print(f"Ocorreu um erro ao criar a partida: {e}")
-    finally:
-        # É uma boa prática sempre fechar a conexão, não importa se a operação deu certo ou errado.
-        conn.close()
+        # Se tentar criar com um ID que já existe no banco, dá erro de chave primária
+        print("[ERRO] ID já existe!")
 
-# READ (Ler)
-def read_partida(id_event):
-    """
-    Lê e exibe os detalhes de uma partida específica pelo seu ID.
-    """
-    # A instrução SQL SELECT é usada para buscar dados.
-    # Usamos LEFT JOIN para buscar também o nome do campeonato na tabela 'ligas'.
+
+# Busca no banco pela partida que tem o idEvent informado e exibe os dados
+def ver_partida(id_event):
     sql = """
-        SELECT p.idEvent, p.strHomeTeam, p.strAwayTeam, p.dateEvent, p.intHomeScore, p.intAwayScore, l.strLeague
+        SELECT p.*, l.strLeague
         FROM partidas p
         LEFT JOIN ligas l ON p.idLeague = l.idLeague
         WHERE p.idEvent = ?
     """
-    
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(sql, (id_event,))
-    
-    # cursor.fetchone() retorna a primeira linha encontrada ou None se não houver resultados.
-    partida = cursor.fetchone()
-    conn.close()
-    
+    with connect_db() as conn:
+        partida = conn.execute(sql, (id_event,)).fetchone()  # Busca uma linha
+
     if partida:
-        print("\n--- Detalhes da Partida Encontrada ---")
-        # Como usamos conn.row_factory, podemos acessar os dados como um dicionário.
-        print(f"  ID do Evento: {partida['idEvent']}")
-        print(f"  Campeonato: {partida['strLeague'] or 'Não especificado'}")
-        print(f"  Data: {partida['dateEvent']}")
-        print(f"  Jogo: {partida['strHomeTeam']} vs {partida['strAwayTeam']}")
-        print(f"  Placar: {partida['intHomeScore']} x {partida['intAwayScore']}")
-        print("------------------------------------")
-        return dict(partida)
+        # Mostra os dados se encontrar a partida
+        print(f"\nID: {partida['idEvent']}\nLiga: {partida['strLeague'] or '-'}")
+        print(f"{partida['strHomeTeam']} vs {partida['strAwayTeam']} em {partida['dateEvent']}")
+        print(f"Placar: {partida['intHomeScore']} x {partida['intAwayScore']}\n")
     else:
-        print(f"\nNenhuma partida encontrada com o ID: {id_event}")
-        return None
+        print("[INFO] Partida não encontrada.")
 
-# UPDATE (Atualizar)
-def update_placar_partida(id_event, new_home_score, new_away_score):
-    """
-    Atualiza o placar de uma partida existente.
 
-    Args:
-        id_event (str): O ID da partida a ser atualizada.
-        new_home_score (int): O novo placar do time da casa.
-        new_away_score (int): O novo placar do time de fora.
-    """
-    # A instrução SQL UPDATE é usada para modificar registros existentes.
-    # A cláusula WHERE é fundamental para garantir que apenas a partida correta seja atualizada.
-    sql = """
-        UPDATE partidas
-        SET intHomeScore = ?, intAwayScore = ?
-        WHERE idEvent = ?
-    """
-    
-    conn = get_db_connection()
-    try:
-        cursor = conn.cursor()
-        cursor.execute(sql, (new_home_score, new_away_score, id_event))
-        conn.commit()
-        
-        # cursor.rowcount nos diz quantas linhas foram afetadas pela última operação.
-        if cursor.rowcount > 0:
-            print(f"Placar da partida (ID: {id_event}) atualizado para {new_home_score} x {new_away_score}!")
+# Atualiza o placar da partida usando o idEvent
+def atualizar_placar(id_event, home_score, away_score):
+    sql = "UPDATE partidas SET intHomeScore = ?, intAwayScore = ? WHERE idEvent = ?"
+    with connect_db() as conn:
+        cur = conn.execute(sql, (home_score, away_score, id_event))
+        if cur.rowcount:
+            # Se alguma linha foi afetada, então a atualização funcionou
+            print("[OK] Placar atualizado!")
         else:
-            print(f"Nenhuma partida encontrada com o ID {id_event} para atualizar.")
-    except Exception as e:
-        print(f"Ocorreu um erro ao atualizar a partida: {e}")
-    finally:
-        conn.close()
+            print("[INFO] Partida não encontrada.")
 
-# DELETE (Deletar)
-def delete_partida(id_event):
-    """
-    Remove uma partida do banco de dados pelo seu ID.
-    """
-    # A instrução SQL DELETE remove registros.
-    # Assim como no UPDATE, a cláusula WHERE é crucial para não apagar a tabela inteira.
+
+# Remove a partida do banco de dados usando o idEvent como chave
+def deletar_partida(id_event):
     sql = "DELETE FROM partidas WHERE idEvent = ?"
-    
-    conn = get_db_connection()
-    try:
-        cursor = conn.cursor()
-        cursor.execute(sql, (id_event,))
-        conn.commit()
-        
-        if cursor.rowcount > 0:
-            print(f"Partida (ID: {id_event}) deletada com sucesso!")
+    with connect_db() as conn:
+        cur = conn.execute(sql, (id_event,))
+        if cur.rowcount:
+            print("[OK] Partida deletada!")
         else:
-            print(f"Nenhuma partida encontrada com o ID {id_event} para deletar.")
-    except Exception as e:
-        print(f"Ocorreu um erro ao deletar a partida: {e}")
-    finally:
-        conn.close()
+            print("[INFO] Partida não encontrada.")
 
-# --- DEMONSTRAÇÃO DE USO ---
+# Menu
+def menu():
+    # Enquanto o usuário n apertar 5 e sair, o while vai ser True e vai continuar 
+    while True:
+        print("\n--- CRUD Partidas ---")
+        print("1. Adicionar partida")
+        print("2. Ler partida")
+        print("3. Atualizar placar")
+        print("4. Deletar partida")
+        print("5. Sair")
+        op = input("Opção: ")
+
+        if op == "1":
+
+            print("\nAntes de criar partida, veja as ligas disponíveis (isso vai ajudar pro segundo input):")
+
+            listar_ligas()  # mostra as ligas antes do input
+
+            # Os dados são colocado com input em uma lista e depois são enviados como argumentos pro criar_partida
+            dados = [
+                input("ID Evento: "),
+                input("ID Liga: "),
+                input("Time Casa: "),
+                input("Time Fora: "),
+                input("Data (AAAA-MM-DD, Enter = hoje): ") or datetime.now().strftime("%Y-%m-%d")
+            ]
+            criar_partida(*dados)
+
+        # Usa o idEvent como argumento pra função ver_partida, e mostra a partida
+        elif op == "2":
+            ver_partida(input("ID Evento: "))
+
+        # Usa o idEvent, home e away como argumentos pra função atualizar_placar
+        elif op == "3":
+            try:
+                id_event = input("ID Evento: ")
+                home  = int(input("Placar casa: "))
+                away = int(input("Placar fora: "))
+                atualizar_placar(id_event, home, away)
+
+            # Se o valor inserido não for aceito, por não poder ser convertido pra inteiro, da ValueError
+            except ValueError:
+                print("[ERRO] Apenas números no placar.")
+
+        # Confirma se o usuario quer deletar uma partida msm, e depois usa o idEvent como argumento
+        elif op == "4":
+            if input("Confirma? (s/n): ") == "s":
+                deletar_partida(input("ID Evento: "))
+
+        # Fecha o menu
+        elif op == "5":
+            break
+
+        # Se tiver fora do menu não é aceito    
+        else:
+            print("Opção inválida.")
+            
+
+# Chama e ativa o menu quando o codigo é rodado
 if __name__ == "__main__":
-    # ID de exemplo para nossa partida de teste.
-    # Usamos um ID alto para não conflitar com dados reais.
-    ID_PARTIDA_TESTE = "9999999"
-    ID_LIGA_TESTE = "5201" # ID da liga brasileira feminina (exemplo)
-
-    print("--- INICIANDO DEMONSTRAÇÃO DO CRUD ---")
-
-    # PASSO 1: CREATE - Vamos criar uma nova partida de exemplo.
-    print("\n--- PASSO 1: Criando uma nova partida... ---")
-    create_partida(
-        id_event=ID_PARTIDA_TESTE,
-        id_league=ID_LIGA_TESTE,
-        home_team="Corinthians (Teste)",
-        away_team="Palmeiras (Teste)",
-        event_date=datetime.now().strftime("%Y-%m-%d"),
-        home_score=0,
-        away_score=0
-    )
-
-    # PASSO 2: READ - Vamos ler a partida que acabamos de criar para confirmar.
-    print("\n--- PASSO 2: Lendo a partida recém-criada... ---")
-    read_partida(ID_PARTIDA_TESTE)
-
-    # PASSO 3: UPDATE - Vamos simular que o jogo aconteceu e atualizar o placar.
-    print("\n--- PASSO 3: Atualizando o placar da partida... ---")
-    update_placar_partida(ID_PARTIDA_TESTE, 3, 1)
-
-    # PASSO 4: READ (DE NOVO) - Vamos ler a partida novamente para ver o placar atualizado.
-    print("\n--- PASSO 4: Lendo a partida após a atualização... ---")
-    read_partida(ID_PARTIDA_TESTE)
-
-    # PASSO 5: DELETE - Agora, vamos limpar o banco de dados removendo a partida de teste.
-    print("\n--- PASSO 5: Deletando a partida de teste... ---")
-    delete_partida(ID_PARTIDA_TESTE)
-
-    # PASSO 6: READ (FINAL) - Vamos tentar ler a partida mais uma vez para confirmar que foi deletada.
-    print("\n--- PASSO 6: Verificando se a partida foi deletada... ---")
-    read_partida(ID_PARTIDA_TESTE)
-
-    print("\n--- DEMONSTRAÇÃO DO CRUD CONCLUÍDA ---")
+    menu()
