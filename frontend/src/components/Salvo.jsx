@@ -62,7 +62,7 @@ function Salvo() {
     }
   };
 
-  // Lógica corrigida: partida é finalizada se tiver placar
+  // partida é finalizada se tiver placar
   const isFinalizada = (partida) => {
     return partida.intHomeScore !== null && partida.intAwayScore !== null;
   };
