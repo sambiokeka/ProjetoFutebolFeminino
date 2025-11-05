@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
-
-
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext'; 
 import '../styles/Register.css';
 import googleIcon from '../assets/google-icon.png';
