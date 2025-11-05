@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import "../styles/Salvo.css";
 import { traduzirNome } from '../utils/traduzir';
 import PartidaCard from "../components/PartidaCard"; 
 
@@ -50,7 +49,6 @@ function Salvo() {
   useEffect(() => {
     carregarPartidasSalvas();
   }, [carregarPartidasSalvas]); 
-
 
   const getStatusPartida = useCallback((partida) => {
     if (partida.status_calculado) {
@@ -125,10 +123,10 @@ function Salvo() {
 
   if (carregando) {
     return (
-      <div className="salvo-container">
-        <div className="loading">
-          <div className="spinner"></div>
-          <p>A carregar partidas salvas...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg font-medium">A carregar partidas salvas...</p>
         </div>
       </div>
     );
@@ -136,11 +134,14 @@ function Salvo() {
 
   if (erro) {
     return (
-      <div className="salvo-container">
-        <div className="error-container">
-          <h4>Erro</h4>
-          <p>{erro}</p>
-          <button className="btn-tentar-novamente" onClick={carregarPartidasSalvas}>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 text-center shadow-lg max-w-md w-full">
+          <h4 className="text-red-600 text-xl font-bold mb-4">Erro</h4>
+          <p className="text-gray-600 mb-6">{erro}</p>
+          <button 
+            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl font-semibold hover:-translate-y-1 transition-all duration-300 shadow-lg"
+            onClick={carregarPartidasSalvas}
+          >
             Tentar Novamente
           </button>
         </div>
@@ -149,49 +150,65 @@ function Salvo() {
   }
 
   return (
-    <div className="salvo-container">
-      <div className="salvo-header">
-        <h1>Partidas Salvas</h1>
-        <p>Gira as tuas partidas favoritas</p>
-      </div>
+    <div className="min-h-screen bg-gray-50 pt-20 pb-8">
+      <div className="max-w-6xl mx-auto px-4">
+        {/* Header */}
+        <div className="text-center mb-8 py-8 border-b-2 border-gray-200">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+            Partidas Salvas
+          </h1>
+          <p className="text-gray-600 text-lg font-medium">Gira as tuas partidas favoritas</p>
+        </div>
 
-      <div className="abas-container">
-        <button
-          onClick={() => setAbaAtiva("proximas")}
-          className={`aba ${abaAtiva === "proximas" ? "ativa" : ""}`}
-        >
-          Próximas ({proximasCount})
-        </button>
-        <button
-          onClick={() => setAbaAtiva("finalizadas")}
-          className={`aba ${abaAtiva === "finalizadas" ? "ativa" : ""}`}
-        >
-          Finalizadas ({finalizadasCount})
-        </button>
-      </div>
+        {/* Abas */}
+        <div className="flex flex-col sm:flex-row justify-center items-center mb-8 border-b-2 border-gray-200 pb-2 gap-2">
+          <button
+            onClick={() => setAbaAtiva("proximas")}
+            className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 w-full sm:w-auto text-center ${
+              abaAtiva === "proximas" 
+                ? "text-purple-600 bg-white border-2 border-purple-600 shadow-md" 
+                : "text-gray-500 bg-gray-100 border-2 border-transparent hover:text-purple-500 hover:bg-gray-200"
+            }`}
+          >
+            Próximas ({proximasCount})
+          </button>
+          <button
+            onClick={() => setAbaAtiva("finalizadas")}
+            className={`px-6 py-3 font-semibold rounded-lg transition-all duration-300 w-full sm:w-auto text-center ${
+              abaAtiva === "finalizadas" 
+                ? "text-purple-600 bg-white border-2 border-purple-600 shadow-md" 
+                : "text-gray-500 bg-gray-100 border-2 border-transparent hover:text-purple-500 hover:bg-gray-200"
+            }`}
+          >
+            Finalizadas ({finalizadasCount})
+          </button>
+        </div>
 
-      <div className="partidas-lista">
-        {partidasFiltradas.length === 0 ? (
-          <div className="partida-vazia">
-            <p>
-              {abaAtiva === "proximas" 
-                ? "Nenhuma partida próxima salva." 
-                : "Nenhuma partida finalizada salva."}
-            </p>
-          </div>
-        ) : (
-          partidasFiltradas.map((partida) => (
-            <PartidaCard
-              key={partida.idEvent}
-              partida={partida}
-              status={getStatusPartida(partida)}
-              variant="salvo" 
-              notificacaoAtiva={notificacoesAtivas[partida.idEvent]}
-              onToggleNotificacao={toggleNotificacao}
-              onRemover={removerPartida}
-            />
-          ))
-        )}
+        {/* Lista de Partidas */}
+        <div className="space-y-6">
+          {partidasFiltradas.length === 0 ? (
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-12 text-center shadow-lg">
+              <i className="fas fa-futbol text-6xl text-gray-300 mb-4"></i>
+              <p className="text-gray-600 text-xl font-medium">
+                {abaAtiva === "proximas" 
+                  ? "Nenhuma partida próxima salva." 
+                  : "Nenhuma partida finalizada salva."}
+              </p>
+            </div>
+          ) : (
+            partidasFiltradas.map((partida) => (
+              <PartidaCard
+                key={partida.idEvent}
+                partida={partida}
+                status={getStatusPartida(partida)}
+                variant="salvo" 
+                notificacaoAtiva={notificacoesAtivas[partida.idEvent]}
+                onToggleNotificacao={toggleNotificacao}
+                onRemover={removerPartida}
+              />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,17 +1,58 @@
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 @import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
-}
 
 body {
   background-color: #f8f6f6;
   overflow-x: hidden;
   padding-top: 55px;
+}
+
+@import "tailwindcss";
+
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: white !important;
+  -webkit-box-shadow: 0 0 0px 1000px #3d1b5c inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: white;
+}
+
+input:-webkit-autofill {
+  -webkit-background-clip: text;
+}
+
+
+input::selection {
+  background-color: #4facfe !important; 
+  color: white !important;
+}
+
+input::-moz-selection {
+  background-color: #4facfe !important;
+  color: white !important;
+}
+
+
+input:-moz-ui-invalid {
+  box-shadow: none;
+}
+
+
+input {
+  color: white !important;
+}
+
+::selection {
+  background-color: #4facfe;
+  color: white;
+}
+
+::-moz-selection {
+  background-color: #4facfe;
+  color: white;
 }
