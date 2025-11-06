@@ -47,15 +47,15 @@ O **Match Point** é uma plataforma web completa para acompanhamento de partidas
 ### Frontend
 - React.js com hooks
 - React Router para navegação
-- CSS personalizado com design responsivo
+- Tailwind
 - Font Awesome para ícones
-- Bootstrap para componentes UI
 
 ### Backend
 - Python Flask
 - SQLite para banco de dados
 - JWT para autenticação
 - API TheSportsDB para dados de partidas
+- API Football para detalhamentos como escalação, titulares, etc.
 - Sistema de webhooks para notificações (sendo implementado)
 
 ---
@@ -66,10 +66,17 @@ O **Match Point** é uma plataforma web completa para acompanhamento de partidas
 ProjetoFutebolFeminino/
 ├── frontend/
 │   ├── components/
+│   │   ├──components/
+│   │   │   ├── CampoTatico.jsx
+│   │   │   ├── EstatisticasJogo.jsx
+│   │   │   ├── VerMaisPopup.jsx
+│   │   │   └── VisualizacaoEscalacoes.jsx
 │   │   ├── Header.jsx
 │   │   ├── Footer.jsx
 │   │   ├── Layout.jsx
+│   │   ├── PartidaCard.jsx
 │   │   ├── PrivateRoute.jsx
+│   │   ├── AuthContext.jsx
 │   │   └── Popup.jsx
 │   ├── pages/
 │   │   ├── Partidas.jsx
@@ -78,27 +85,30 @@ ProjetoFutebolFeminino/
 │   │   └── Register.jsx
 │   ├── utils/
 │   │   ├── traduzir.js
+│   │   ├── formatters.js
 │   │   └── escudos.js
 │   ├── styles/
-│   │   ├── Partidas.css
-│   │   ├── Salvo.css
-│   │   ├── Login.css
-│   │   ├── Register.css
 │   │   ├── Header.css
-│   │   └── Footer.css
-│   └── assets/
-│       ├── google-icon.png
-│       ├── facebook-icon.png
-│       └── bola-icon.png
+│   ├── assets/
+│   │   ├── google-icon.png
+│   │   ├── facebook-icon.png
+│   │   └── bola-icon.png
+│   └── routes/
+│   │   └── AppRoutes.jsx
 ├── backend/
+│   ├── database/
+│   │   ├── futebol_feminino.db
+│   │   └── users.db
 │   ├── alimentar/
 │   │   ├── alimentar_paulistao.py
-│   │   ├── alimentar_copa_br.py
+│   │   └── alimentar_copa_br.py
 │   ├── main.py
 │   ├── rotas.py
 │   ├── database.py
 │   ├── monitor.py
-│   ├── config.py
+│   ├── CRUD.py
+│   ├── teste.py
+│   └── config.py
 ├── requirements.txt
 └── README.md
 ```
@@ -185,6 +195,7 @@ O sistema utiliza dois bancos SQLite:
 - `monitor.py`: Atualiza placares e status das partidas em tempo real.
 - `rotas.py`: Cria os endpoints e faz autenticação de usuários.
 - `config.py`: Configurações para requisições da API.
+- `CRUD.py`: Feito para inserir, alterar, deletar e ver jogos.
 - `database.py`: Cria o banco e tabelas se não existirem, além de gerenciar status dos jogos.
 - Arquivos em `alimentar/`: Inserção manual de partidas.
 
@@ -192,7 +203,7 @@ O sistema utiliza dois bancos SQLite:
 
 - `traduzir.js`: Traduz nomes vindos da API (inglês → português).
 - `escudos.js`: Implementa os escudos dos times para exibição nas partidas.
-
+- `formatters.js`: Arruma a data e horario das partidas.
 ---
 
 ## Contribuição
