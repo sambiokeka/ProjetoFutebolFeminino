@@ -40,7 +40,22 @@ export const traducoes = {
     'Wales Women' : 'País de Gales Feminino',
     'Slovakia Women' : 'Eslováquia Feminino',
     'Ukraine Women' : 'Ucrânia Feminino',
-    'Brazil Women' : 'Brasil Feminino'
+    'Brazil Women' : 'Brasil Feminino',
+    'Finland Women' : 'Finlândia Feminino',
+    'Austria Women' : 'Áustria Feminino',
+    'New Zealand Women' : 'Nova Zelândia Feminino',
+    'Cyprus Women' : 'Chipre Feminino',
+    'Luxembourg Women' : 'Luxemburgo Feminino',
+    'Netherlands Women' : 'Holanda Feminino',
+    'Turkey Women' : 'Turquia Feminino',
+    'Albania Women' : 'Albânia Feminino',
+    'Italy Women' : 'Italia Feminino',
+    'Chinese Taipei Women' : 'Taiwan Feminino',
+    'Japan Women' : 'Japão Feminino',
+    'Denmark Women' : 'Dinamarca Feminino',
+    'Norway Women' : 'Noruega Feminino',
+    'Belgium Women' : 'Bélgica Feminino',
+
   },
 
   // Ligas/Campeonatos
@@ -63,33 +78,36 @@ export const traducoes = {
     'Women\'s': 'Feminino',
     'Female': 'Feminino',
     'W' : 'Feminino',
+    'WFC' : 'Feminino',
     'FC' : ''
   }
 };
 
-// Função para traduzir nomes
 export const traduzirNome = (nome) => {
   if (!nome) return nome;
-  
+ 
   let nomeTraduzido = nome;
-  
-  // Primeiro tenta traduzir times específicos
+ 
   if (traducoes.teams[nomeTraduzido]) {
     return traducoes.teams[nomeTraduzido];
   }
-  
-  // Tenta traduzir ligas específicas
   if (traducoes.leagues[nomeTraduzido]) {
     return traducoes.leagues[nomeTraduzido];
   }
-  
-  // Traduz termos gerais (Women → Feminino)
-  Object.keys(traducoes.terms).forEach(termoIngles => {
+ 
+  const termos = Object.keys(traducoes.terms);
+
+  termos.sort((a, b) => b.length - a.length);
+
+  termos.forEach(termoIngles => {
     const termoPortugues = traducoes.terms[termoIngles];
-    if (nomeTraduzido.includes(termoIngles)) {
-      nomeTraduzido = nomeTraduzido.replace(termoIngles, termoPortugues);
-    }
+     
+    const regex = new RegExp(`\\b${termoIngles}\\b`, 'gi');
+
+    nomeTraduzido = nomeTraduzido.replace(regex, termoPortugues);
   });
-  
+ 
+  nomeTraduzido = nomeTraduzido.replace(/\s+/g, ' ').trim();
+ 
   return nomeTraduzido;
 };
