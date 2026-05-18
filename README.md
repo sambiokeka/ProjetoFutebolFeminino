@@ -6,11 +6,11 @@ O **Match Point** é uma plataforma web completa para acompanhamento de partidas
 
 ## Equipe
 
-- Erick Jooji (RM: 564482)
-- Luiz Dalboni (RM: 564189)
-- Matheus Tozarelli (RM: 563490)
-- Rafael Lorenzini (RM: 563643)
-- Rafael Peloso (RM: 561343)
+- Erick Jooji 
+- Luiz Dalboni
+- Matheus Tozarelli 
+- Rafael Lorenzini 
+- Rafael Peloso 
 
 ---
 
